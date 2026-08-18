@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --bg-primary: #F3FAF7;
+    --surface-primary: #FFFFFF;
+    --surface-secondary: #ECFDF5;
+    --primary: #0F766E;
+    --primary-bright: #14B8A6;
+    --bio-green: #22C55E;
+    --dna-blue: #0EA5E9;
+    --sci-purple: #8B5CF6;
+    --text-main: #12312B;
+    --text-secondary: #64748B;
+    --border-color: #DDEDE8;
+    --warning: #F59E0B;
+    --error: #EF4444;
+    --success: #16A34A;
+  }
+
+  .dark {
+    --bg-primary: #0F172A;
+    --surface-primary: #1E293B;
+    --surface-secondary: #0F2922;
+    --primary: #14B8A6;
+    --primary-bright: #2DD4BF;
+    --text-main: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --border-color: #334155;
+  }
+}
+
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  margin: 0;
+}
+
+/* Scientific Grid & Biological Cell Background Patterns */
+.bg-scientific-grid {
+  background-image: radial-gradient(#0F766E 0.75px, transparent 0.75px), radial-gradient(#0F766E 0.75px, #F3FAF7 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  opacity: 0.15;
+}
+
+.bg-cell-pattern {
+  background-image: radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 80% 70%, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
+                    radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+}
+
+/* 3D DNA Helix CSS Animation */
+@keyframes dna-rotate-light {
+  0% {
+    transform: rotateY(0deg) rotateX(10deg) rotateZ(-6deg);
+  }
+  100% {
+    transform: rotateY(360deg) rotateX(10deg) rotateZ(-6deg);
+  }
+}
+
+.dna-3d-container {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.dna-3d-helix {
+  transform-style: preserve-3d;
+  animation: dna-rotate-light 12s linear infinite;
+}
+
+.dna-3d-helix:hover {
+  animation-play-state: paused;
+}
+
+/* Subtle organic pulse */
+@keyframes bio-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+
+.animate-bio-pulse {
+  animation: bio-pulse 4s ease-in-out infinite;
+}
+
+/* RTL / LTR Helpers */
+.dir-rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.dir-ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Ensure sequence inputs and codes are always LTR regardless of page RTL */
+.sequence-mono-ltr {
+  direction: ltr !important;
+  text-align: left !important;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Custom scrollbar for sequence boxes & scientific tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #ECFDF5;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0F766E;
+}
