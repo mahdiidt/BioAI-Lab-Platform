@@ -419,6 +419,13 @@ export const fa = {
   tool_newick_tree_format: 'فرمت درخت Newick',
 
   // Footer & Links
+  // راهنمای پلتفرم
+  guideBadge: 'مرجع کامل',
+  guideIntro: 'راهنمای کامل تمام دسته‌بندی‌ها و ابزارهای BioAI.Lab — اینکه هر ابزار چه کاری انجام می‌دهد، چه زمانی باید از آن استفاده کرد و اساس علمی آن چیست. در ادامه مرور کنید یا مستقیماً هر ابزار را باز کنید.',
+  guideLevelLabel: 'سطح',
+  badgePopular: 'محبوب',
+  badgeFeatured: 'ویژه',
+
   launchTool: 'اجرا',
   localClientSide: 'کاملاً محلی و سمت کلاینت',
   footerRights: 'BioAI.Lab © 2026. پیاده‌سازی شده برای پژوهش و آموزش علمی.',
