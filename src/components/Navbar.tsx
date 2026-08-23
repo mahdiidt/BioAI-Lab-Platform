@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dna, Search, Star, Menu, X, ShieldCheck, Sparkles } from 'lucide-react';
+import { Dna, Search, Star, Menu, X, ShieldCheck, Sparkles, BookOpen } from 'lucide-react';
 import { LanguageSelector } from './common/LanguageSelector';
 import { ThemeSelector } from './common/ThemeSelector';
 import { getTranslation } from '../i18n';
@@ -15,6 +15,7 @@ interface NavbarProps {
   onOpenFavorites: () => void;
   onNavigateHome: () => void;
   onSelectCategory: (catId: string) => void;
+  onOpenGuide: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -27,6 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenFavorites,
   onNavigateHome,
   onSelectCategory,
+  onOpenGuide,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -71,6 +73,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Controls Right */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Platform & Tools Guide Button */}
+          <button
+            onClick={onOpenGuide}
+            type="button"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#DDEDE8] dark:border-slate-800 bg-white dark:bg-slate-900 text-[#12312B] dark:text-slate-100 hover:bg-[#ECFDF5] dark:hover:bg-slate-800 hover:border-[#14B8A6] transition-all cursor-pointer shadow-2xs text-xs font-semibold"
+            title={getTranslation(currentLang, 'navAbout')}
+          >
+            <BookOpen className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
+            <span className="hidden lg:inline">{getTranslation(currentLang, 'navAbout')}</span>
+          </button>
+
           {/* Favorites Button */}
           <button
             onClick={onOpenFavorites}
@@ -125,6 +138,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <ThemeSelector currentTheme={currentTheme} onThemeChange={onThemeChange} lang={currentLang} />
             </div>
           </div>
+
+          <button
+            onClick={() => {
+              onOpenGuide();
+              setMobileMenuOpen(false);
+            }}
+            type="button"
+            className="w-full py-2.5 px-3 rounded-lg bg-[#ECFDF5] dark:bg-slate-900 text-[#0F766E] dark:text-teal-400 font-semibold text-xs flex items-center gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>{getTranslation(currentLang, 'navAbout')}</span>
+          </button>
 
           <button
             onClick={() => {
