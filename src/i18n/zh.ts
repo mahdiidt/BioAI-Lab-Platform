@@ -411,6 +411,13 @@ export const zh = {
   tool_gram_neg: '革兰氏阴性',
   tool_newick_tree_format: 'Newick 进化树格式',
 
+  // 平台指南
+  guideBadge: '完整参考',
+  guideIntro: 'BioAI.Lab 所有分类与工具的完整指南——每个工具的功能、使用场景及背后的科学原理。请在下方浏览，或直接打开任意工具。',
+  guideLevelLabel: '级别',
+  badgePopular: '热门',
+  badgeFeatured: '精选',
+
   launchTool: '启动',
   localClientSide: '100% 本地客户端运行',
   footerRights: 'BioAI.Lab © 2026. 为科研与教学而建。',
