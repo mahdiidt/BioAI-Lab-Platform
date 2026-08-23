@@ -411,6 +411,13 @@ export const fr = {
   tool_gram_neg: 'Gram-Négatif',
   tool_newick_tree_format: 'Format d\'Arbre Newick',
 
+  // Guide de la Plateforme
+  guideBadge: 'Référence Complète',
+  guideIntro: "Un guide complet de toutes les catégories et outils de BioAI.Lab — ce que fait chacun, quand l'utiliser et la science qui le sous-tend. Parcourez ci-dessous ou ouvrez directement un outil.",
+  guideLevelLabel: 'Niveau',
+  badgePopular: 'Populaire',
+  badgeFeatured: 'Recommandé',
+
   launchTool: 'Lancer',
   localClientSide: '100% Côté Client Local',
   footerRights: 'BioAI.Lab © 2026. Conçu pour la Recherche Scientifique & l\'Éducation.',
