@@ -5,6 +5,7 @@ import { FeaturedCategories } from './components/FeaturedCategories';
 import { ToolDashboard } from './components/ToolDashboard';
 import { ToolDetailModal } from './components/ToolDetailModal';
 import { SearchDialog } from './components/common/SearchDialog';
+import { PlatformGuideModal } from './components/PlatformGuideModal';
 import { Footer } from './components/Footer';
 import { Language, Theme } from './types';
 
@@ -58,6 +59,7 @@ export default function App() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState<boolean>(false);
   const [activeToolId, setActiveToolId] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [guideOpen, setGuideOpen] = useState<boolean>(false);
   const [favorites, setFavorites] = useState<string[]>(getValidInitialFavorites);
 
 
@@ -168,6 +170,7 @@ export default function App() {
           setSelectedCategory(catId);
           handleExploreClick();
         }}
+        onOpenGuide={() => setGuideOpen(true)}
       />
 
       {/* Hero Section */}
@@ -220,6 +223,15 @@ export default function App() {
         onSelectTool={(toolId) => setActiveToolId(toolId)}
         lang={lang}
       />
+
+      {/* Platform & Tools Guide Modal */}
+      {guideOpen && (
+        <PlatformGuideModal
+          lang={lang}
+          onClose={() => setGuideOpen(false)}
+          onOpenTool={(toolId) => setActiveToolId(toolId)}
+        />
+      )}
 
       {/* Footer */}
       <Footer lang={lang} onLanguageChange={setLang} />
