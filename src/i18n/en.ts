@@ -418,6 +418,13 @@ export const en = {
   tool_gram_neg: 'Gram-Negative',
   tool_newick_tree_format: 'Newick Tree Format',
 
+  // Platform Guide
+  guideBadge: 'Complete Reference',
+  guideIntro: 'A complete guide to every category and tool on BioAI.Lab — what each one does, when to use it, and the science behind it. Browse below or open any tool directly.',
+  guideLevelLabel: 'Level',
+  badgePopular: 'Popular',
+  badgeFeatured: 'Featured',
+
   // Footer & Links
   launchTool: 'Launch',
   localClientSide: 'Local 100% Client-Side',
