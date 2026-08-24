@@ -1,20 +1,24 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# BioAI.Lab — Life Sciences & Bioinformatics Suite
 
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/4f5b5f17-cb6f-4753-825c-27409d319009
+A client-side suite of 18+ bioinformatics calculators, sequence analyzers,
+primer designers, and molecular biology tools. Fully static — no backend,
+no database, no API keys required. All processing happens locally in the
+browser. Supports 6 languages (English, Persian/Farsi, Chinese, Spanish,
+French, German).
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
+2. Run the app:
    `npm run dev`
+
+## Build for Production
+
+`npm run build`
+
+## Run Tests
+
+`npm test`
