@@ -62,7 +62,12 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-xs z-50 flex items-start justify-center pt-20 p-4 animate-in fade-in duration-150">
+    <div
+      className="fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-xs z-50 flex items-start justify-center pt-20 p-4 animate-in fade-in duration-150"
+      role="dialog"
+      aria-modal="true"
+      aria-label={getTranslation(lang, 'searchPlaceholder')}
+    >
       <div className="bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
         {/* Header Search Input */}
         <div className="p-4 border-b border-[#DDEDE8] dark:border-slate-800 flex items-center gap-3 bg-[#ECFDF5] dark:bg-slate-800/90">
@@ -77,6 +82,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
             }}
             onKeyDown={handleKeyDown}
             placeholder={getTranslation(lang, 'searchPlaceholder')}
+            aria-label={getTranslation(lang, 'searchPlaceholder')}
             className="w-full bg-transparent text-[#12312B] dark:text-slate-100 outline-none text-sm font-medium placeholder:text-[#64748B] dark:placeholder:text-slate-400"
           />
           <button
