@@ -4,6 +4,7 @@ import { PunnettSquareVisualizer } from '../visualizers/PunnettSquareVisualizer'
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
+import { ExportButton } from '../common/ExportButton';
 import { Grid, Scale, Info } from 'lucide-react';
 
 interface ToolProps {
@@ -57,6 +58,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#DDEDE8] pb-3">
               <h4 className="font-bold text-sm text-[#12312B]">{getTranslation(lang, 'tool_parental_cross')}</h4>
               <div className="flex items-center gap-2">
+                {punnettResult && <ExportButton filename="punnett_square.json" data={punnettResult} format="json" lang={lang} />}
                 <button
                   onClick={() => { setP1('Aa'); setP2('Aa'); }}
                   className="px-2.5 py-1 text-xs font-bold rounded-lg bg-[#ECFDF5] text-[#0F766E] border border-[#DDEDE8] hover:bg-[#d1fae5] cursor-pointer"
@@ -172,9 +174,12 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
 
           {hwResult ? (
             <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-              <h4 className="font-bold text-sm text-[#12312B] border-b border-[#DDEDE8] pb-2">
-                {getTranslation(lang, 'tool_genotype_freq_pop')}
-              </h4>
+              <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-2">
+                <h4 className="font-bold text-sm text-[#12312B]">
+                  {getTranslation(lang, 'tool_genotype_freq_pop')}
+                </h4>
+                <ExportButton filename="hardy_weinberg.json" data={hwResult} format="json" lang={lang} />
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
@@ -214,4 +219,3 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
     </div>
   );
 };
-
