@@ -4,6 +4,7 @@ import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { Activity, AlertTriangle, TrendingUp } from 'lucide-react';
+import { ExportButton } from '../common/ExportButton';
 
 interface ToolProps {
   lang: Language;
@@ -69,9 +70,12 @@ export const MichaelisMentenTool: React.FC<ToolProps> = ({ lang }) => {
             <Activity className="w-4 h-4 text-[#0F766E]" />
             {getTranslation(lang, 'tool_reaction_vel_output')}
           </h4>
-          <span className="text-xs font-mono font-bold text-[#0F766E] bg-[#ECFDF5] px-2.5 py-1 rounded-lg">
-            V = {res.velocity} µmol/min
-          </span>
+          <div className="flex items-center gap-2">
+            <ExportButton filename="michaelis_menten.json" data={res} format="json" lang={lang} />
+            <span className="text-xs font-mono font-bold text-[#0F766E] bg-[#ECFDF5] px-2.5 py-1 rounded-lg">
+              V = {res.velocity} µmol/min
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -129,4 +133,3 @@ export const MichaelisMentenTool: React.FC<ToolProps> = ({ lang }) => {
     </div>
   );
 };
-
