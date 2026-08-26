@@ -4,6 +4,7 @@ import { analyzeMutation } from '../../utils/genetics';
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
+import { ExportButton } from '../common/ExportButton';
 import { Zap, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 interface ToolProps {
@@ -45,9 +46,12 @@ export const MutationAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
             <Zap className="w-4 h-4 text-[#F59E0B]" />
             {getTranslation(lang, 'tool_mutation_analysis')}
           </h4>
-          <span className="text-xs font-mono font-bold text-[#64748B]">
-            {origDna.length} bp vs {mutDna.length} bp
-          </span>
+          <div className="flex items-center gap-2">
+            <ExportButton filename="mutation_analysis.json" data={result} format="json" lang={lang} />
+            <span className="text-xs font-mono font-bold text-[#64748B]">
+              {origDna.length} bp vs {mutDna.length} bp
+            </span>
+          </div>
         </div>
 
         {/* Mutation Badge */}
@@ -136,4 +140,3 @@ export const MutationAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
     </div>
   );
 };
-
