@@ -4,6 +4,7 @@ import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { Activity, Clock, AlertCircle } from 'lucide-react';
+import { ExportButton } from '../common/ExportButton';
 
 interface ToolProps {
   lang: Language;
@@ -60,6 +61,16 @@ export const BacterialGrowthTool: React.FC<ToolProps> = ({ lang }) => {
         </div>
       </div>
 
+      {/* Invalid-input warning: this growth model requires Nt > N0 */}
+      {nt <= n0 && (
+        <div className="p-4 bg-amber-50 border border-amber-300 rounded-2xl flex items-start gap-2.5">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs font-semibold text-amber-800">
+            {getTranslation(lang, 'tool_bacterial_growth_invalid_input')}
+          </p>
+        </div>
+      )}
+
       {/* Results */}
       <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
         <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
@@ -67,6 +78,7 @@ export const BacterialGrowthTool: React.FC<ToolProps> = ({ lang }) => {
             <Clock className="w-4 h-4 text-[#0F766E]" />
             {getTranslation(lang, 'tool_generation_metrics')}
           </h4>
+          <ExportButton filename="bacterial_growth.json" data={res} format="json" lang={lang} className="me-2" />
           <span className="text-xs font-mono font-bold text-[#0F766E] bg-[#ECFDF5] px-2.5 py-1 rounded-lg">
             g = {res.generationTimeMins} mins / generation
           </span>
