@@ -323,6 +323,7 @@ export const fa = {
   tool_lineweaver_burk_title: 'تبدیل خطی لاین‌ویور-برک (1/v در برابر 1/[S])',
   tool_transformation_warning: 'هشدار خطای تبدیل خطی:',
   tool_bacterial_growth_params: 'پارامترهای کینتیک جمعیت باکتری',
+  tool_bacterial_growth_invalid_input: 'جمعیت نهایی باید از جمعیت اولیه بیشتر باشد — این مدل رشد نمایی نمی‌تواند زمان دوبرابرشدن را برای جمعیتی که در حال کاهش یا بدون تغییر است محاسبه کند.',
   tool_initial_pop_n0: 'جمعیت اولیه (N₀)',
   tool_final_pop_nt: 'جمعیت نهایی (Nₜ)',
   tool_elapsed_time: 'مدت زمان فاز نمایی (t به ساعت)',
