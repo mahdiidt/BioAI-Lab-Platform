@@ -316,6 +316,7 @@ export const zh = {
   tool_lineweaver_burk_title: 'Lineweaver-Burk 双倒数作图 (1/v 对 1/[S])',
   tool_transformation_warning: '双倒数变换误差警告:',
   tool_bacterial_growth_params: '菌群生长动力学参数',
+  tool_bacterial_growth_invalid_input: '最终种群数量必须大于初始种群数量——该指数增长模型无法为正在缩小或未发生变化的种群计算倍增时间。',
   tool_initial_pop_n0: '初始菌群数量 (N₀)',
   tool_final_pop_nt: '最终菌群数量 (Nₜ)',
   tool_elapsed_time: '对数生长期时长 (t, 小时)',
