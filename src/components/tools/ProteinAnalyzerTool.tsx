@@ -5,6 +5,7 @@ import { ScientificExplanation } from '../common/ScientificExplanation';
 import { CopyButton } from '../common/CopyButton';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
+import { ExportButton } from '../common/ExportButton';
 
 interface ToolProps {
   lang: Language;
@@ -28,7 +29,10 @@ export const ProteinAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
 
       {stats && (
         <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-          <h4 className="font-bold text-sm text-[#12312B]">{getTranslation(lang, 'tool_calc_protein_props')}</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="font-bold text-sm text-[#12312B]">{getTranslation(lang, 'tool_calc_protein_props')}</h4>
+            <ExportButton filename="protein_analysis.json" data={stats} format="json" lang={lang} />
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="p-3 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
@@ -72,4 +76,3 @@ export const ProteinAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
     </div>
   );
 };
-
