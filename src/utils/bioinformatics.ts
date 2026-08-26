@@ -577,28 +577,6 @@ export function designPrimers(
 // analysis.
 
 // 7. Pairwise Sequence Alignment (Needleman-Wunsch) with explicit threshold checks
-
-// IUPAC ambiguity code -> set of canonical bases it represents.
-// Used so that alignment scoring/identity treats ambiguous bases (R, Y, N, ...)
-// by base-set compatibility rather than raw character equality - e.g. N vs A
-// is a legitimate potential match (N can represent A), not an automatic mismatch.
-const IUPAC_BASES: Record<string, string> = {
-  A: 'A', C: 'C', G: 'G', T: 'T',
-  R: 'AG', Y: 'CT', S: 'GC', W: 'AT', K: 'GT', M: 'AC',
-  B: 'CGT', D: 'AGT', H: 'ACT', V: 'ACG',
-  N: 'ACGT',
-};
-
-function basesAreCompatible(a: string, b: string): boolean {
-  const setA = IUPAC_BASES[a];
-  const setB = IUPAC_BASES[b];
-  if (!setA || !setB) return a === b;
-  for (let k = 0; k < setA.length; k++) {
-    if (setB.indexOf(setA[k]) !== -1) return true;
-  }
-  return false;
-}
-
 export function needlemanWunschAlignment(
   seqA: string,
   seqB: string,
@@ -607,6 +585,25 @@ export function needlemanWunschAlignment(
   gapPenalty: number = -2
 ): AlignmentResult & { warning?: string } {
   const maxLen = 1000;
+
+  if (
+    !Number.isFinite(matchScore) ||
+    !Number.isFinite(mismatchPenalty) ||
+    !Number.isFinite(gapPenalty)
+  ) {
+    return {
+      alignedA: '',
+      alignedB: '',
+      matchLine: '',
+      score: 0,
+      identityPercent: 0,
+      matches: 0,
+      mismatches: 0,
+      gaps: 0,
+      warning: 'Scoring parameters (match score, mismatch penalty, gap penalty) must be finite numbers.',
+    };
+  }
+
   const valA = validateSequence(seqA, 'DNA');
   const valB = validateSequence(seqB, 'DNA');
 
@@ -666,7 +663,7 @@ export function needlemanWunschAlignment(
 
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
-      const match = dp[i - 1][j - 1] + (basesAreCompatible(cleanA[i - 1], cleanB[j - 1]) ? matchScore : mismatchPenalty);
+      const match = dp[i - 1][j - 1] + (cleanA[i - 1] === cleanB[j - 1] ? matchScore : mismatchPenalty);
       const deleteGap = dp[i - 1][j] + gapPenalty;
       const insertGap = dp[i][j - 1] + gapPenalty;
       dp[i][j] = Math.max(match, deleteGap, insertGap);
@@ -680,7 +677,7 @@ export function needlemanWunschAlignment(
 
   while (i > 0 || j > 0) {
     if (i > 0 && j > 0) {
-      const scoreDiag = dp[i - 1][j - 1] + (basesAreCompatible(cleanA[i - 1], cleanB[j - 1]) ? matchScore : mismatchPenalty);
+      const scoreDiag = dp[i - 1][j - 1] + (cleanA[i - 1] === cleanB[j - 1] ? matchScore : mismatchPenalty);
       if (dp[i][j] === scoreDiag) {
         alignedA = cleanA[i - 1] + alignedA;
         alignedB = cleanB[j - 1] + alignedB;
@@ -712,7 +709,7 @@ export function needlemanWunschAlignment(
     if (charA === '-' || charB === '-') {
       matchLine += ' ';
       gapCount++;
-    } else if (basesAreCompatible(charA, charB)) {
+    } else if (charA === charB) {
       matchLine += '|';
       matchCount++;
     } else {
