@@ -5,6 +5,7 @@ import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { Layers } from 'lucide-react';
+import { ExportButton } from '../common/ExportButton';
 
 interface ToolProps {
   lang: Language;
@@ -35,6 +36,7 @@ export const AgaroseGelSimTool: React.FC<ToolProps> = ({ lang }) => {
             <Layers className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_configure_gel_sim')}
           </h4>
           <div className="flex items-center gap-2">
+            <ExportButton filename="agarose_gel_digest.json" data={{ lanes, digest1, digest2 }} format="json" lang={lang} />
             <span className="text-xs text-[#64748B] font-bold">{getTranslation(lang, 'tool_gel_percent')}</span>
             {[0.8, 1.0, 1.5, 2.0].map((c) => (
               <button
