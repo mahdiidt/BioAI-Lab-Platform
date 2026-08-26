@@ -8,6 +8,7 @@ import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { Repeat, AlertTriangle } from 'lucide-react';
+import { ExportButton } from '../common/ExportButton';
 
 interface ToolProps {
   lang: Language;
@@ -76,10 +77,18 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
       {/* Results Section */}
       {validation.isValid && (
         <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-          <h4 className="font-bold text-sm text-[#12312B] border-b border-[#DDEDE8] pb-3 flex items-center gap-2">
-            <Repeat className="w-4 h-4 text-[#0F766E]" />
-            {getTranslation(lang, 'tool_complement_strands')} ({mode})
-          </h4>
+          <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
+            <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
+              <Repeat className="w-4 h-4 text-[#0F766E]" />
+              {getTranslation(lang, 'tool_complement_strands')} ({mode})
+            </h4>
+            <ExportButton
+              filename="reverse_complement.json"
+              data={{ mode, original: validation.cleanSequence, complement3to5, reverseComplement5to3 }}
+              format="json"
+              lang={lang}
+            />
+          </div>
 
           <div className="space-y-4">
             {/* Input Sequence */}
