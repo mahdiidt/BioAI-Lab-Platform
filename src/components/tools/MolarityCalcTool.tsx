@@ -4,6 +4,7 @@ import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { Calculator, FlaskConical, Droplet, Info } from 'lucide-react';
+import { ExportButton } from '../common/ExportButton';
 
 interface ToolProps {
   lang: Language;
@@ -117,7 +118,10 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
 
           {molarityRes && (
             <div className="p-5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-2xl space-y-2">
-              <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">{getTranslation(lang, 'tool_req_solute_mass')}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">{getTranslation(lang, 'tool_req_solute_mass')}</span>
+                <ExportButton filename="molarity_calc.json" data={molarityRes} format="json" lang={lang} />
+              </div>
               <div className="text-3xl font-black text-[#0F766E] font-mono">
                 {molarityRes.value} {molarityRes.unit}
               </div>
@@ -216,9 +220,12 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
 
           {c1v1Res && (
             <div className="p-5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-2xl space-y-2">
-              <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">
-                {getTranslation(lang, 'tool_calculated')} {c1v1Res.solvedVariable}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">
+                  {getTranslation(lang, 'tool_calculated')} {c1v1Res.solvedVariable}
+                </span>
+                <ExportButton filename="c1v1_dilution.json" data={c1v1Res} format="json" lang={lang} />
+              </div>
               <div className="text-3xl font-black text-[#0F766E] font-mono">
                 {c1v1Res.value} {c1v1Res.unit}
               </div>
@@ -273,7 +280,10 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
           </div>
 
           <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3">
-            <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">{getTranslation(lang, 'tool_est_cell_density')}</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">{getTranslation(lang, 'tool_est_cell_density')}</span>
+              <ExportButton filename="od600_cell_density.json" data={odRes} format="json" lang={lang} />
+            </div>
             <div className="text-2xl font-black text-[#0F766E] font-mono">
               {odRes.formattedCells} cells/mL
             </div>
@@ -299,4 +309,3 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
     </div>
   );
 };
-
