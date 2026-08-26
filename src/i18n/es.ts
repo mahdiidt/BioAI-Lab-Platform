@@ -316,6 +316,7 @@ export const es = {
   tool_lineweaver_burk_title: 'Transformación Lineal Lineweaver-Burk (1/v vs 1/[S])',
   tool_transformation_warning: 'Advertencia de Error de Transformación:',
   tool_bacterial_growth_params: 'Parámetros de Cinética de Población Bacteriana',
+  tool_bacterial_growth_invalid_input: 'La población final debe ser mayor que la población inicial: este modelo de crecimiento exponencial no puede calcular un tiempo de duplicación para una población que se reduce o no cambia.',
   tool_initial_pop_n0: 'Población Inicial (N₀)',
   tool_final_pop_nt: 'Población Final (Nₜ)',
   tool_elapsed_time: 'Duración de la fase logarítmica (t en horas)',
