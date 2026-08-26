@@ -28,9 +28,8 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
   // characters (they no longer silently substitute 'N'), so only run
   // them once the sequence has actually passed validation.
   const revComp = validation.isValid ? reverseComplement(cleanSeq) : '';
-  // Use the utility's own scientifically meaningful default (10 aa) instead of
-  // a hardcoded low threshold — a 3 aa minimum matches almost any random
-  // sequence and produces biologically meaningless "ORFs".
+  // Minimum ORF length kept at the utility's own default (10 aa) so short,
+  // biologically meaningless runs (e.g. 3 aa) aren't reported as ORFs.
   const orfs = validation.isValid ? findOpenReadingFrames(cleanSeq) : [];
 
   return (
