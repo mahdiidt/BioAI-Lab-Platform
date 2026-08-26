@@ -65,9 +65,12 @@ export function analyzeProtein(sequence: string) {
     percentages[aa] = Number(((counts[aa] / length) * 100).toFixed(1));
   }
 
-  // Calculate extinction coefficient (M^-1 cm^-1 at 280 nm)
-  // Extinction = (W * 5500) + (Y * 1490) + (C * 125)
-  const extinctionCoeff = counts.W * 5500 + counts.Y * 1490 + counts.C * 125;
+  // Calculate extinction coefficient (M^-1 cm^-1 at 280 nm) - Pace/Gill method
+  // Extinction = (Trp * 5500) + (Tyr * 1490) + (Cystine pairs * 125)
+  // Only cysteines engaged in disulfide bonds (cystine) contribute; free/unpaired Cys = 0.
+  // Since bonding state isn't known from sequence alone, assume max possible pairing (floor(C/2)).
+  const cystinePairs = Math.floor(counts.C / 2);
+  const extinctionCoeff = counts.W * 5500 + counts.Y * 1490 + cystinePairs * 125;
 
   // Calculate pI by bisection method between pH 0 and pH 14
   const pi = calculateIsoelectricPoint(counts);
