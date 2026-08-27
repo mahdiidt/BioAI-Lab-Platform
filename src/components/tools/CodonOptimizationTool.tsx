@@ -6,7 +6,7 @@ import { ExportButton } from '../common/ExportButton';
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
-import { Sliders, Cpu } from 'lucide-react';
+import { Sliders, Cpu, AlertTriangle } from 'lucide-react';
 
 interface ToolProps {
   lang: Language;
@@ -57,6 +57,14 @@ export const CodonOptimizationTool: React.FC<ToolProps> = ({ lang }) => {
           })}
         </div>
       </div>
+
+      {/* Ambiguity / Invalid Input Warning */}
+      {result.warning && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+          <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
+          <span>{result.warning}</span>
+        </div>
+      )}
 
       {/* Results */}
       <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
@@ -129,4 +137,3 @@ export const CodonOptimizationTool: React.FC<ToolProps> = ({ lang }) => {
     </div>
   );
 };
-
