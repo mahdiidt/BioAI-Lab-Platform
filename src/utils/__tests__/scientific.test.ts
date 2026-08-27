@@ -227,6 +227,9 @@ describe('6. Restriction Digest', () => {
     const res = digestDna(seq, ['EcoRI'], false);
     expect(res.isValid).toBe(false);
     expect(res.fragmentSizes).toHaveLength(0);
+    // Regression: the Agarose Gel Simulator UI now displays this message
+    // instead of silently rendering an empty gel with no explanation.
+    expect(res.errorMessage).toBeDefined();
   });
 });
 
