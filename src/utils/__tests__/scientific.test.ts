@@ -186,6 +186,15 @@ describe('5. Lab & Solution Calculations (C1V1 & Molarity)', () => {
     expect(res?.target).toBe('mass');
     expect(res?.value).toBeCloseTo(58.44, 2);
   });
+
+  it('reports correct diluent volume when solving C1 (regression: was hardcoded to 0)', () => {
+    // Given V1 = 5 mL stock used, target C2 = 1 mM, final V2 = 50 mL,
+    // solving for the required stock concentration C1.
+    const res = calculateC1V1(undefined, 5, 1, 50, 'mM', 'mL');
+    expect(res?.solvedVariable).toBe('C1');
+    expect(res?.value).toBe(10); // (1 * 50) / 5 = 10 mM
+    expect(res?.diluentVolume).toBe(45); // V2 - V1 = 50 - 5, NOT 0
+  });
 });
 
 describe('6. Restriction Digest', () => {
@@ -594,6 +603,28 @@ describe('18. REGRESSION: DNA utility validation and codon optimization ambiguit
     expect(res.proteinSequence).toBe('');
     expect(res.codonsChanged).toBe(0);
     expect(res.totalCodons).toBe(0);
+    // Regression: the empty result must not be silent — the caller (and
+    // therefore the UI) must be told why nothing was optimized.
+    expect(res.warning).toBeDefined();
+    expect(res.warning).toMatch(/ambiguity|ambiguous/i);
+  });
+
+  it('surfaces a warning (not a silent empty result) for invalid characters in codon optimization', () => {
+    const res = optimizeCodons('ATGXYZ', 'ecoli');
+    expect(res.optimizedDna).toBe('');
+    expect(res.warning).toBeDefined();
+    expect(res.warning).toMatch(/invalid characters/i);
+  });
+
+  it('does not emit a warning for a genuinely empty codon-optimization input', () => {
+    const res = optimizeCodons('', 'ecoli');
+    expect(res.warning).toBeUndefined();
+  });
+
+  it('does not emit a warning for valid unambiguous DNA in codon optimization', () => {
+    const res = optimizeCodons('ATGAAATAA', 'ecoli');
+    expect(res.warning).toBeUndefined();
+    expect(res.optimizedDna.length).toBeGreaterThan(0);
   });
 
   it('does not count IUPAC ambiguity codes as literal N in sequence statistics', () => {
