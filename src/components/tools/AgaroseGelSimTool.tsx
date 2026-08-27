@@ -4,7 +4,7 @@ import { AgaroseGelVisualizer } from '../visualizers/AgaroseGelVisualizer';
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
-import { Layers } from 'lucide-react';
+import { Layers, AlertTriangle } from 'lucide-react';
 import { ExportButton } from '../common/ExportButton';
 
 interface ToolProps {
@@ -108,6 +108,14 @@ export const AgaroseGelSimTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
         </div>
       </div>
+
+      {/* Invalid Sequence Warning */}
+      {(!digest1.isValid || !digest2.isValid) && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+          <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
+          <span>{digest1.errorMessage || digest2.errorMessage}</span>
+        </div>
+      )}
 
       {/* Visualizer */}
       <AgaroseGelVisualizer lanes={lanes} gelConcentrationPercent={gelConc} lang={lang} />
