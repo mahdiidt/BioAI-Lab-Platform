@@ -647,3 +647,29 @@ describe('18. REGRESSION: DNA utility validation and codon optimization ambiguit
   });
 
 });
+
+describe('19. REGRESSION: K-mer Tool Reports Analyzed Sequence Length, Not Raw Textarea Length', () => {
+  it('reports sequenceLength based on the cleaned/parsed sequence, not raw character count', () => {
+    // Raw input includes a FASTA header line and newlines, which must be
+    // excluded from the analyzed sequence length shown to the user.
+    const raw = '>my_gene\nATGC\nGATC\nAAAA';
+    const res = analyzeKmers(raw, 3, 'DNA');
+    expect(res.isValid).toBe(true);
+    // clean sequence is 'ATGCGATCAAAA' -> 12 bases (header + newlines stripped)
+    expect(res.sequenceLength).toBe(12);
+    expect(res.sequenceLength).not.toBe(raw.length);
+    // totalKmers must be consistent with sequenceLength (length - k + 1)
+    expect(res.totalKmers).toBe(res.sequenceLength - 3 + 1);
+  });
+
+  it('reports a defined sequenceLength even on validation failure, for consistent UI display', () => {
+    const res = analyzeKmers('ATGCXYZ', 3, 'DNA');
+    expect(res.isValid).toBe(false);
+    expect(res.sequenceLength).toBeDefined();
+  });
+
+  it('reports sequenceLength consistent with plain (non-FASTA) input', () => {
+    const res = analyzeKmers('ATGCATGC', 3, 'DNA');
+    expect(res.sequenceLength).toBe(8);
+  });
+});
