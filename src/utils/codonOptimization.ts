@@ -182,11 +182,29 @@ export function optimizeCodons(
   optimizedGcContent: number;
   codonsChanged: number;
   totalCodons: number;
+  warning?: string;
 } {
   const val = validateSequence(dnaSeq, 'DNA');
-  const seq = val.isValid && /^[ACGT]+$/i.test(val.cleanSequence)
+  const hasAmbiguity = val.isValid && !/^[ACGT]+$/i.test(val.cleanSequence);
+  const seq = val.isValid && !hasAmbiguity
     ? val.cleanSequence.replace(/U/g, 'T')
     : '';
+
+  // Codon optimization requires a deterministic codon-by-codon substitution.
+  // IUPAC ambiguity codes (e.g. N, R, Y) do not identify a single codon, so
+  // they cannot be safely reassigned to a host-preferred codon. Rather than
+  // silently discarding the sequence with no explanation, surface this to
+  // the caller so the UI can inform the user instead of showing an empty
+  // "optimized" result with no context.
+  let warning: string | undefined;
+  if (dnaSeq.trim().length > 0) {
+    if (!val.isValid) {
+      warning = `Sequence contains invalid characters: ${val.invalidChars.join(', ')}`;
+    } else if (hasAmbiguity) {
+      warning = 'Codon optimization requires unambiguous bases. IUPAC ambiguity codes (N, R, Y, etc.) do not identify a single codon and were not optimized.';
+    }
+  }
+
   const hostTable = CODON_USAGE_TABLES[host].frequencies;
 
   // Build top codon map for each amino acid in selected host
@@ -272,5 +290,6 @@ export function optimizeCodons(
     optimizedGcContent: optGc,
     codonsChanged,
     totalCodons,
+    warning,
   };
 }
