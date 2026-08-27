@@ -15,6 +15,7 @@ export interface KmerAnalysisResult {
   isValid: boolean;
   errorMessage?: string;
   sequenceType: SequenceType;
+  sequenceLength: number;
 }
 
 export function analyzeKmers(
@@ -33,6 +34,7 @@ export function analyzeKmers(
       isValid: false,
       errorMessage: validation.errorMessage,
       sequenceType,
+      sequenceLength: validation.cleanSequence.length,
     };
   }
 
@@ -48,6 +50,7 @@ export function analyzeKmers(
       isValid: false,
       errorMessage: `Sequence length (${seq.length.toLocaleString()} bp) exceeds maximum supported limit of ${MAX_SEQ_LEN.toLocaleString()} bp for in-browser k-mer analysis.`,
       sequenceType,
+      sequenceLength: seq.length,
     };
   }
 
@@ -60,6 +63,7 @@ export function analyzeKmers(
       isValid: false,
       errorMessage: 'k must be at least 1.',
       sequenceType,
+      sequenceLength: seq.length,
     };
   }
 
@@ -72,6 +76,7 @@ export function analyzeKmers(
       isValid: false,
       errorMessage: 'k value exceeds maximum limit of 30 to prevent memory overhead.',
       sequenceType,
+      sequenceLength: seq.length,
     };
   }
 
@@ -84,6 +89,7 @@ export function analyzeKmers(
       isValid: false,
       errorMessage: `Sequence length (${seq.length} bp) is shorter than k (${k}).`,
       sequenceType,
+      sequenceLength: seq.length,
     };
   }
 
@@ -110,5 +116,6 @@ export function analyzeKmers(
     frequencies,
     isValid: true,
     sequenceType,
+    sequenceLength: seq.length,
   };
 }
