@@ -91,7 +91,7 @@ export const KmerTool: React.FC<ToolProps> = ({ lang }) => {
             </div>
             <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl col-span-2 md:col-span-1">
               <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_length')}</span>
-              <span className="text-lg font-bold text-[#0EA5E9] font-mono">{sequence.length} bp</span>
+              <span className="text-lg font-bold text-[#0EA5E9] font-mono">{result.sequenceLength} bp</span>
             </div>
           </div>
 
@@ -145,4 +145,3 @@ export const KmerTool: React.FC<ToolProps> = ({ lang }) => {
     </div>
   );
 };
-
