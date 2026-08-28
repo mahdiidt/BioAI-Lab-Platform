@@ -100,7 +100,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
 
           {punnettResult ? (
             <div className="space-y-4">
-              <PunnettSquareVisualizer result={punnettResult} />
+              <PunnettSquareVisualizer result={punnettResult} lang={lang} />
 
               <div className="p-4 bg-[#ECFDF5] border border-[#DDEDE8] rounded-2xl flex items-start gap-3 text-xs text-[#0F766E]">
                 <Info className="w-5 h-5 shrink-0 text-[#0F766E] mt-0.5" />
