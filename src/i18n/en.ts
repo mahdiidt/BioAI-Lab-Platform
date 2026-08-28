@@ -21,6 +21,7 @@ export const en = {
   clear: 'Clear',
   copy: 'Copy',
   copied: 'Copied to Clipboard!',
+  copyFailed: 'Failed',
   export: 'Export',
   sampleData: 'Load Sample',
   howItWorks: 'How does this work?',
@@ -453,6 +454,25 @@ export const en = {
   tool_multi_fasta_rejected_hint: 'This analyzer works on one sequence at a time.',
   tool_yes: 'Yes',
   tool_no: 'No',
+
+  // Visualizer i18n (Phylogenetic Tree & Punnett Square)
+  tool_phylo_cladogram_header: 'Rendered Phylogenetic Cladogram',
+  tool_phylo_taxa_leaves: 'Taxa / Leaves',
+  tool_phylo_invalid_format: 'Invalid Newick tree format.',
+  tool_phylo_taxon_fallback: 'Taxon',
+  tool_punnett_interactive_header: 'Interactive Punnett Square',
+  tool_punnett_monohybrid: '2×2 Monohybrid',
+  tool_punnett_dihybrid: '4×4 Dihybrid',
+  tool_punnett_cross: 'Cross',
+  tool_punnett_parent_axis: 'Parent 1 \\ Parent 2',
+  tool_expected_genotypes: 'Expected Genotypes',
+  tool_expected_phenotypes: 'Expected Phenotypes (Complete Dominance)',
+  tool_approx_starting_temp: 'Approximate starting temperature (requires experimental optimization)',
+  hero_local_browser_privacy: 'Local Browser Privacy',
+  hero_bio_genetics_tools: 'Bio/Genetics Tools',
+  hero_supported_languages: 'Supported Languages',
+  tool_no_residues_after_stop: 'This sequence contains only stop-codon markers (*) and no actual amino acid residues to analyze.',
+  tool_vmax_km_positive: 'Vmax and Km must be positive non-zero numbers.',
 
   // Footer & Links
   launchTool: 'Launch',
