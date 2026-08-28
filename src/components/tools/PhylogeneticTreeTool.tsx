@@ -25,7 +25,7 @@ export const PhylogeneticTreeTool: React.FC<ToolProps> = ({ lang }) => {
         />
       </div>
 
-      <PhylogeneticTreeVisualizer newickString={newick} />
+      <PhylogeneticTreeVisualizer newickString={newick} lang={lang} />
 
       <ScientificExplanation
         formula="Newick Tree Format: (TaxonA:lengthA, (TaxonB:lengthB, TaxonC:lengthC):lengthInternal);"
@@ -35,4 +35,3 @@ export const PhylogeneticTreeTool: React.FC<ToolProps> = ({ lang }) => {
     </div>
   );
 };
-
