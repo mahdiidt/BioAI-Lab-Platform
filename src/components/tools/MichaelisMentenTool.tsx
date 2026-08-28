@@ -16,6 +16,7 @@ export const MichaelisMentenTool: React.FC<ToolProps> = ({ lang }) => {
   const [substrate, setSubstrate] = useState<number>(10);
 
   const res: MichaelisMentenResult = calculateMichaelisMenten(vmax, km, substrate);
+  const hasInvalidInput = vmax <= 0 || km <= 0 || substrate < 0;
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
@@ -62,6 +63,13 @@ export const MichaelisMentenTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
         </div>
       </div>
+
+      {hasInvalidInput && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+          <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
+          <span>{res.disclaimer || getTranslation(lang, 'tool_vmax_km_positive')}</span>
+        </div>
+      )}
 
       {/* Results */}
       <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
