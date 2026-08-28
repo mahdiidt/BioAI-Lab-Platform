@@ -119,7 +119,7 @@ export const PrimerDesignerTool: React.FC<ToolProps> = ({ lang, initialTab = 'de
               <div className="p-4 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-[#12312B] block">{getTranslation(lang, 'tool_rec_anneal_temp')}</span>
-                  <span className="text-[11px] text-[#64748B]">Approximate starting temperature (requires experimental optimization)</span>
+                  <span className="text-[11px] text-[#64748B]">{getTranslation(lang, 'tool_approx_starting_temp')}</span>
                 </div>
                 <span className="text-2xl font-black text-[#0F766E] font-mono">{taInfo.recommendedTa} °C</span>
               </div>
