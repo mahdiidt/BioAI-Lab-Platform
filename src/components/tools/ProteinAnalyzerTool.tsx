@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { SequenceInput } from '../common/SequenceInput';
 import { analyzeProtein } from '../../utils/protein';
+import { validateSequence } from '../../utils/sequenceValidator';
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { CopyButton } from '../common/CopyButton';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { ExportButton } from '../common/ExportButton';
+import { AlertTriangle } from 'lucide-react';
 
 interface ToolProps {
   lang: Language;
@@ -14,7 +16,11 @@ interface ToolProps {
 export const ProteinAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
   const [seq, setSeq] = useState('MSKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTFSYGVQCFSRYPDHMKQHDFFKSAMPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIMADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHMVLLEFVTAAGITHGMDELYK');
 
-  const stats = analyzeProtein(seq);
+  // analyzeProtein() returns null (with no error detail) for invalid or
+  // empty input. Validate separately so the UI can tell the user *why*
+  // no results are shown, instead of the results panel silently vanishing.
+  const validation = validateSequence(seq, 'PROTEIN');
+  const stats = validation.isValid ? analyzeProtein(seq) : null;
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
@@ -26,6 +32,24 @@ export const ProteinAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
         allowedCharsRegex={/^[ACDEFGHIKLMNPQRSTVWY\s]+$/i}
         lang={lang}
       />
+
+      {!validation.isValid && validation.errorMessage && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+          <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
+          <span>{validation.errorMessage}</span>
+        </div>
+      )}
+
+      {/* Edge case: a sequence made up entirely of '*' (stop codon markers)
+          passes character validation but has zero actual residues once
+          stop markers are stripped, so analyzeProtein() still returns
+          null. Surface that explicitly instead of showing nothing. */}
+      {validation.isValid && !stats && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+          <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
+          <span>{getTranslation(lang, 'tool_no_residues_after_stop')}</span>
+        </div>
+      )}
 
       {stats && (
         <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
