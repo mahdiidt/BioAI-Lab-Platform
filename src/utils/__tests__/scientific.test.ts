@@ -819,3 +819,37 @@ describe('25. DNA Analyzer v2 — ORF Analysis Is DNA-Specific & Flags Ambiguous
     expect(orfs[0].hasAmbiguousCodons).toBe(false);
   });
 });
+
+describe('26. REGRESSION: Protein Analyzer Silent Failure on Invalid Input', () => {
+  it('analyzeProtein returns null (no error detail) for invalid characters — UI must validate separately', () => {
+    const res = analyzeProtein('MSK123XYZ');
+    expect(res).toBeNull();
+  });
+
+  it('validateSequence(PROTEIN) supplies the error message the UI needs when analyzeProtein returns null', () => {
+    const val = validateSequence('MSK123', 'PROTEIN');
+    expect(val.isValid).toBe(false);
+    expect(val.errorMessage).toBeDefined();
+  });
+
+  it('a sequence of only stop-codon markers passes character validation but analyzeProtein still returns null (edge case the UI must also handle)', () => {
+    const val = validateSequence('***', 'PROTEIN');
+    expect(val.isValid).toBe(true);
+    const res = analyzeProtein('***');
+    expect(res).toBeNull();
+  });
+});
+
+describe('27. REGRESSION: Michaelis-Menten Silent Zero-Result on Invalid Vmax/Km', () => {
+  it('returns a disclaimer explaining invalid input instead of a bare all-zero result', () => {
+    const res = calculateMichaelisMenten(-5, 5, 10);
+    expect(res.velocity).toBe(0);
+    expect(res.disclaimer).toBeDefined();
+    expect(res.disclaimer).toMatch(/positive non-zero/i);
+  });
+
+  it('does not attach the invalid-input disclaimer to a valid calculation', () => {
+    const res = calculateMichaelisMenten(100, 5, 10);
+    expect(res.velocity).toBeGreaterThan(0);
+  });
+});
