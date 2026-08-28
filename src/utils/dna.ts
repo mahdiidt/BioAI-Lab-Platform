@@ -312,6 +312,7 @@ export function findOpenReadingFrames(dnaSeq: string, minAaLength = 10) {
     lengthBp: number;
     lengthAa: number;
     proteinSequence: string;
+    hasAmbiguousCodons: boolean;
   }> = [];
 
   const searchFrame = (targetSeq: string, isReverse: boolean) => {
@@ -343,6 +344,11 @@ export function findOpenReadingFrames(dnaSeq: string, minAaLength = 10) {
               lengthBp: orfDna.length,
               lengthAa,
               proteinSequence: prot,
+              // 'X' in the translated protein means at least one codon in
+              // this ORF contained an IUPAC ambiguity code that could not
+              // be deterministically translated. Such ORFs should not be
+              // presented as a fully-resolved canonical reading frame.
+              hasAmbiguousCodons: prot.includes('X'),
             });
           }
         }
@@ -386,4 +392,47 @@ export function findMotifPositions(sequence: string, motif: string): number[] {
   }
 
   return positions;
+}
+
+const IUPAC_AMBIGUITY_CODES = ['R', 'Y', 'S', 'W', 'K', 'M', 'B', 'V', 'D', 'H', 'N'] as const;
+
+/**
+ * Returns a full per-symbol base count for a cleaned (already-validated)
+ * DNA/RNA sequence, split into canonical bases and IUPAC ambiguity codes.
+ * Unlike calculateSequenceStats().baseCounts (which only tracks A/T/C/G/U/N
+ * for backward compatibility), this reports every ambiguity code that
+ * actually occurs so the UI can show them without lumping everything
+ * non-canonical into "N".
+ */
+export function getDetailedBaseComposition(
+  sequence: string,
+  mode: 'DNA' | 'RNA' = 'DNA'
+): {
+  canonical: Record<string, number>;
+  ambiguous: Record<string, number>;
+  canonicalTotal: number;
+  ambiguousTotal: number;
+} {
+  const seq = sequence.toUpperCase().replace(/\s+/g, '');
+  const canonicalSymbols = mode === 'RNA' ? ['A', 'C', 'G', 'U'] : ['A', 'C', 'G', 'T'];
+
+  const canonical: Record<string, number> = {};
+  for (const s of canonicalSymbols) canonical[s] = 0;
+
+  const ambiguous: Record<string, number> = {};
+
+  for (const base of seq) {
+    if (canonical[base] !== undefined) {
+      canonical[base]++;
+    } else if ((IUPAC_AMBIGUITY_CODES as readonly string[]).includes(base)) {
+      ambiguous[base] = (ambiguous[base] || 0) + 1;
+    }
+    // Any other character is invalid and should have already been
+    // rejected by validateSequence() before this function is called.
+  }
+
+  const canonicalTotal = Object.values(canonical).reduce((a, b) => a + b, 0);
+  const ambiguousTotal = Object.values(ambiguous).reduce((a, b) => a + b, 0);
+
+  return { canonical, ambiguous, canonicalTotal, ambiguousTotal };
 }
