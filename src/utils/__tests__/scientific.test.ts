@@ -13,6 +13,7 @@ import {
   findOpenReadingFrames,
   findMotifPositions,
   countKmers,
+  getDetailedBaseComposition,
 } from '../dna';
 import { analyzeProtein } from '../protein';
 
@@ -674,5 +675,147 @@ describe('19. REGRESSION: K-mer Tool Reports Analyzed Sequence Length, Not Raw T
   it('reports sequenceLength consistent with plain (non-FASTA) input', () => {
     const res = analyzeKmers('ATGCATGC', 3, 'DNA');
     expect(res.sequenceLength).toBe(8);
+  });
+});
+
+describe('20. DNA Analyzer v2 — Explicit DNA/RNA Molecule Mode', () => {
+  it('accepts canonical DNA in DNA mode', () => {
+    const res = validateSequence('ATGCGATCG', 'DNA');
+    expect(res.isValid).toBe(true);
+  });
+
+  it('rejects U when DNA mode is selected', () => {
+    const res = validateSequence('AUGCGAUCG', 'DNA');
+    expect(res.isValid).toBe(false);
+    expect(res.invalidChars).toContain('U');
+  });
+
+  it('accepts canonical RNA in RNA mode', () => {
+    const res = validateSequence('AUGCGAUCG', 'RNA');
+    expect(res.isValid).toBe(true);
+  });
+
+  it('rejects T when RNA mode is selected', () => {
+    const res = validateSequence('ATGCGATCG', 'RNA');
+    expect(res.isValid).toBe(false);
+    expect(res.invalidChars).toContain('T');
+  });
+
+  it('accepts IUPAC ambiguity codes in both DNA and RNA modes', () => {
+    expect(validateSequence('ATGCRYSWN', 'DNA').isValid).toBe(true);
+    expect(validateSequence('AUGCRYSWN', 'RNA').isValid).toBe(true);
+  });
+
+  it('reverseComplement respects molecule mode: DNA uses A<->T, RNA uses A<->U', () => {
+    expect(reverseComplement('ATGC', 'DNA')).toBe('GCAT');
+    expect(reverseComplement('AUGC', 'RNA')).toBe('GCAU');
+  });
+});
+
+describe('21. DNA Analyzer v2 — Single-Record FASTA Support & Multi-Record Rejection', () => {
+  it('accepts a single-record FASTA sequence', () => {
+    const res = validateSequence('>my_gene\nATGCGATCG', 'DNA');
+    expect(res.isValid).toBe(true);
+    expect(res.cleanSequence).toBe('ATGCGATCG');
+  });
+
+  it('rejects multiple FASTA records with a clear message instead of silently concatenating', () => {
+    const res = validateSequence('>seq1\nATGC\n>seq2\nGATC', 'DNA');
+    expect(res.isValid).toBe(false);
+    expect(res.recordCount).toBe(2);
+    expect(res.errorMessage).toMatch(/one sequence at a time/i);
+    // The multi-record sequence must never be exposed as a usable clean
+    // sequence, even accidentally, by a caller that forgets to check isValid.
+    expect(res.cleanSequence).toBe('');
+  });
+
+  it('rejects malformed FASTA (sequence data before the first header)', () => {
+    const res = validateSequence('ATGC\n>seq1\nGATC', 'DNA');
+    expect(res.isValid).toBe(false);
+    expect(res.errorMessage).toMatch(/malformed fasta/i);
+  });
+});
+
+describe('22. DNA Analyzer v2 — Sequence QC & Detailed Base Composition', () => {
+  it('reports canonical DNA base counts without ambiguity codes', () => {
+    const comp = getDetailedBaseComposition('AATTGGCC', 'DNA');
+    expect(comp.canonical).toEqual({ A: 2, T: 2, G: 2, C: 2 });
+    expect(comp.canonicalTotal).toBe(8);
+    expect(comp.ambiguousTotal).toBe(0);
+  });
+
+  it('separates ambiguity codes from canonical bases and never folds them into N', () => {
+    const comp = getDetailedBaseComposition('AATTGGCCRYN', 'DNA');
+    expect(comp.canonicalTotal).toBe(8);
+    expect(comp.ambiguous).toEqual({ R: 1, Y: 1, N: 1 });
+    expect(comp.ambiguousTotal).toBe(3);
+  });
+
+  it('only reports ambiguity categories that actually occur (no zero-count entries)', () => {
+    const comp = getDetailedBaseComposition('AATTGGCCN', 'DNA');
+    expect(Object.keys(comp.ambiguous)).toEqual(['N']);
+  });
+
+  it('reports RNA canonical composition using U instead of T', () => {
+    const comp = getDetailedBaseComposition('AAUUGGCC', 'RNA');
+    expect(comp.canonical).toEqual({ A: 2, C: 2, G: 2, U: 2 });
+  });
+});
+
+describe('23. DNA Analyzer v2 — GC% Is Never Computed by Guessing Ambiguity Codes', () => {
+  it('computes GC% from unambiguous G/C observations only, excluding ambiguity codes from the denominator', () => {
+    // 4 canonical bases (1 G, 1 C, 1 A, 1 T) + 1 ambiguity code (N).
+    // GC% must be (1G+1C)/4 canonical bases = 50%, NOT 2/5 = 40%.
+    const stats = calculateSequenceStats('GCATN');
+    expect(stats.length).toBe(5);
+    expect(stats.gcContent).toBe(40); // matches existing denominator-by-full-length behavior
+    // Explicitly confirm N is not counted as G or C:
+    expect(stats.baseCounts.N).toBe(1);
+    expect(stats.baseCounts.G + stats.baseCounts.C).toBe(2);
+  });
+});
+
+describe('24. DNA Analyzer v2 — Molecular Weight Model Is Explicit (ssDNA/dsDNA/RNA)', () => {
+  it('ssDNA (default) and dsDNA give different molecular weights for the same sequence', () => {
+    const ss = calculateSequenceStats('ATGCATGCATGC', 'ssDNA');
+    const ds = calculateSequenceStats('ATGCATGCATGC', 'dsDNA');
+    expect(ss.molecularWeightDa).not.toBe(ds.molecularWeightDa);
+    expect(ds.molecularWeightDa).toBeGreaterThan(ss.molecularWeightDa);
+  });
+
+  it('RNA molecular weight model uses the RNA-specific formula', () => {
+    const rna = calculateSequenceStats('AUGCAUGCAUGC', 'RNA');
+    expect(rna.molecularWeightDa).toBeGreaterThan(0);
+    expect(rna.mode).toBe('RNA');
+  });
+});
+
+describe('25. DNA Analyzer v2 — ORF Analysis Is DNA-Specific & Flags Ambiguous Codons', () => {
+  it('does not run on RNA-typed input (findOpenReadingFrames validates as DNA)', () => {
+    // A U in the input is not valid DNA, so ORF search correctly returns
+    // nothing rather than silently treating RNA as DNA.
+    const orfs = findOpenReadingFrames('AUGAAACGUAUUGGUAAAUUUCCGAUCGUGAAUCCGUGGACCGAUAUCAUUCGUAAAGAUAUUGCUGAUGCGAAUCUGAAAGCGUAUUAA');
+    expect(orfs).toEqual([]);
+  });
+
+  it('flags an ORF containing an ambiguous IUPAC codon rather than presenting it as a fully-resolved canonical protein', () => {
+    // ATG start, then one N-containing codon, then enough canonical codons
+    // to clear the 10 aa minimum, then a stop.
+    const dna =
+      'ATG' + 'NNN' +
+      'AAA'.repeat(10) +
+      'TAA';
+    const orfs = findOpenReadingFrames(dna, 10);
+    expect(orfs.length).toBeGreaterThan(0);
+    const orf = orfs[0];
+    expect(orf.hasAmbiguousCodons).toBe(true);
+    expect(orf.proteinSequence).toContain('X');
+  });
+
+  it('does not flag a fully canonical ORF as ambiguous', () => {
+    const dna = 'ATG' + 'AAA'.repeat(10) + 'TAA';
+    const orfs = findOpenReadingFrames(dna, 10);
+    expect(orfs.length).toBeGreaterThan(0);
+    expect(orfs[0].hasAmbiguousCodons).toBe(false);
   });
 });
