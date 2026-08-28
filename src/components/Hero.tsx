@@ -65,15 +65,15 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="pt-6 grid grid-cols-3 gap-4 border-t border-[#DDEDE8]/80 dark:border-slate-800 text-left">
               <div>
                 <span className="block text-xl font-extrabold text-[#0F766E] dark:text-teal-400 font-mono">100%</span>
-                <span className="text-xs text-[#64748B] dark:text-slate-400 font-medium">Local Browser Privacy</span>
+                <span className="text-xs text-[#64748B] dark:text-slate-400 font-medium">{getTranslation(lang, 'hero_local_browser_privacy')}</span>
               </div>
               <div>
                 <span className="block text-xl font-extrabold text-[#0EA5E9] font-mono">{TOOL_REGISTRY.length}+</span>
-                <span className="text-xs text-[#64748B] dark:text-slate-400 font-medium">Bio/Genetics Tools</span>
+                <span className="text-xs text-[#64748B] dark:text-slate-400 font-medium">{getTranslation(lang, 'hero_bio_genetics_tools')}</span>
               </div>
               <div>
                 <span className="block text-xl font-extrabold text-[#8B5CF6] font-mono">6</span>
-                <span className="text-xs text-[#64748B] dark:text-slate-400 font-medium">Supported Languages</span>
+                <span className="text-xs text-[#64748B] dark:text-slate-400 font-medium">{getTranslation(lang, 'hero_supported_languages')}</span>
               </div>
             </div>
           </div>
