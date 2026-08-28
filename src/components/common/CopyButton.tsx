@@ -44,7 +44,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({ textToCopy, lang = 'en',
       ) : copyFailed ? (
         <>
           <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
-          <span className="text-rose-600">Failed</span>
+          <span className="text-rose-600">{getTranslation(currentLang, 'copyFailed')}</span>
         </>
       ) : (
         <>
