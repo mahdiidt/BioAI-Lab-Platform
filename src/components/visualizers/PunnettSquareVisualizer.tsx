@@ -1,8 +1,11 @@
 import React from 'react';
 import { PunnettResult } from '../../utils/genetics';
+import { Language } from '../../types';
+import { getTranslation } from '../../i18n';
 
 interface PunnettSquareVisualizerProps {
   result: PunnettResult;
+  lang?: Language;
 }
 
 interface RatioItem {
@@ -11,7 +14,7 @@ interface RatioItem {
   percent: number;
 }
 
-export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = ({ result }) => {
+export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = ({ result, lang = 'en' }) => {
   const { p1Gametes, p2Gametes, grid, genotypeRatios, phenotypeRatios, type } = result;
 
   const totalCells = type === 'monohybrid' ? 4 : 16;
@@ -20,7 +23,7 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
     <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
       <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-2">
         <h4 className="font-bold text-sm text-[#12312B]">
-          Interactive Punnett Square ({type === 'monohybrid' ? '2×2 Monohybrid' : '4×4 Dihybrid'} Cross)
+          {getTranslation(lang, 'tool_punnett_interactive_header')} ({getTranslation(lang, type === 'monohybrid' ? 'tool_punnett_monohybrid' : 'tool_punnett_dihybrid')} {getTranslation(lang, 'tool_punnett_cross')})
         </h4>
         <span className="text-xs font-semibold text-[#0F766E] bg-[#ECFDF5] px-2.5 py-0.5 rounded-full border border-[#DDEDE8]">
           {result.p1} × {result.p2}
@@ -33,7 +36,7 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
           <table className="border-collapse mx-auto">
             <thead>
               <tr>
-                <th className="p-2 text-xs font-mono text-[#64748B]">Parent 1 \ Parent 2</th>
+                <th className="p-2 text-xs font-mono text-[#64748B]">{getTranslation(lang, 'tool_punnett_parent_axis')}</th>
                 {p2Gametes.map((a, i) => (
                   <th key={i} className="p-2.5 font-mono font-bold text-sm text-[#0F766E] bg-white rounded border border-[#DDEDE8] min-w-[50px] text-center">
                     {a}
@@ -66,7 +69,7 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
           {/* Genotypes */}
           <div>
             <h5 className="font-bold text-xs text-[#0F766E] uppercase tracking-wider mb-2">
-              Expected Genotypes
+              {getTranslation(lang, 'tool_expected_genotypes')}
             </h5>
             <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
               {Object.entries(genotypeRatios).map(([gt, info]) => {
@@ -86,7 +89,7 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
           {/* Phenotypes */}
           <div>
             <h5 className="font-bold text-xs text-[#8B5CF6] uppercase tracking-wider mb-2">
-              Expected Phenotypes (Complete Dominance)
+              {getTranslation(lang, 'tool_expected_phenotypes')}
             </h5>
             <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
               {Object.entries(phenotypeRatios).map(([pheno, info]) => {
