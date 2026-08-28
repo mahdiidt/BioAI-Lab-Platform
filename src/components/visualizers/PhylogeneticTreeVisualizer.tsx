@@ -1,19 +1,22 @@
 import React from 'react';
 import { parseNewick, PhyloNode } from '../../utils/newickParser';
 import { Network, AlertCircle } from 'lucide-react';
+import { Language } from '../../types';
+import { getTranslation } from '../../i18n';
 
 interface PhylogeneticTreeVisualizerProps {
   newickString: string;
+  lang?: Language;
 }
 
-export const PhylogeneticTreeVisualizer: React.FC<PhylogeneticTreeVisualizerProps> = ({ newickString }) => {
+export const PhylogeneticTreeVisualizer: React.FC<PhylogeneticTreeVisualizerProps> = ({ newickString, lang = 'en' }) => {
   const parsed = parseNewick(newickString);
 
   if (!parsed.isValid || !parsed.root) {
     return (
       <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-medium flex items-center gap-2">
         <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-        <span>{parsed.errorMessage || 'Invalid Newick tree format.'}</span>
+        <span>{parsed.errorMessage || getTranslation(lang, 'tool_phylo_invalid_format')}</span>
       </div>
     );
   }
@@ -103,7 +106,7 @@ export const PhylogeneticTreeVisualizer: React.FC<PhylogeneticTreeVisualizerProp
           <line x1={currentX} y1={nodeY} x2={nextX} y2={nodeY} stroke="#0F766E" strokeWidth="2" />
           <circle cx={nextX} cy={nodeY} r="4" fill="#14B8A6" />
           <text x={nextX + 8} y={nodeY + 4} fill="#12312B" fontSize="11" fontWeight="bold" fontFamily="monospace">
-            {node.name || 'Taxon'}
+            {node.name || getTranslation(lang, 'tool_phylo_taxon_fallback')}
             {node.branchLength !== undefined && (
               <tspan fill="#64748B" fontSize="9" fontWeight="normal"> ({node.branchLength})</tspan>
             )}
@@ -119,10 +122,10 @@ export const PhylogeneticTreeVisualizer: React.FC<PhylogeneticTreeVisualizerProp
     <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3">
       <div className="flex items-center justify-between text-xs font-bold text-[#12312B] border-b border-[#DDEDE8] pb-2">
         <span className="flex items-center gap-2">
-          <Network className="w-4 h-4 text-[#0F766E]" /> Rendered Phylogenetic Cladogram
+          <Network className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_phylo_cladogram_header')}
         </span>
         <span className="text-[#0F766E] font-mono bg-[#ECFDF5] px-2.5 py-0.5 rounded-full border border-[#DDEDE8]">
-          {leaves.length} Taxa / Leaves
+          {leaves.length} {getTranslation(lang, 'tool_phylo_taxa_leaves')}
         </span>
       </div>
 
