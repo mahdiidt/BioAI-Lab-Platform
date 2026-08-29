@@ -37,8 +37,10 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
         <span className="text-xs font-bold text-[#12312B] flex items-center gap-2">
           <Repeat className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_select_molecule_mode')}
         </span>
-        <div className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8]">
+        <div role="group" aria-label={getTranslation(lang, 'tool_select_molecule_mode')} className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8]">
           <button
+            type="button"
+            aria-pressed={mode === 'DNA'}
             onClick={() => setMode('DNA')}
             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               mode === 'DNA' ? 'bg-[#0F766E] text-white shadow-2xs' : 'text-[#64748B] hover:text-[#12312B]'
@@ -47,6 +49,8 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
             {getTranslation(lang, 'tool_dna_mode')}
           </button>
           <button
+            type="button"
+            aria-pressed={mode === 'RNA'}
             onClick={() => setMode('RNA')}
             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               mode === 'RNA' ? 'bg-[#0F766E] text-white shadow-2xs' : 'text-[#64748B] hover:text-[#12312B]'
