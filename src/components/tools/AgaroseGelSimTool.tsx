@@ -41,6 +41,8 @@ export const AgaroseGelSimTool: React.FC<ToolProps> = ({ lang }) => {
             {[0.8, 1.0, 1.5, 2.0].map((c) => (
               <button
                 key={c}
+                type="button"
+                aria-pressed={gelConc === c}
                 onClick={() => setGelConc(c)}
                 className={`px-2.5 py-1 text-xs font-bold rounded-lg cursor-pointer ${
                   gelConc === c
