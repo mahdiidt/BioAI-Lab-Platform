@@ -29,8 +29,10 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Tab bar */}
-      <div className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 flex-wrap">
+      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 flex-wrap">
         <button
+          role="tab"
+          aria-selected={activeTab === 'punnett'}
           onClick={() => setActiveTab('punnett')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'punnett'
@@ -41,6 +43,8 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
           <Grid className="w-4 h-4" /> {getTranslation(lang, 'tool_punnett_tab')}
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'hardy'}
           onClick={() => setActiveTab('hardy')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'hardy'
