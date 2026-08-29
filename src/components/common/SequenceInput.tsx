@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Trash2, FileUp, Sparkles, AlertTriangle } from 'lucide-react';
 import { getTranslation } from '../../i18n';
 import { Language } from '../../types';
@@ -21,15 +21,19 @@ export const SequenceInput: React.FC<SequenceInputProps> = ({
   value,
   onChange,
   label,
-  placeholder = 'Paste or type DNA, RNA, or Protein sequence here...',
+  placeholder,
   sampleSequence,
-  sampleLabel = 'Load Sample',
+  sampleLabel,
   allowedCharsRegex,
   lang = 'en',
   rows = 4,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentLang: Language = (lang as Language) || 'en';
+  const [fileError, setFileError] = useState<string | null>(null);
+
+  const resolvedPlaceholder = placeholder || getTranslation(currentLang, 'defaultSequencePlaceholder');
+  const resolvedSampleLabel = sampleLabel || getTranslation(currentLang, 'defaultLoadSampleLabel');
 
   const { sequence: cleanSequenceStr } = normalizeSequenceInput(value);
   const length = cleanSequenceStr.length;
@@ -41,11 +45,13 @@ export const SequenceInput: React.FC<SequenceInputProps> = ({
     if (!file) return;
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      alert(`File is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum allowed size is 5 MB.`);
+      const sizeMb = (file.size / 1024 / 1024).toFixed(1);
+      setFileError(getTranslation(currentLang, 'fileTooLargeError').replace('{size}', sizeMb));
       e.target.value = '';
       return;
     }
 
+    setFileError(null);
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = event.target?.result as string;
@@ -77,7 +83,7 @@ export const SequenceInput: React.FC<SequenceInputProps> = ({
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-[#ECFDF5] dark:bg-slate-800 text-[#0F766E] dark:text-teal-300 border border-[#DDEDE8] dark:border-slate-700 hover:bg-[#d1fae5] dark:hover:bg-slate-700 transition-colors cursor-pointer"
             >
               <Sparkles className="w-3 h-3 text-[#14B8A6]" />
-              <span>{sampleLabel}</span>
+              <span>{resolvedSampleLabel}</span>
             </button>
           )}
 
@@ -118,14 +124,21 @@ export const SequenceInput: React.FC<SequenceInputProps> = ({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={rows}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           className="w-full p-3.5 rounded-xl border border-[#DDEDE8] dark:border-slate-700 bg-white dark:bg-slate-900 text-[#12312B] dark:text-teal-300 focus:ring-2 focus:ring-[#14B8A6] focus:border-transparent outline-none transition-all sequence-mono-ltr text-xs tracking-wider font-mono shadow-inner resize-y"
         />
 
         <div className="absolute bottom-2.5 right-3 px-2 py-0.5 rounded bg-[#ECFDF5] dark:bg-slate-800 border border-[#DDEDE8] dark:border-slate-700 text-[10px] font-mono text-[#0F766E] dark:text-teal-300 font-medium pointer-events-none">
-          {length.toLocaleString()} {length === 1 ? 'base' : 'bases'}
+          {length.toLocaleString()} {length === 1 ? getTranslation(currentLang, 'sequenceUnitBase') : getTranslation(currentLang, 'sequenceUnitBasePlural')}
         </div>
       </div>
+
+      {fileError && (
+        <div className="p-2.5 bg-red-50 dark:bg-rose-950/40 border border-red-200 dark:border-rose-900 rounded-lg flex items-center gap-2 text-xs text-[#EF4444] dark:text-rose-300">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>{fileError}</span>
+        </div>
+      )}
 
       {invalidChars.length > 0 && (
         <div className="p-2.5 bg-red-50 dark:bg-rose-950/40 border border-red-200 dark:border-rose-900 rounded-lg flex items-center gap-2 text-xs text-[#EF4444] dark:text-rose-300">
