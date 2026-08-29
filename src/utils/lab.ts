@@ -132,15 +132,17 @@ export function calculateC1V1(
   if (isNum(v1) && v1 > 0 && isNum(c2) && c2 >= 0 && isNum(v2) && v2 > 0 && !isNum(c1)) {
     if (v2 < v1) return null; // Target volume cannot be smaller than stock volume in a dilution
     const calcC1 = (c2 * v2) / v1;
+    const diluent = Math.max(0, v2 - v1);
     return {
       solvedVariable: 'C1',
       value: Number(calcC1.toFixed(3)),
       unit: cUnit,
-      diluentVolume: 0,
+      diluentVolume: Number(diluent.toFixed(3)),
       formula: 'C1 = (C2 × V2) / V1',
       calculationSteps: [
         `V1 = ${v1} ${vUnit}, C2 = ${c2} ${cUnit}, V2 = ${v2} ${vUnit}`,
         `C1 = (${c2} × ${v2}) / ${v1} = ${calcC1.toFixed(3)} ${cUnit}`,
+        `Diluent Volume (H2O/Buffer) = V2 - V1 = ${v2} - ${v1} = ${diluent.toFixed(3)} ${vUnit}`,
       ],
     };
   }
