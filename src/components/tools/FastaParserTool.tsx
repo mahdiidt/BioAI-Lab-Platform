@@ -40,6 +40,8 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
             {(['DNA', 'RNA', 'PROTEIN'] as const).map((type) => (
               <button
                 key={type}
+                type="button"
+                aria-pressed={seqType === type}
                 onClick={() => setSeqType(type)}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   seqType === type
