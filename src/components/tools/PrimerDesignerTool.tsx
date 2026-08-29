@@ -41,8 +41,10 @@ export const PrimerDesignerTool: React.FC<ToolProps> = ({ lang, initialTab = 'de
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 overflow-x-auto">
+      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 overflow-x-auto">
         <button
+          role="tab"
+          aria-selected={activeTab === 'design'}
           onClick={() => setActiveTab('design')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'design'
@@ -53,6 +55,8 @@ export const PrimerDesignerTool: React.FC<ToolProps> = ({ lang, initialTab = 'de
           <Crosshair className="w-4 h-4" /> {getTranslation(lang, 'tool_pair_primer_design')}
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'tm'}
           onClick={() => setActiveTab('tm')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'tm'
@@ -63,6 +67,8 @@ export const PrimerDesignerTool: React.FC<ToolProps> = ({ lang, initialTab = 'de
           <Thermometer className="w-4 h-4" /> {getTranslation(lang, 'tool_primer_tm_calc')}
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'setup'}
           onClick={() => setActiveTab('setup')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'setup'
