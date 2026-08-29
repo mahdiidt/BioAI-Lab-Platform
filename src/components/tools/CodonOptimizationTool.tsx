@@ -43,6 +43,7 @@ export const CodonOptimizationTool: React.FC<ToolProps> = ({ lang }) => {
               <button
                 key={h}
                 type="button"
+                aria-pressed={isSelected}
                 onClick={() => setHost(h)}
                 className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                   isSelected
