@@ -45,8 +45,10 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
             <Scissors className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_select_restriction_enzymes')}
           </label>
 
-          <div className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8]">
+          <div role="group" aria-label={getTranslation(lang, 'tool_linear_dna') + ' / ' + getTranslation(lang, 'tool_circular_plasmid')} className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8]">
             <button
+              type="button"
+              aria-pressed={!isCircular}
               onClick={() => setIsCircular(false)}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 !isCircular ? 'bg-[#0F766E] text-white shadow-2xs' : 'text-[#64748B] hover:text-[#12312B]'
@@ -55,6 +57,8 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
               {getTranslation(lang, 'tool_linear_dna')}
             </button>
             <button
+              type="button"
+              aria-pressed={isCircular}
               onClick={() => setIsCircular(true)}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 isCircular ? 'bg-[#0F766E] text-white shadow-2xs' : 'text-[#64748B] hover:text-[#12312B]'
