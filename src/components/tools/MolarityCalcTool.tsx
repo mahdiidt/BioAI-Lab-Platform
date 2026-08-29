@@ -37,8 +37,10 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 overflow-x-auto">
+      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 overflow-x-auto">
         <button
+          role="tab"
+          aria-selected={activeTab === 'molarity'}
           onClick={() => setActiveTab('molarity')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'molarity'
@@ -49,6 +51,8 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
           <Calculator className="w-4 h-4" /> {getTranslation(lang, 'tool_molarity_calc')}
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'c1v1'}
           onClick={() => setActiveTab('c1v1')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'c1v1'
@@ -59,6 +63,8 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
           <FlaskConical className="w-4 h-4" /> {getTranslation(lang, 'tool_solution_dilution')}
         </button>
         <button
+          role="tab"
+          aria-selected={activeTab === 'od600'}
           onClick={() => setActiveTab('od600')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'od600'
@@ -151,6 +157,8 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#64748B] font-bold">{getTranslation(lang, 'tool_solve_for')}:</span>
                 <button
+                  type="button"
+                  aria-pressed={targetToSolve === 'V1'}
                   onClick={() => setTargetToSolve('V1')}
                   className={`px-3 py-1 text-xs font-bold rounded-lg cursor-pointer ${
                     targetToSolve === 'V1' ? 'bg-[#0F766E] text-white' : 'bg-[#F3FAF7] text-[#64748B]'
@@ -159,6 +167,8 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
                   {getTranslation(lang, 'tool_stock_vol_v1')}
                 </button>
                 <button
+                  type="button"
+                  aria-pressed={targetToSolve === 'C2'}
                   onClick={() => setTargetToSolve('C2')}
                   className={`px-3 py-1 text-xs font-bold rounded-lg cursor-pointer ${
                     targetToSolve === 'C2' ? 'bg-[#0F766E] text-white' : 'bg-[#F3FAF7] text-[#64748B]'
