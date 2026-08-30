@@ -91,6 +91,8 @@ export const es = {
   tool_mutation_desc: 'Identifique mutaciones silenciosas, de cambio de sentido, sin sentido y de desfase.',
   tool_codon_opt_title: 'Motor de Optimización de Codones',
   tool_codon_opt_desc: 'Optimice el uso de codones para alta expresión proteica en E. coli, levadura o humanos.',
+  tool_crispr_title: 'Diseñador de ARN Guía CRISPR (gRNA)',
+  tool_crispr_desc: 'Escanea una secuencia de ADN objetivo en busca de sitios PAM de la familia Cas9 y diseña ARN guía candidatos de 20nt en ambas cadenas, con evaluación de %GC, homopolímeros y off-target dentro de la misma entrada.',
 
   tool_primer_design_title: 'Diseñador de Cebadores PCR',
   tool_primer_design_desc: 'Diseñe cebadores directos e inversos con termodinámica Tm y comprobación de especificidad.',
@@ -471,6 +473,24 @@ export const es = {
   hero_supported_languages: 'Idiomas Compatibles',
   tool_no_residues_after_stop: 'Esta secuencia solo contiene marcadores de codón de parada (*) y ningún residuo de aminoácido real para analizar.',
   tool_vmax_km_positive: 'Vmax y Km deben ser números positivos distintos de cero.',
+
+  // Diseñador de ARN Guía CRISPR
+  tool_load_sample_target: 'Cargar Objetivo de Ejemplo',
+  tool_select_pam: 'Seleccionar PAM / Variante de Cas',
+  tool_ambiguity_blocks_guide_design: 'Esta secuencia contiene códigos de ambigüedad IUPAC. El diseño de ARN guía requiere una secuencia totalmente inequívoca, ya que una base ambigua no puede fijarse en una guía sintetizada.',
+  tool_candidate_guides_found: 'ARN Guía Candidatos Encontrados',
+  tool_pam_pattern: 'Patrón PAM',
+  tool_guide_length: 'Longitud de la Guía',
+  tool_no_guides_found: 'No se encontraron sitios PAM que coincidan con el patrón seleccionado en esta secuencia.',
+  tool_strand: 'Cadena',
+  tool_quality_score: 'Puntuación',
+  tool_score_high: 'alta',
+  tool_score_medium: 'media',
+  tool_score_low: 'baja',
+  tool_polyt_warning: 'Racha TTTT+ (terminador de Pol III)',
+  tool_homopolymer_warning: 'Racha homopolimérica (4+)',
+  tool_offtarget_warning: 'Se repite en otro lugar de la entrada',
+  tool_offtarget_scope_note: 'La detección de off-target aquí solo verifica secuencias semilla de 12nt repetidas dentro de la secuencia que pegaste arriba — NO es una búsqueda de off-target en todo el genoma. Verifica siempre las guías candidatas contra una base de datos completa de genoma/transcriptoma antes de encargar los oligos.',
 
   launchTool: 'Ejecutar',
   localClientSide: 'Local 100% en Cliente',
