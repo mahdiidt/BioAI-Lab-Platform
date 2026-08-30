@@ -91,6 +91,8 @@ export const zh = {
   tool_mutation_desc: '识别无义突变、错义突变、同义突变与移码突变。',
   tool_codon_opt_title: '密码子优化引擎',
   tool_codon_opt_desc: '优化大肠杆菌、酵母或人类宿主系统中的基因表达密码子。',
+  tool_crispr_title: 'CRISPR 向导 RNA（gRNA）设计器',
+  tool_crispr_desc: '扫描目标 DNA 序列以查找 Cas9 家族 PAM 位点，并在两条链上设计候选的 20nt 向导 RNA，包含 GC 含量、同聚物及同一输入内脱靶筛查。',
 
   tool_primer_design_title: 'PCR 引物设计器',
   tool_primer_design_desc: '设计正向与反向引物，评估 Tm 热力学与特异性。',
@@ -471,6 +473,24 @@ export const zh = {
   hero_supported_languages: '支持的语言',
   tool_no_residues_after_stop: '该序列仅包含终止密码子标记（*），没有可供分析的实际氨基酸残基。',
   tool_vmax_km_positive: 'Vmax 和 Km 必须为正的非零数值。',
+
+  // CRISPR 向导 RNA 设计器
+  tool_load_sample_target: '加载示例目标',
+  tool_select_pam: '选择 PAM / Cas 变体',
+  tool_ambiguity_blocks_guide_design: '该序列包含 IUPAC 模糊代码。向导 RNA 设计需要完全无歧义的序列，因为模糊碱基无法用于合成向导。',
+  tool_candidate_guides_found: '找到的候选向导 RNA',
+  tool_pam_pattern: 'PAM 模式',
+  tool_guide_length: '向导长度',
+  tool_no_guides_found: '在该序列中未找到匹配所选模式的 PAM 位点。',
+  tool_strand: '链',
+  tool_quality_score: '评分',
+  tool_score_high: '高',
+  tool_score_medium: '中',
+  tool_score_low: '低',
+  tool_polyt_warning: '连续 4+ 个 T（Pol III 终止信号）',
+  tool_homopolymer_warning: '同聚物重复（4+）',
+  tool_offtarget_warning: '在输入中其他位置重复出现',
+  tool_offtarget_scope_note: '此处的脱靶筛查仅检查您粘贴的序列内是否存在重复的 12nt 种子序列——这不是全基因组脱靶搜索。订购寡核苷酸前，请务必对照完整的基因组/转录组数据库核实候选向导。',
 
   launchTool: '启动',
   localClientSide: '100% 本地客户端运行',
