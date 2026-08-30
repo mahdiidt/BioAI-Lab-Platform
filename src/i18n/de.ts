@@ -91,6 +91,8 @@ export const de = {
   tool_mutation_desc: 'Identifizieren Sie stumme, Missense-, Nonsense- und Rastermutationen.',
   tool_codon_opt_title: 'Codon-Optimierungs-Engine',
   tool_codon_opt_desc: 'Optimieren Sie die Codon-Nutzung für hohe Proteinexpression in E. coli, Hefe oder menschlichen Wirten.',
+  tool_crispr_title: 'CRISPR-Guide-RNA-Designer (gRNA)',
+  tool_crispr_desc: 'Durchsucht eine Ziel-DNA-Sequenz nach PAM-Stellen der Cas9-Familie und entwirft Kandidaten-Guide-RNAs (20 nt) auf beiden Strängen, mit GC-Gehalt-, Homopolymer- und Off-Target-Prüfung innerhalb derselben Eingabe.',
 
   tool_primer_design_title: 'PCR-Primer-Designer',
   tool_primer_design_desc: 'Entwerfen Sie Vorwärts-/Rückwärts-Primer mit Tm-Thermodynamik und Spezifitätsprüfungen.',
@@ -471,6 +473,24 @@ export const de = {
   hero_supported_languages: 'Unterstützte Sprachen',
   tool_no_residues_after_stop: 'Diese Sequenz enthält nur Stopcodon-Marker (*) und keine tatsächlichen Aminosäurereste zur Analyse.',
   tool_vmax_km_positive: 'Vmax und Km müssen positive, von Null verschiedene Zahlen sein.',
+
+  // CRISPR-Guide-RNA-Designer
+  tool_load_sample_target: 'Beispielziel Laden',
+  tool_select_pam: 'PAM / Cas-Variante Auswählen',
+  tool_ambiguity_blocks_guide_design: 'Diese Sequenz enthält IUPAC-Mehrdeutigkeitscodes. Das Guide-RNA-Design erfordert eine vollständig eindeutige Sequenz, da eine mehrdeutige Base nicht in einer synthetisierten Guide festgelegt werden kann.',
+  tool_candidate_guides_found: 'Gefundene Kandidaten-Guide-RNAs',
+  tool_pam_pattern: 'PAM-Muster',
+  tool_guide_length: 'Guide-Länge',
+  tool_no_guides_found: 'In dieser Sequenz wurden keine PAM-Stellen gefunden, die dem gewählten Muster entsprechen.',
+  tool_strand: 'Strang',
+  tool_quality_score: 'Bewertung',
+  tool_score_high: 'hoch',
+  tool_score_medium: 'mittel',
+  tool_score_low: 'niedrig',
+  tool_polyt_warning: 'TTTT+-Lauf (Pol-III-Terminator)',
+  tool_homopolymer_warning: 'Homopolymer-Lauf (4+)',
+  tool_offtarget_warning: 'Wiederholt sich an anderer Stelle der Eingabe',
+  tool_offtarget_scope_note: 'Die Off-Target-Prüfung hier prüft nur auf wiederholte 12-nt-Seed-Sequenzen innerhalb der oben eingefügten Sequenz — dies ist KEINE genomweite Off-Target-Suche. Überprüfen Sie Kandidaten-Guides vor der Bestellung von Oligonukleotiden immer gegen eine vollständige Genom-/Transkriptom-Datenbank.',
 
   launchTool: 'Starten',
   localClientSide: 'Lokale 100% Client-Ausführung',
