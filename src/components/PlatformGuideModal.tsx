@@ -43,6 +43,7 @@ import {
   Shield,
   AlignLeft,
   GitMerge,
+  Target,
 } from 'lucide-react';
 
 interface PlatformGuideModalProps {
@@ -56,9 +57,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Dna, GitBranch, Flame, Scissors, Activity, Calculator, FlaskConical, Microscope, Network,
   Repeat, ArrowRightLeft, Binary, PieChart, Search, FileText, BarChart2, Grid, Scale, Zap,
   Sliders, Crosshair, Thermometer, TestTube, Box, FlaskRound, TrendingDown, Eye, TrendingUp,
-  LineChart, Shield, AlignLeft, GitMerge,
+  LineChart, Shield, AlignLeft, GitMerge, Target,
 };
-
 const LEVEL_COLORS: Record<string, string> = {
   basic: 'text-[#0F766E] dark:text-teal-400 bg-[#ECFDF5] dark:bg-slate-800 border-[#DDEDE8] dark:border-slate-700',
   intermediate: 'text-[#0369A1] dark:text-sky-400 bg-sky-50 dark:bg-slate-800 border-sky-200 dark:border-slate-700',
