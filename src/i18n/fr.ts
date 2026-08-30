@@ -91,6 +91,8 @@ export const fr = {
   tool_mutation_desc: 'Identifiez les mutations silencieuses, faux-sens, non-sens et décalantes.',
   tool_codon_opt_title: 'Moteur d\'Optimisation des Codons',
   tool_codon_opt_desc: 'Optimisez l\'usage des codons pour une forte expression protéique chez E. coli, la levure ou l\'humain.',
+  tool_crispr_title: 'Concepteur d\'ARN Guide CRISPR (gRNA)',
+  tool_crispr_desc: 'Analyse une séquence d\'ADN cible à la recherche de sites PAM de la famille Cas9 et conçoit des ARN guides candidats de 20 nt sur les deux brins, avec évaluation du %GC, des homopolymères et des off-targets au sein de la même entrée.',
 
   tool_primer_design_title: 'Concepteur d\'Amorces PCR',
   tool_primer_design_desc: 'Concevez des amorces sens et antisens avec thermodynamique Tm et vérification de spécificité.',
@@ -471,6 +473,24 @@ export const fr = {
   hero_supported_languages: 'Langues Prises en Charge',
   tool_no_residues_after_stop: "Cette séquence ne contient que des marqueurs de codon stop (*) et aucun résidu d'acide aminé réel à analyser.",
   tool_vmax_km_positive: 'Vmax et Km doivent être des nombres positifs non nuls.',
+
+  // Concepteur d'ARN Guide CRISPR
+  tool_load_sample_target: 'Charger une Cible d\'Exemple',
+  tool_select_pam: 'Sélectionner le PAM / la Variante de Cas',
+  tool_ambiguity_blocks_guide_design: 'Cette séquence contient des codes d\'ambiguïté IUPAC. La conception d\'ARN guide nécessite une séquence totalement non ambiguë, car une base ambiguë ne peut pas être fixée dans un guide synthétisé.',
+  tool_candidate_guides_found: 'ARN Guides Candidats Trouvés',
+  tool_pam_pattern: 'Motif PAM',
+  tool_guide_length: 'Longueur du Guide',
+  tool_no_guides_found: 'Aucun site PAM correspondant au motif sélectionné n\'a été trouvé dans cette séquence.',
+  tool_strand: 'Brin',
+  tool_quality_score: 'Score',
+  tool_score_high: 'élevé',
+  tool_score_medium: 'moyen',
+  tool_score_low: 'faible',
+  tool_polyt_warning: 'Séquence TTTT+ (terminateur Pol III)',
+  tool_homopolymer_warning: 'Séquence homopolymère (4+)',
+  tool_offtarget_warning: 'Se répète ailleurs dans l\'entrée',
+  tool_offtarget_scope_note: 'Le dépistage des off-targets ici ne vérifie que les séquences graines de 12 nt répétées dans la séquence collée ci-dessus — ce n\'est PAS une recherche d\'off-target à l\'échelle du génome. Vérifiez toujours les guides candidats par rapport à une base de données génome/transcriptome complète avant de commander les oligonucléotides.',
 
   launchTool: 'Lancer',
   localClientSide: '100% Côté Client Local',
