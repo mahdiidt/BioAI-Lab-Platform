@@ -15,6 +15,7 @@ import {
   countKmers,
   getDetailedBaseComposition,
 } from '../dna';
+import { findCrisprGuides } from '../crispr';
 import { analyzeProtein } from '../protein';
 
 import { calculatePrimerTm, calculatePcrReactionSetup, calculateAnnealingTemperature } from '../pcr';
@@ -851,5 +852,111 @@ describe('27. REGRESSION: Michaelis-Menten Silent Zero-Result on Invalid Vmax/Km
   it('does not attach the invalid-input disclaimer to a valid calculation', () => {
     const res = calculateMichaelisMenten(100, 5, 10);
     expect(res.velocity).toBeGreaterThan(0);
+  });
+});
+
+describe('28. CRISPR Guide RNA Designer — PAM Scanning & Guide Scoring', () => {
+  it('finds a forward-strand NGG guide with correct 1-based coordinates', () => {
+    const guide = 'ACGTACGTACGTACGTACGT'.slice(0, 20); // 20nt
+    const seq = 'TTTT' + guide + 'CGG' + 'AAAAAAAAAAAAAAAAAAAAAAAAAA';
+    const res = findCrisprGuides(seq, 'NGG', 20);
+    expect(res.isValid).toBe(true);
+    const hit = res.guides.find((g) => g.strand === '+' && g.guideStart === 5);
+    expect(hit).toBeDefined();
+    expect(hit!.guideEnd).toBe(24);
+    expect(hit!.pamStart).toBe(25);
+    expect(hit!.pamEnd).toBe(27);
+    expect(hit!.guideSeq).toBe(guide);
+    expect(hit!.pamSeq).toBe('CGG');
+  });
+
+  it('finds guides on the reverse strand and reports coordinates in original sequence numbering', () => {
+    // Build a sequence whose reverse complement contains a clean NGG guide,
+    // so scanning the + strand directly should NOT find it, but the '-'
+    // strand scan should.
+    const guide = 'AAACCCGGGTTTAAACCCGG'; // 20nt, no PAM-mimicking suffix on + strand
+    const revCompOfGuidePlusPam = 'X'; // placeholder, computed below via helper
+    // Construct: revComp(seq) must contain guide+CGG. Easiest: pick a guide,
+    // compute what the + strand must look like by reverse-complementing
+    // (guide + 'CGG') ourselves using the same IUPAC pairing rules.
+    const complement: Record<string, string> = { A: 'T', T: 'A', C: 'G', G: 'C' };
+    const revCompManual = (s: string) =>
+      s.split('').reverse().map((c) => complement[c]).join('');
+    const forwardChunk = revCompManual(guide + 'CGG');
+    const seq = 'GGGG' + forwardChunk + 'GGGG';
+    const res = findCrisprGuides(seq, 'NGG', 20);
+    const revHit = res.guides.find((g) => g.strand === '-');
+    expect(revHit).toBeDefined();
+    expect(revHit!.guideSeq).toBe(guide);
+    expect(revHit!.pamSeq).toBe('CGG');
+    // guideStart must be < guideEnd even on the reverse strand (consistent 1-based reporting)
+    expect(revHit!.guideStart).toBeLessThan(revHit!.guideEnd);
+  });
+
+  it('flags a guide containing a TTTT+ run (Pol III terminator) and lowers its score', () => {
+    const guideT = 'AAAATTTTAAAATTTTAAAA';
+    const seq = guideT + 'TGG';
+    const res = findCrisprGuides(seq, 'NGG', 20);
+    expect(res.guides.length).toBeGreaterThan(0);
+    expect(res.guides[0].hasPolyT).toBe(true);
+    expect(res.guides[0].qualityScore).toBeLessThan(70);
+  });
+
+  it('does not flag a clean, moderate-GC guide as poly-T or homopolymer', () => {
+    const cleanGuide = 'ACGTACGTACGTACGTACGT';
+    const seq = cleanGuide + 'CGG';
+    const res = findCrisprGuides(seq, 'NGG', 20);
+    expect(res.guides.length).toBeGreaterThan(0);
+    const hit = res.guides.find((g) => g.guideSeq === cleanGuide);
+    expect(hit!.hasPolyT).toBe(false);
+    expect(hit!.hasHomopolymer).toBe(false);
+  });
+
+  it('detects a same-input off-target when an identical guide site is repeated', () => {
+    const guide = 'ACGTACGTACGTACGTACGT';
+    const seq = guide + 'AGG' + 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT' + guide + 'TGG';
+    const res = findCrisprGuides(seq, 'NGG', 20);
+    const hits = res.guides.filter((g) => g.guideSeq === guide);
+    expect(hits.length).toBe(2);
+    for (const h of hits) {
+      expect(h.seedOffTargetCount).toBeGreaterThan(0);
+    }
+  });
+
+  it('rejects a sequence containing IUPAC ambiguity codes rather than silently skipping ambiguous windows', () => {
+    const res = findCrisprGuides('ATGCNNNNACGTACGTACGTACGTACGTCGGATCG', 'NGG', 20);
+    expect(res.isValid).toBe(true);
+    expect(res.warning).toBe('AMBIGUITY_BLOCKS_DESIGN');
+    expect(res.guides).toEqual([]);
+  });
+
+  it('rejects invalid (non-DNA) characters with a clear error message', () => {
+    const res = findCrisprGuides('ATGCXYZATGCATGCATGCATGCATGCCGG', 'NGG', 20);
+    expect(res.isValid).toBe(false);
+    expect(res.errorMessage).toBeDefined();
+  });
+
+  it('returns an empty guide list (not an error) for a sequence too short to contain a guide+PAM', () => {
+    const res = findCrisprGuides('ATGCATGC', 'NGG', 20);
+    expect(res.isValid).toBe(true);
+    expect(res.guides).toEqual([]);
+  });
+
+  it('supports the relaxed NG PAM variant', () => {
+    const guide = 'ACGTACGTACGTACGTACGT';
+    const seq = guide + 'CG' + 'AAAAAAAAAA';
+    const res = findCrisprGuides(seq, 'NG', 20);
+    expect(res.guides.some((g) => g.guideSeq === guide && g.pamSeq === 'CG')).toBe(true);
+  });
+
+  it('sorts guides by descending quality score', () => {
+    const guide = 'ACGTACGTACGTACGTACGT';
+    const guideT = 'AAAATTTTAAAATTTTAAAA';
+    const seq = guideT + 'TGG' + 'AAAAAAAAAAAAAAAAAAAAAAAA' + guide + 'CGG';
+    const res = findCrisprGuides(seq, 'NGG', 20);
+    expect(res.guides.length).toBeGreaterThanOrEqual(2);
+    for (let i = 1; i < res.guides.length; i++) {
+      expect(res.guides[i - 1].qualityScore).toBeGreaterThanOrEqual(res.guides[i].qualityScore);
+    }
   });
 });
