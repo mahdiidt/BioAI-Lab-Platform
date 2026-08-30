@@ -96,6 +96,8 @@ export const fa = {
   tool_mutation_desc: 'تشخیص جهش‌های خاموش، بدمعنی، بی‌معنی و تغییر فریم.',
   tool_codon_opt_title: 'موتور بهینه‌سازی کدون',
   tool_codon_opt_desc: 'بهینه‌سازی ترجیح کدونی برای بیان بالای پروتئین در E. coli، مخمر و انسان.',
+  tool_crispr_title: 'طراح گاید RNA کریسپر (CRISPR gRNA)',
+  tool_crispr_desc: 'اسکن یک توالی هدف DNA برای یافتن سایت‌های PAM خانواده‌ی Cas9 و طراحی گایدهای ۲۰ نوکلئوتیدی کاندید روی هر دو رشته، همراه با بررسی GC%، هوموپلیمر، و off-target درون همان ورودی.',
 
   tool_primer_design_title: 'طراح پرایمرهای PCR',
   tool_primer_design_desc: 'طراحی پرایمرهای رفت و برگشت با بررسی ترمودینامیک Tm و اختصاصیت.',
@@ -478,6 +480,24 @@ export const fa = {
   hero_supported_languages: 'زبان‌های پشتیبانی‌شده',
   tool_no_residues_after_stop: 'این توالی فقط شامل نشانه‌های کدون توقف (*) است و هیچ اسیدآمینه‌ی واقعی برای تحلیل ندارد.',
   tool_vmax_km_positive: 'Vmax و Km باید اعداد مثبت و غیرصفر باشند.',
+
+  // طراح گاید RNA کریسپر
+  tool_load_sample_target: 'بارگذاری هدف نمونه',
+  tool_select_pam: 'انتخاب PAM / نوع Cas',
+  tool_ambiguity_blocks_guide_design: 'این توالی حاوی کدهای ابهام IUPAC است. طراحی گاید RNA نیازمند توالی کاملاً قطعی است، چون یک باز مبهم را نمی‌توان در یک گاید سنتزشده قطعی کرد.',
+  tool_candidate_guides_found: 'گایدهای RNA کاندید یافت‌شده',
+  tool_pam_pattern: 'الگوی PAM',
+  tool_guide_length: 'طول گاید',
+  tool_no_guides_found: 'هیچ سایت PAM مطابق الگوی انتخاب‌شده در این توالی یافت نشد.',
+  tool_strand: 'رشته',
+  tool_quality_score: 'امتیاز',
+  tool_score_high: 'بالا',
+  tool_score_medium: 'متوسط',
+  tool_score_low: 'پایین',
+  tool_polyt_warning: 'توالی ۴+ تکرار T (توقف‌دهنده‌ی Pol III)',
+  tool_homopolymer_warning: 'توالی هوموپلیمر (۴+ تکرار)',
+  tool_offtarget_warning: 'تکرار در جای دیگر ورودی',
+  tool_offtarget_scope_note: 'بررسی off-target اینجا فقط تکرار توالی هسته‌ی ۱۲ نوکلئوتیدی درون همین توالی‌ای که پیست کردید رو چک می‌کنه — این یک جستجوی سراسر ژنوم نیست. همیشه قبل از سفارش الیگو، گایدهای کاندید رو در برابر پایگاه‌داده‌ی کامل ژنوم/ترانسکریپتوم بررسی کنید.',
 
   launchTool: 'اجرا',
   localClientSide: 'کاملاً محلی و سمت کلاینت',
