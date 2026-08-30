@@ -13,6 +13,7 @@ import { KmerTool } from './tools/KmerTool';
 import { PunnettSquareTool } from './tools/PunnettSquareTool';
 import { MutationAnalyzerTool } from './tools/MutationAnalyzerTool';
 import { CodonOptimizationTool } from './tools/CodonOptimizationTool';
+import { CrisprGuideDesignerTool } from './tools/CrisprGuideDesignerTool';
 import { PrimerDesignerTool } from './tools/PrimerDesignerTool';
 import { RestrictionDigestTool } from './tools/RestrictionDigestTool';
 import { AgaroseGelSimTool } from './tools/AgaroseGelSimTool';
@@ -94,6 +95,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'codon_optimization':
         return <CodonOptimizationTool lang={lang} />;
+
+      case 'crispr_guide_designer':
+        return <CrisprGuideDesignerTool lang={lang} />;
 
       case 'primer_designer':
         return <PrimerDesignerTool lang={lang} initialTab="design" />;
