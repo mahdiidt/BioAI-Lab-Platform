@@ -134,6 +134,17 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     keywords: ['codon', 'optimization', 'expression', 'ecoli', 'human', 'yeast'],
     educationalLevel: 'research',
   },
+  {
+    id: 'crispr_guide_designer',
+    titleKey: 'tool_crispr_title',
+    descKey: 'tool_crispr_desc',
+    category: 'genetics',
+    iconName: 'Target',
+    keywords: ['crispr', 'cas9', 'grna', 'guide rna', 'pam', 'genome editing', 'sgrna'],
+    educationalLevel: 'research',
+    popular: true,
+    featured: true,
+  },
 
   // PCR & PRIMERS
   {
