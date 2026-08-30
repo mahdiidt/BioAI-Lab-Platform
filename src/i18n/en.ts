@@ -96,6 +96,8 @@ export const en = {
   tool_mutation_desc: 'Identify silent, missense, nonsense, and frameshift point mutations.',
   tool_codon_opt_title: 'Codon Optimization Engine',
   tool_codon_opt_desc: 'Optimize codon bias for high protein expression in E. coli, Yeast, or Human hosts.',
+  tool_crispr_title: 'CRISPR Guide RNA (gRNA) Designer',
+  tool_crispr_desc: 'Scan a target DNA sequence for Cas9-family PAM sites and design candidate 20nt guide RNAs on both strands, with GC%, homopolymer, and same-input off-target screening.',
 
   tool_primer_design_title: 'PCR Primer Designer',
   tool_primer_design_desc: 'Design forward/reverse primers with Tm thermodynamics and specificity checks.',
@@ -478,6 +480,24 @@ export const en = {
   hero_supported_languages: 'Supported Languages',
   tool_no_residues_after_stop: 'This sequence contains only stop-codon markers (*) and no actual amino acid residues to analyze.',
   tool_vmax_km_positive: 'Vmax and Km must be positive non-zero numbers.',
+
+  // CRISPR Guide RNA Designer
+  tool_load_sample_target: 'Load Sample Target',
+  tool_select_pam: 'Select PAM / Cas Variant',
+  tool_ambiguity_blocks_guide_design: 'This sequence contains IUPAC ambiguity codes. Guide RNA design requires a fully unambiguous sequence, since an ambiguous base cannot be committed to a synthesized guide.',
+  tool_candidate_guides_found: 'Candidate Guide RNAs Found',
+  tool_pam_pattern: 'PAM Pattern',
+  tool_guide_length: 'Guide Length',
+  tool_no_guides_found: 'No PAM sites matching the selected pattern were found in this sequence.',
+  tool_strand: 'Strand',
+  tool_quality_score: 'Score',
+  tool_score_high: 'high',
+  tool_score_medium: 'medium',
+  tool_score_low: 'low',
+  tool_polyt_warning: 'TTTT+ run (Pol III terminator)',
+  tool_homopolymer_warning: 'Homopolymer run (4+)',
+  tool_offtarget_warning: 'Repeats elsewhere in input',
+  tool_offtarget_scope_note: 'Off-target screening here only checks for repeated 12nt seed sequences within the sequence you pasted above — it is NOT a genome-wide off-target search. Always verify candidate guides against a full genome/transcriptome database before ordering oligos.',
 
   // Footer & Links
   launchTool: 'Launch',
