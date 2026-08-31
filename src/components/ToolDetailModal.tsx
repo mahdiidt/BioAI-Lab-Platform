@@ -22,6 +22,9 @@ import { MolarityCalcTool } from './tools/MolarityCalcTool';
 import { MichaelisMentenTool } from './tools/MichaelisMentenTool';
 import { BacterialGrowthTool } from './tools/BacterialGrowthTool';
 import { GlobalAlignmentTool } from './tools/GlobalAlignmentTool';
+import { LocalAlignmentTool } from './tools/LocalAlignmentTool';
+import { RnaSecondaryStructureTool } from './tools/RnaSecondaryStructureTool';
+import { StatisticalTestTool } from './tools/StatisticalTestTool';
 import { PhylogeneticTreeTool } from './tools/PhylogeneticTreeTool';
 import { GramStainTool } from './tools/GramStainTool';
 
@@ -133,6 +136,15 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'global_alignment':
         return <GlobalAlignmentTool lang={lang} />;
+
+      case 'local_alignment':
+        return <LocalAlignmentTool lang={lang} />;
+
+      case 'rna_secondary_structure':
+        return <RnaSecondaryStructureTool lang={lang} />;
+
+      case 'statistical_test':
+        return <StatisticalTestTool lang={lang} />;
 
       case 'phylogenetic_tree':
         return <PhylogeneticTreeTool lang={lang} />;
