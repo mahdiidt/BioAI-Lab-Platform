@@ -1,4 +1,4 @@
-export const zh = {
+پexport const zh = {
   brandName: 'BioAI.Lab',
   brandTagline: '智能生物学、遗传学与生物信息学实验室平台',
   brandSubtitle: 'AI赋能生物学。为科学家而建。',
