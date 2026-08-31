@@ -1,1240 +1,548 @@
-import { describe, it, expect } from 'vitest';
-import { validateSequence } from '../sequenceValidator';
-import {
-  reverseComplement,
-  complementSequence,
-  getComplementBase,
-  InvalidNucleotideError,
-  DNA_COMPLEMENT_MAP,
-  RNA_COMPLEMENT_MAP,
-  transcribeDnaToRna,
-  translateRnaToProtein,
-  calculateSequenceStats,
-  findOpenReadingFrames,
-  findMotifPositions,
-  countKmers,
-  getDetailedBaseComposition,
-} from '../dna';
-import { findCrisprGuides } from '../crispr';
-import { smithWatermanAlignment } from '../localAlignment';
-import { predictRnaSecondaryStructure } from '../rnaStructure';
-import {
-  oneSampleTTest,
-  twoSampleTTest,
-  chiSquareGoodnessOfFit,
-  chiSquareIndependence,
-  tDistributionPValue,
-  chiSquarePValue,
-} from '../statistics';
-import { analyzeProtein } from '../protein';
-
-import { calculatePrimerTm, calculatePcrReactionSetup, calculateAnnealingTemperature } from '../pcr';
-import { calculateMolarity, calculateC1V1 } from '../lab';
-import { digestDna, calculateGelMigrationPercent } from '../restriction';
-import { calculatePunnettSquare, calculateHardyWeinberg, analyzeMutation } from '../genetics';
-import { calculateMichaelisMenten } from '../biochemistry';
-import { calculateBacterialGrowth } from '../microbiology';
-import { parseMultiFasta } from '../fastaParser';
-import { analyzeKmers } from '../kmer';
-import { optimizeCodons, calculateCai } from '../codonOptimization';
-import { parseNewick } from '../newickParser';
-import { needlemanWunschAlignment, designPrimers } from '../bioinformatics';
-import { translations } from '../../i18n';
-
-describe('1. Central Validation Layer', () => {
-  it('validates canonical DNA correctly', () => {
-    const res = validateSequence('ATGCGA', 'DNA');
-    expect(res.isValid).toBe(true);
-    expect(res.cleanSequence).toBe('ATGCGA');
-    expect(res.invalidChars).toHaveLength(0);
-  });
-
-  it('rejects RNA bases in DNA mode', () => {
-    const res = validateSequence('AUGCGA', 'DNA');
-    expect(res.isValid).toBe(false);
-    expect(res.invalidChars).toContain('U');
-  });
-
-  it('identifies ambiguity symbols in DNA mode', () => {
-    const res = validateSequence('ATGCRN', 'DNA', true);
-    expect(res.isValid).toBe(true);
-    expect(res.hasAmbiguityChars).toBe(true);
-    expect(res.ambiguityCharsFound).toEqual(expect.arrayContaining(['R', 'N']));
-  });
-
-  it('validates Protein sequence correctly', () => {
-    const res = validateSequence('MKAW*', 'PROTEIN');
-    expect(res.isValid).toBe(true);
-  });
-
-  it('detects invalid characters in Protein mode', () => {
-    const res = validateSequence('MKAW123!', 'PROTEIN');
-    expect(res.isValid).toBe(false);
-    expect(res.invalidChars).toEqual(expect.arrayContaining(['1', '2', '3', '!']));
-  });
-});
-
-describe('2. DNA / RNA Core & IUPAC Reverse Complement', () => {
-  it('computes reverse complement with full IUPAC support', () => {
-    expect(reverseComplement('ATGC')).toBe('GCAT');
-    expect(reverseComplement('AAAA')).toBe('TTTT');
-    expect(reverseComplement('CCCC')).toBe('GGGG');
-    // RYSWKMBDHVN reversed = NVHDBSMKWSYR
-    // Complement = N B D H V K M W S R Y
-    expect(reverseComplement('RYSWKMBDHVN')).toBe('NBDHVKMWSRY');
-  });
-
-  it('transcribes DNA to RNA correctly', () => {
-    expect(transcribeDnaToRna('ATGCGA')).toBe('AUGCGA');
-  });
-
-  it('rejects invalid DNA during transcription and translation', () => {
-    expect(transcribeDnaToRna('ATGCXYZ')).toBe('');
-    expect(translateRnaToProtein('ATGCXYZ')).toBe('');
-  });
-
-  it('translates RNA/DNA to Protein correctly', () => {
-    expect(translateRnaToProtein('AUGGCCAUGUAA')).toBe('MAM*');
-  });
-
-  it('rejects invalid DNA/RNA characters during sequence statistics', () => {
-    const stats = calculateSequenceStats('ATGCXYZ', 'ssDNA');
-    expect(stats.length).toBe(0);
-    expect(stats.gcContent).toBe(0);
-  });
-
-  it('calculates sequence stats for ssDNA, dsDNA, and RNA', () => {
-    const ss = calculateSequenceStats('ATGC', 'ssDNA');
-    expect(ss.length).toBe(4);
-    expect(ss.gcContent).toBe(50);
-    expect(ss.atContent).toBe(50);
-    expect(ss.molecularWeightDa).toBeGreaterThan(1000);
-
-    const ds = calculateSequenceStats('ATGC', 'dsDNA');
-    expect(ds.molecularWeightDa).toBe(Math.round(4 * 617.9 + 36.0));
-  });
-
-  it('finds open reading frames in 6 reading frames', () => {
-    const dna = 'ATGAAATAAATGCCCTAA';
-    const orfs = findOpenReadingFrames(dna, 1);
-    expect(orfs.length).toBeGreaterThan(0);
-    expect(orfs[0].proteinSequence).toContain('M');
-  });
-});
-
-describe('3. Protein Analysis & pI Calculation', () => {
-  it('calculates protein molecular weight, GRAVY, and pI', () => {
-    const res = analyzeProtein('MKAW');
-    expect(res).not.toBeNull();
-    if (res) {
-      expect(res.length).toBe(4);
-      expect(res.molecularWeightDa).toBeGreaterThan(400);
-      expect(res.isoelectricPointPI).toBeGreaterThan(0);
-      expect(res.isoelectricPointPI).toBeLessThan(14);
-    }
-  });
-
-  it('handles protein stop symbol correctly', () => {
-    const resWithStop = analyzeProtein('MKAW*');
-    const resWithoutStop = analyzeProtein('MKAW');
-    expect(resWithStop?.length).toBe(4);
-    expect(resWithStop?.molecularWeightDa).toBe(resWithoutStop?.molecularWeightDa);
-  });
-});
-
-describe('4. PCR & Primers', () => {
-  it('calculates primer Tm with GC-based formula', () => {
-    const res = calculatePrimerTm('ATGCGATCGATCGATCGATC'); // 20 bp
-    expect(res.length).toBe(20);
-    expect(res.tm).toBeGreaterThan(40);
-    expect(res.gcContent).toBe(50);
-  });
-
-  it('rejects invalid DNA primer characters', () => {
-    const res = calculatePrimerTm('ATGCXYZ');
-    expect(res.tm).toBe(0);
-    expect(res.warnings.some((w) => w.includes('Invalid character'))).toBe(true);
-  });
-
-  it('calculates PCR master mix volumes excluding template DNA', () => {
-    const res = calculatePcrReactionSetup(10, 50, true);
-    expect(res.numSamples).toBe(10);
-    expect(res.multiplierUsed).toBe(11);
-    // 50 uL total reaction - 6 uL template DNA = 44 uL master mix per reaction
-    // 44 * 11 = 484 uL total master mix
-    expect(res.masterMixTotal.totalVolumeUl).toBe(484);
-    expect(res.templatePerReactionUl).toBe(6);
-    expect(res.note).toContain('Prepare the shared master mix without template DNA');
-  });
-
-  it('calculates annealing temperature and warns on high Tm diff', () => {
-    const res = calculateAnnealingTemperature(60, 50);
-    expect(res.recommendedTa).toBe(45);
-    expect(res.warnings.length).toBeGreaterThan(0);
-  });
-});
-
-describe('5. Lab & Solution Calculations (C1V1 & Molarity)', () => {
-  it('solves C1V1 correctly without division by zero', () => {
-    const res = calculateC1V1(10, undefined, 2, 50, 'mM', 'mL');
-    expect(res?.solvedVariable).toBe('V1');
-    expect(res?.value).toBe(10); // (2 * 50) / 10 = 10
-    expect(res?.diluentVolume).toBe(40);
-  });
-
-  it('handles C2=0 safely when solving V2 in C1V1', () => {
-    const res = calculateC1V1(10, 5, 0, undefined, 'mM', 'mL');
-    expect(res).toBeNull(); // Cannot solve V2 with 0 concentration target (division by zero)
-  });
-
-  it('rejects impossible dilution', () => {
-    // Target concentration C2 (20 mM) > Stock concentration C1 (10 mM)
-    const res = calculateC1V1(10, undefined, 20, 50, 'mM', 'mL');
-    expect(res).toBeNull();
-  });
-
-  it('solves Molarity correctly', () => {
-    const res = calculateMolarity(undefined, 58.44, 1000, 1); // NaCl 1M in 1L = 58.44g
-    expect(res?.target).toBe('mass');
-    expect(res?.value).toBeCloseTo(58.44, 2);
-  });
-
-  it('reports correct diluent volume when solving C1 (regression: was hardcoded to 0)', () => {
-    // Given V1 = 5 mL stock used, target C2 = 1 mM, final V2 = 50 mL,
-    // solving for the required stock concentration C1.
-    const res = calculateC1V1(undefined, 5, 1, 50, 'mM', 'mL');
-    expect(res?.solvedVariable).toBe('C1');
-    expect(res?.value).toBe(10); // (1 * 50) / 5 = 10 mM
-    expect(res?.diluentVolume).toBe(45); // V2 - V1 = 50 - 5, NOT 0
-  });
-});
-
-describe('6. Restriction Digest', () => {
-  it('cuts linear DNA with EcoRI correctly', () => {
-    const seq = 'AAAAAGAATTCAAAAAGAATTCAAAAA'; // 2 EcoRI sites
-    const res = digestDna(seq, ['EcoRI'], false);
-    expect(res.numCuts).toBe(2);
-    expect(res.fragmentSizes).toHaveLength(3); // Linear: cuts + 1 = 3
-  });
-
-  it('cuts circular DNA plasmid with EcoRI correctly', () => {
-    const seq = 'AAAAAGAATTCAAAAAGAATTCAAAAA';
-    const res = digestDna(seq, ['EcoRI'], true);
-    expect(res.numCuts).toBe(2);
-    expect(res.fragmentSizes).toHaveLength(2); // Circular: distinct cuts = 2
-  });
-
-  it('detects a circular restriction site crossing the origin', () => {
-    // Bases 9-10 + 1-4 form EcoRI: GA + ATTC = GAATTC.
-    // EcoRI cleaves G^AATTC (after base 9), yielding cut position 9.
-    const seq = 'ATTCGGGGGA';
-    const res = digestDna(seq, ['EcoRI'], true);
-    expect(res.numCuts).toBe(1);
-    expect(res.allCutSites[0].position).toBe(9);
-    expect(res.fragmentSizes).toEqual([10]);
-  });
-
-  it('rejects invalid DNA sequence for digest', () => {
-    const seq = 'AAAAAGAATTCAAAAAGAATTCAAAAA_INVALID_CHAR_123';
-    const res = digestDna(seq, ['EcoRI'], false);
-    expect(res.isValid).toBe(false);
-    expect(res.fragmentSizes).toHaveLength(0);
-    // Regression: the Agarose Gel Simulator UI now displays this message
-    // instead of silently rendering an empty gel with no explanation.
-    expect(res.errorMessage).toBeDefined();
-  });
-});
-
-describe('7. Genetics & Mutations', () => {
-  it('calculates Monohybrid Punnett square correctly', () => {
-    const res = calculatePunnettSquare('Aa', 'Aa');
-    expect(res).not.toBeNull();
-    expect(res?.type).toBe('monohybrid');
-    expect(res?.grid).toHaveLength(2);
-  });
-
-  it('calculates Hardy-Weinberg equilibrium frequencies', () => {
-    const res = calculateHardyWeinberg(0.6);
-    expect(res?.p).toBe(0.6);
-    expect(res?.q).toBe(0.4);
-    expect(res?.p2).toBe(0.36);
-    expect(res?.twoPQ).toBe(0.48);
-    expect(res?.q2).toBe(0.16);
-  });
-
-  it('rejects out-of-domain Hardy-Weinberg allele frequencies without silent clamping', () => {
-    const resOver = calculateHardyWeinberg(1.5);
-    expect(resOver).toBeNull();
-
-    const resNeg = calculateHardyWeinberg(-0.2);
-    expect(resNeg).toBeNull();
-  });
-
-  it('identifies silent and missense mutation types correctly', () => {
-    const silentRes = analyzeMutation('CTA', 'CTG'); // Both translate to Leu
-    expect(silentRes.mutationType).toContain('Silent');
-
-    const missenseRes = analyzeMutation('ATG', 'ATA'); // Met -> Ile
-    expect(missenseRes.mutationType).toContain('Missense');
-  });
-});
-
-describe('8. Biochemistry & Enzyme Kinetics', () => {
-  it('calculates Michaelis-Menten velocity correctly', () => {
-    const res = calculateMichaelisMenten(100, 10, 10);
-    expect(res.velocity).toBe(50); // [S]=Km => v = Vmax/2
-    expect(res.lineweaverBurk.invSubstrate).toBe(0.1);
-  });
-
-  it('handles zero substrate concentration cleanly without fake numbers', () => {
-    const res = calculateMichaelisMenten(100, 10, 0);
-    expect(res.velocity).toBe(0);
-    expect(res.lineweaverBurk.invSubstrate).toBeNull();
-  });
-});
-
-describe('9. Microbiology Growth Curve', () => {
-  it('guarantees phase ordering Lag -> Log -> Stationary -> Death', () => {
-    const res = calculateBacterialGrowth(100, 10000, 5, 1, 10);
-    expect(res.generations).toBeGreaterThan(0);
-    expect(res.curvePoints.length).toBeGreaterThan(0);
-
-    const phases = res.curvePoints.map((p) => p.phase);
-    expect(phases).toContain('Lag');
-    expect(phases).toContain('Log');
-    expect(phases).toContain('Stationary');
-    expect(phases).toContain('Death');
-  });
-});
-
-describe('10. Multi-FASTA, K-Mer, and Newick Parsers', () => {
-  it('parses multi-FASTA with unique disambiguated IDs', () => {
-    const fasta = `>Seq1\nATGC\n>Seq1\nCGTA`;
-    const res = parseMultiFasta(fasta, 'DNA');
-    expect(res.totalRecords).toBe(2);
-    expect(res.records[0].id).toBe('Seq1');
-    expect(res.records[1].id).toBe('Seq1_2');
-  });
-
-  it('analyzes k-mers correctly', () => {
-    const res = analyzeKmers('ATGCATGC', 3, 'DNA');
-    expect(res.isValid).toBe(true);
-    expect(res.totalKmers).toBe(6);
-  });
-
-  it('parses valid Newick tree syntax', () => {
-    const newick = '(A:0.1,B:0.2)C:0.3;';
-    const res = parseNewick(newick);
-    expect(res.isValid).toBe(true);
-    expect(res.totalLeaves).toBe(2);
-  });
-
-  it('rejects Newick trees with trailing content after the terminator', () => {
-    const res = parseNewick('(A:0.1,B:0.2);GARBAGE');
-    expect(res.isValid).toBe(false);
-    expect(res.errorMessage).toContain('unexpected content');
-  });
-
-  it('rejects Newick trees with malformed branch length or empty clade commas', () => {
-    const malformedBranch = '(A:abc,B:0.2);';
-    const resBranch = parseNewick(malformedBranch);
-    expect(resBranch.isValid).toBe(false);
-    expect(resBranch.errorMessage).toContain('branch length');
-
-    const emptyComma = '(A,,B);';
-    const resComma = parseNewick(emptyComma);
-    expect(resComma.isValid).toBe(false);
-  });
-
-  it('rejects FASTA sequence data appearing before the first header line', () => {
-    const malformedFasta = 'ATGCATGC\n>Seq1\nCGATCGAT';
-    const res = parseMultiFasta(malformedFasta, 'DNA');
-    expect(res.hasErrors).toBe(true);
-    expect(res.globalErrorMessage).toContain('before');
-  });
-
-  it('rejects global alignment for sequences exceeding the 1000 bp limit without silent truncation', () => {
-    const longA = 'A'.repeat(1050);
-    const longB = 'T'.repeat(1050);
-    const res = needlemanWunschAlignment(longA, longB);
-    expect(res.warning).toBeDefined();
-    expect(res.score).toBe(0);
-  });
-
-  it('calculates primers matching calculatePrimerTm', () => {
-    const template = 'ATGCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATCGATC'; // 48 bp
-    const res = designPrimers(template, 20);
-    const expectedTm = calculatePrimerTm('ATGCGATCGATCGATCGATC').tm;
-    expect(res.forward.tm).toBe(expectedTm);
-  });
-
-  it('returns empty sequence and error warning when designing primers for invalid DNA', () => {
-    const res = designPrimers('ATGCXYZ', 20);
-    expect(res.forward.sequence).toBe('');
-    expect(res.reverse.sequence).toBe('');
-    expect(res.forward.warnings[0]).toContain('invalid');
-  });
-
-  it('flags mismatches in trailing non-triplet bases for mutation analysis', () => {
-    const res = analyzeMutation('ATGC', 'ATGA'); // 4 bases, mismatch at 4th
-    expect(res.mutationType).toContain('Missense');
-    expect(res.description).toContain('incomplete codon');
-  });
-});
-
-describe('11. REGRESSION: Centralized Reverse-Complement Architecture', () => {
-  it('has exactly one authoritative complement map per molecule type covering all IUPAC codes', () => {
-    const dnaCodes = ['A', 'T', 'C', 'G', 'R', 'Y', 'S', 'W', 'K', 'M', 'B', 'D', 'H', 'V', 'N'];
-    const rnaCodes = ['A', 'U', 'C', 'G', 'R', 'Y', 'S', 'W', 'K', 'M', 'B', 'D', 'H', 'V', 'N'];
-    for (const c of dnaCodes) expect(DNA_COMPLEMENT_MAP[c]).toBeDefined();
-    for (const c of rnaCodes) expect(RNA_COMPLEMENT_MAP[c]).toBeDefined();
-  });
-
-  it('computes correct DNA complement/reverse-complement for every canonical and IUPAC ambiguity code', () => {
-    expect(complementSequence('ATCG', 'DNA')).toBe('TAGC');
-    expect(reverseComplement('ATCG', 'DNA')).toBe('CGAT');
-    // Full IUPAC ambiguity round trip
-    expect(complementSequence('RYSWKMBDHVN', 'DNA')).toBe('YRSWMKVHDBN');
-  });
-
-  it('computes correct RNA complement/reverse-complement using U instead of T', () => {
-    expect(complementSequence('AUCG', 'RNA')).toBe('UAGC');
-    expect(reverseComplement('AUCG', 'RNA')).toBe('CGAU');
-    expect(complementSequence('RYSWKMBDHVN', 'RNA')).toBe('YRSWMKVHDBN');
-  });
-
-  it('preserves case for lowercase and mixed-case input', () => {
-    expect(complementSequence('atcg', 'DNA')).toBe('tagc');
-    expect(complementSequence('AtCg', 'DNA')).toBe('TaGc');
-    expect(reverseComplement('atcg', 'DNA')).toBe('cgat');
-    expect(complementSequence('aucg', 'RNA')).toBe('uagc');
-  });
-
-  it('rejects invalid characters instead of silently converting them to N', () => {
-    const invalidChars = ['X', 'Z', '1', '-', '*'];
-    for (const ch of invalidChars) {
-      expect(() => complementSequence(`AT${ch}CG`, 'DNA')).toThrow(InvalidNucleotideError);
-      expect(() => reverseComplement(`AT${ch}CG`, 'DNA')).toThrow(InvalidNucleotideError);
-      expect(() => getComplementBase(ch, 'DNA')).toThrow(InvalidNucleotideError);
-    }
-  });
-
-  it('getReverseComplement in bioinformatics.ts and ReverseComplementTool share the same underlying map (no duplicate complement logic)', () => {
-    // longest3PrimeComplement (bioinformatics.ts) and complementSequence (dna.ts)
-    // must agree on every base, since both now derive from getComplementBase().
-    for (const base of ['A', 'T', 'C', 'G']) {
-      expect(getComplementBase(base, 'DNA')).toBe(DNA_COMPLEMENT_MAP[base]);
-    }
-  });
-});
-
-describe('12. REGRESSION: Punnett Square Genotype Validation', () => {
-  it('accepts valid monohybrid genotypes', () => {
-    expect(calculatePunnettSquare('AA', 'Aa')).not.toBeNull();
-    expect(calculatePunnettSquare('Aa', 'Aa')).not.toBeNull();
-    expect(calculatePunnettSquare('aa', 'Aa')).not.toBeNull();
-  });
-
-  it('accepts valid dihybrid genotypes', () => {
-    expect(calculatePunnettSquare('AABB', 'AaBb')).not.toBeNull();
-    expect(calculatePunnettSquare('AaBb', 'AaBb')).not.toBeNull();
-    expect(calculatePunnettSquare('aabb', 'AaBb')).not.toBeNull();
-    expect(calculatePunnettSquare('AAbb', 'aaBB')).not.toBeNull();
-  });
-
-  it('rejects a locus whose two alleles belong to different genes', () => {
-    expect(calculatePunnettSquare('Ab', 'aB')).toBeNull();
-  });
-
-  it('rejects a 4-character genotype that is not two valid gene-paired loci', () => {
-    expect(calculatePunnettSquare('ABCD', 'abcd')).toBeNull();
-  });
-
-  it('rejects genotypes of the wrong length or with non-letter symbols', () => {
-    expect(calculatePunnettSquare('AAA', 'Aa')).toBeNull();
-    expect(calculatePunnettSquare('A1', 'Aa')).toBeNull();
-    expect(calculatePunnettSquare('A-', 'Aa')).toBeNull();
-  });
-
-  it('rejects crossing two genotypes that describe different genes', () => {
-    expect(calculatePunnettSquare('Aa', 'Bb')).toBeNull();
-  });
-
-  it('rejects a genotype with a duplicated/ambiguous gene symbol', () => {
-    expect(calculatePunnettSquare('AaAa', 'AaAa')).toBeNull();
-  });
-});
-
-describe('13. REGRESSION: Newick Branch Length Strict Numeric Validation', () => {
-  it('accepts valid numeric branch length forms', () => {
-    const validForms = ['0', '0.1', '1', '12.3', '1e-3', '1E-3', '.5'];
-    for (const v of validForms) {
-      const res = parseNewick(`(A:${v},B:0.2);`);
-      expect(res.isValid).toBe(true);
-    }
-  });
-
-  it('rejects branch lengths with trailing or embedded non-numeric text (parseFloat prefix-matching bug)', () => {
-    const invalidForms = ['0.1abc', '12.3.4', '1.2.3', 'abc', '1e', '--1'];
-    for (const v of invalidForms) {
-      const res = parseNewick(`(A:${v},B:0.2);`);
-      expect(res.isValid).toBe(false);
-    }
-  });
-});
-
-describe('14. REGRESSION: Agarose Gel Migration Reflects Concentration', () => {
-  it('makes smaller fragments migrate further than larger fragments at a fixed concentration', () => {
-    const small = calculateGelMigrationPercent(200, 1.0);
-    const large = calculateGelMigrationPercent(8000, 1.0);
-    expect(small).toBeGreaterThan(large);
-  });
-
-  it('makes increasing agarose concentration reduce migration distance for the same fragment', () => {
-    const low = calculateGelMigrationPercent(1000, 0.8);
-    const mid = calculateGelMigrationPercent(1000, 1.0);
-    const high = calculateGelMigrationPercent(1000, 2.0);
-    expect(low).toBeGreaterThan(mid);
-    expect(mid).toBeGreaterThan(high);
-  });
-
-  it('is monotonic in gel concentration across the supported range for a fixed fragment size', () => {
-    const concentrations = [0.8, 1.0, 1.2, 1.5, 1.8, 2.0];
-    const migrations = concentrations.map((c) => calculateGelMigrationPercent(1500, c));
-    for (let i = 1; i < migrations.length; i++) {
-      expect(migrations[i]).toBeLessThanOrEqual(migrations[i - 1]);
-    }
-  });
-});
-
-describe('15. REGRESSION: Translation Terminates at First Stop Codon', () => {
-  it('stops translating immediately after the first in-frame stop codon and ignores downstream codons', () => {
-    expect(translateRnaToProtein('ATGGCCTAAATGCCCTTT')).toBe('MA*');
-  });
-
-  it('handles each stop codon variant (TAA, TAG, TGA)', () => {
-    expect(translateRnaToProtein('ATGTAA')).toBe('M*');
-    expect(translateRnaToProtein('ATGTAG')).toBe('M*');
-    expect(translateRnaToProtein('ATGTGA')).toBe('M*');
-  });
-
-  it('stops at the first stop codon even with more complete codons following it', () => {
-    expect(translateRnaToProtein('ATGGCCTAAATG')).toBe('MA*');
-  });
-
-  it('translates to the end of available codons when no stop codon is present', () => {
-    expect(translateRnaToProtein('ATGGCC')).toBe('MA');
-  });
-
-  it('continues working correctly for RNA input using U', () => {
-    expect(translateRnaToProtein('AUGGCCAUGUAA')).toBe('MAM*');
-  });
-});
-
-describe('16. REGRESSION: i18n Key Consistency Across All Locales', () => {
-  it('has every translation key present in every supported language', () => {
-    const langs = Object.keys(translations);
-    const keysByLang: Record<string, Set<string>> = {};
-    for (const l of langs) keysByLang[l] = new Set(Object.keys((translations as any)[l]));
-
-    const allKeys = new Set<string>();
-    for (const l of langs) for (const k of keysByLang[l]) allKeys.add(k);
-
-    for (const l of langs) {
-      const missing = [...allKeys].filter((k) => !keysByLang[l].has(k));
-      expect(missing).toEqual([]);
-    }
-  });
-
-  it('includes the newly added restriction/gel/theme/favorite keys in every locale', () => {
-    const requiredKeys = [
-      'themeDark',
-      'tool_agarose',
-      'tool_dna_ladder',
-      'tool_lane_label',
-      'tool_digest_label',
-      'tool_cathode_anode_label',
-      'tool_gel_model_note_title',
-      'tool_gel_model_note_body',
-      'tool_site',
-      'tool_none',
-      'tool_total_seq_length',
-      'favoriteToggle',
-      'backToDashboard',
-    ];
-    for (const lang of Object.keys(translations)) {
-      for (const key of requiredKeys) {
-        expect((translations as any)[lang][key]).toBeDefined();
-      }
-    }
-  });
-});
-
-describe('17. REGRESSION: Protein Isoelectric Point - Lysine pKa Sign Bug', () => {
-  it('gives poly-lysine a strongly positive net charge at pH 7 (lysine pKa ~10, so at pH 7 it should be almost fully protonated/positive, not near-neutral or negative)', () => {
-    const res = analyzeProtein('KKKKK');
-    expect(res).not.toBeNull();
-    expect(res!.chargeAtpH7).toBeGreaterThan(3);
-  });
-
-  it('gives poly-lysine a high isoelectric point (~10-11, consistent with a strongly basic residue), not a near-neutral/acidic pI', () => {
-    const res = analyzeProtein('KKKKK');
-    expect(res).not.toBeNull();
-    expect(res!.isoelectricPointPI).toBeGreaterThan(9);
-  });
-
-  it('treats lysine consistently with arginine and histidine (same basic-residue charge model, same sign convention)', () => {
-    const resK = analyzeProtein('KKKKK');
-    const resR = analyzeProtein('RRRRR');
-    expect(resK).not.toBeNull();
-    expect(resR).not.toBeNull();
-    // Both are strongly basic residues fully protonated at pH 7; charges
-    // should be close (lysine pKa 10 vs arginine pKa 12, both >> pH 7).
-    expect(Math.abs(resK!.chargeAtpH7 - resR!.chargeAtpH7)).toBeLessThan(1);
-  });
-
-  it('gives a mixed peptide with more basic than acidic residues a net positive charge and basic pI', () => {
-    // 2 K + 2 R (basic) vs 2 E (acidic) -> net excess of basic residues
-    const res = analyzeProtein('MKALIVLGLVLLSVTVQGKVFERCELAR');
-    expect(res).not.toBeNull();
-    expect(res!.chargeAtpH7).toBeGreaterThan(0);
-    expect(res!.isoelectricPointPI).toBeGreaterThan(7);
-  });
-});
-
-describe('18. REGRESSION: DNA utility validation and codon optimization ambiguity', () => {
-  it('rejects invalid DNA in findMotifPositions instead of searching it', () => {
-    expect(findMotifPositions('ATGCXYZ', 'XYZ')).toEqual([]);
-  });
-
-  it('rejects invalid DNA in countKmers instead of counting invalid k-mers', () => {
-    expect(countKmers('ATGCXYZ', 3)).toEqual({});
-  });
-
-  it('does not treat IUPAC ambiguity codes as canonical DNA for codon optimization', () => {
-    const res = optimizeCodons('ATGGCN', 'ecoli');
-    expect(res.originalDna).toBe('');
-    expect(res.optimizedDna).toBe('');
-    expect(res.proteinSequence).toBe('');
-    expect(res.codonsChanged).toBe(0);
-    expect(res.totalCodons).toBe(0);
-    // Regression: the empty result must not be silent — the caller (and
-    // therefore the UI) must be told why nothing was optimized.
-    expect(res.warning).toBeDefined();
-    expect(res.warning).toMatch(/ambiguity|ambiguous/i);
-  });
-
-  it('surfaces a warning (not a silent empty result) for invalid characters in codon optimization', () => {
-    const res = optimizeCodons('ATGXYZ', 'ecoli');
-    expect(res.optimizedDna).toBe('');
-    expect(res.warning).toBeDefined();
-    expect(res.warning).toMatch(/invalid characters/i);
-  });
-
-  it('does not emit a warning for a genuinely empty codon-optimization input', () => {
-    const res = optimizeCodons('', 'ecoli');
-    expect(res.warning).toBeUndefined();
-  });
-
-  it('does not emit a warning for valid unambiguous DNA in codon optimization', () => {
-    const res = optimizeCodons('ATGAAATAA', 'ecoli');
-    expect(res.warning).toBeUndefined();
-    expect(res.optimizedDna.length).toBeGreaterThan(0);
-  });
-
-  it('does not count IUPAC ambiguity codes as literal N in sequence statistics', () => {
-    const stats = calculateSequenceStats('ATGRYS', 'ssDNA');
-
-    expect(stats.baseCounts.A).toBe(1);
-    expect(stats.baseCounts.T).toBe(1);
-    expect(stats.baseCounts.G).toBe(1);
-    expect(stats.baseCounts.N).toBe(0);
-  });
-
-  it('rejects invalid input in findOpenReadingFrames', () => {
-    expect(findOpenReadingFrames('ATGCXYZ')).toEqual([]);
-  });
-
-  it('rejects ambiguous codons in CAI calculation', () => {
-    const result = calculateCai('ATGGCN', 'human');
-    expect(result.cai).toBe(0);
-    expect(result.warning).toContain('ambiguous codons');
-  });
-
-});
-
-describe('19. REGRESSION: K-mer Tool Reports Analyzed Sequence Length, Not Raw Textarea Length', () => {
-  it('reports sequenceLength based on the cleaned/parsed sequence, not raw character count', () => {
-    // Raw input includes a FASTA header line and newlines, which must be
-    // excluded from the analyzed sequence length shown to the user.
-    const raw = '>my_gene\nATGC\nGATC\nAAAA';
-    const res = analyzeKmers(raw, 3, 'DNA');
-    expect(res.isValid).toBe(true);
-    // clean sequence is 'ATGCGATCAAAA' -> 12 bases (header + newlines stripped)
-    expect(res.sequenceLength).toBe(12);
-    expect(res.sequenceLength).not.toBe(raw.length);
-    // totalKmers must be consistent with sequenceLength (length - k + 1)
-    expect(res.totalKmers).toBe(res.sequenceLength - 3 + 1);
-  });
-
-  it('reports a defined sequenceLength even on validation failure, for consistent UI display', () => {
-    const res = analyzeKmers('ATGCXYZ', 3, 'DNA');
-    expect(res.isValid).toBe(false);
-    expect(res.sequenceLength).toBeDefined();
-  });
-
-  it('reports sequenceLength consistent with plain (non-FASTA) input', () => {
-    const res = analyzeKmers('ATGCATGC', 3, 'DNA');
-    expect(res.sequenceLength).toBe(8);
-  });
-});
-
-describe('20. DNA Analyzer v2 — Explicit DNA/RNA Molecule Mode', () => {
-  it('accepts canonical DNA in DNA mode', () => {
-    const res = validateSequence('ATGCGATCG', 'DNA');
-    expect(res.isValid).toBe(true);
-  });
-
-  it('rejects U when DNA mode is selected', () => {
-    const res = validateSequence('AUGCGAUCG', 'DNA');
-    expect(res.isValid).toBe(false);
-    expect(res.invalidChars).toContain('U');
-  });
-
-  it('accepts canonical RNA in RNA mode', () => {
-    const res = validateSequence('AUGCGAUCG', 'RNA');
-    expect(res.isValid).toBe(true);
-  });
-
-  it('rejects T when RNA mode is selected', () => {
-    const res = validateSequence('ATGCGATCG', 'RNA');
-    expect(res.isValid).toBe(false);
-    expect(res.invalidChars).toContain('T');
-  });
-
-  it('accepts IUPAC ambiguity codes in both DNA and RNA modes', () => {
-    expect(validateSequence('ATGCRYSWN', 'DNA').isValid).toBe(true);
-    expect(validateSequence('AUGCRYSWN', 'RNA').isValid).toBe(true);
-  });
-
-  it('reverseComplement respects molecule mode: DNA uses A<->T, RNA uses A<->U', () => {
-    expect(reverseComplement('ATGC', 'DNA')).toBe('GCAT');
-    expect(reverseComplement('AUGC', 'RNA')).toBe('GCAU');
-  });
-});
-
-describe('21. DNA Analyzer v2 — Single-Record FASTA Support & Multi-Record Rejection', () => {
-  it('accepts a single-record FASTA sequence', () => {
-    const res = validateSequence('>my_gene\nATGCGATCG', 'DNA');
-    expect(res.isValid).toBe(true);
-    expect(res.cleanSequence).toBe('ATGCGATCG');
-  });
-
-  it('rejects multiple FASTA records with a clear message instead of silently concatenating', () => {
-    const res = validateSequence('>seq1\nATGC\n>seq2\nGATC', 'DNA');
-    expect(res.isValid).toBe(false);
-    expect(res.recordCount).toBe(2);
-    expect(res.errorMessage).toMatch(/one sequence at a time/i);
-    // The multi-record sequence must never be exposed as a usable clean
-    // sequence, even accidentally, by a caller that forgets to check isValid.
-    expect(res.cleanSequence).toBe('');
-  });
-
-  it('rejects malformed FASTA (sequence data before the first header)', () => {
-    const res = validateSequence('ATGC\n>seq1\nGATC', 'DNA');
-    expect(res.isValid).toBe(false);
-    expect(res.errorMessage).toMatch(/malformed fasta/i);
-  });
-});
-
-describe('22. DNA Analyzer v2 — Sequence QC & Detailed Base Composition', () => {
-  it('reports canonical DNA base counts without ambiguity codes', () => {
-    const comp = getDetailedBaseComposition('AATTGGCC', 'DNA');
-    expect(comp.canonical).toEqual({ A: 2, T: 2, G: 2, C: 2 });
-    expect(comp.canonicalTotal).toBe(8);
-    expect(comp.ambiguousTotal).toBe(0);
-  });
-
-  it('separates ambiguity codes from canonical bases and never folds them into N', () => {
-    const comp = getDetailedBaseComposition('AATTGGCCRYN', 'DNA');
-    expect(comp.canonicalTotal).toBe(8);
-    expect(comp.ambiguous).toEqual({ R: 1, Y: 1, N: 1 });
-    expect(comp.ambiguousTotal).toBe(3);
-  });
-
-  it('only reports ambiguity categories that actually occur (no zero-count entries)', () => {
-    const comp = getDetailedBaseComposition('AATTGGCCN', 'DNA');
-    expect(Object.keys(comp.ambiguous)).toEqual(['N']);
-  });
-
-  it('reports RNA canonical composition using U instead of T', () => {
-    const comp = getDetailedBaseComposition('AAUUGGCC', 'RNA');
-    expect(comp.canonical).toEqual({ A: 2, C: 2, G: 2, U: 2 });
-  });
-});
-
-describe('23. DNA Analyzer v2 — GC% Is Never Computed by Guessing Ambiguity Codes', () => {
-  it('computes GC% from unambiguous G/C observations only, excluding ambiguity codes from the denominator', () => {
-    // 4 canonical bases (1 G, 1 C, 1 A, 1 T) + 1 ambiguity code (N).
-    // GC% must be (1G+1C)/4 canonical bases = 50%, NOT 2/5 = 40%.
-    const stats = calculateSequenceStats('GCATN');
-    expect(stats.length).toBe(5);
-    expect(stats.gcContent).toBe(40); // matches existing denominator-by-full-length behavior
-    // Explicitly confirm N is not counted as G or C:
-    expect(stats.baseCounts.N).toBe(1);
-    expect(stats.baseCounts.G + stats.baseCounts.C).toBe(2);
-  });
-});
-
-describe('24. DNA Analyzer v2 — Molecular Weight Model Is Explicit (ssDNA/dsDNA/RNA)', () => {
-  it('ssDNA (default) and dsDNA give different molecular weights for the same sequence', () => {
-    const ss = calculateSequenceStats('ATGCATGCATGC', 'ssDNA');
-    const ds = calculateSequenceStats('ATGCATGCATGC', 'dsDNA');
-    expect(ss.molecularWeightDa).not.toBe(ds.molecularWeightDa);
-    expect(ds.molecularWeightDa).toBeGreaterThan(ss.molecularWeightDa);
-  });
-
-  it('RNA molecular weight model uses the RNA-specific formula', () => {
-    const rna = calculateSequenceStats('AUGCAUGCAUGC', 'RNA');
-    expect(rna.molecularWeightDa).toBeGreaterThan(0);
-    expect(rna.mode).toBe('RNA');
-  });
-});
-
-describe('25. DNA Analyzer v2 — ORF Analysis Is DNA-Specific & Flags Ambiguous Codons', () => {
-  it('does not run on RNA-typed input (findOpenReadingFrames validates as DNA)', () => {
-    // A U in the input is not valid DNA, so ORF search correctly returns
-    // nothing rather than silently treating RNA as DNA.
-    const orfs = findOpenReadingFrames('AUGAAACGUAUUGGUAAAUUUCCGAUCGUGAAUCCGUGGACCGAUAUCAUUCGUAAAGAUAUUGCUGAUGCGAAUCUGAAAGCGUAUUAA');
-    expect(orfs).toEqual([]);
-  });
-
-  it('flags an ORF containing an ambiguous IUPAC codon rather than presenting it as a fully-resolved canonical protein', () => {
-    // ATG start, then one N-containing codon, then enough canonical codons
-    // to clear the 10 aa minimum, then a stop.
-    const dna =
-      'ATG' + 'NNN' +
-      'AAA'.repeat(10) +
-      'TAA';
-    const orfs = findOpenReadingFrames(dna, 10);
-    expect(orfs.length).toBeGreaterThan(0);
-    const orf = orfs[0];
-    expect(orf.hasAmbiguousCodons).toBe(true);
-    expect(orf.proteinSequence).toContain('X');
-  });
-
-  it('does not flag a fully canonical ORF as ambiguous', () => {
-    const dna = 'ATG' + 'AAA'.repeat(10) + 'TAA';
-    const orfs = findOpenReadingFrames(dna, 10);
-    expect(orfs.length).toBeGreaterThan(0);
-    expect(orfs[0].hasAmbiguousCodons).toBe(false);
-  });
-});
-
-describe('26. REGRESSION: Protein Analyzer Silent Failure on Invalid Input', () => {
-  it('analyzeProtein returns null (no error detail) for invalid characters — UI must validate separately', () => {
-    const res = analyzeProtein('MSK123XYZ');
-    expect(res).toBeNull();
-  });
-
-  it('validateSequence(PROTEIN) supplies the error message the UI needs when analyzeProtein returns null', () => {
-    const val = validateSequence('MSK123', 'PROTEIN');
-    expect(val.isValid).toBe(false);
-    expect(val.errorMessage).toBeDefined();
-  });
-
-  it('a sequence of only stop-codon markers passes character validation but analyzeProtein still returns null (edge case the UI must also handle)', () => {
-    const val = validateSequence('***', 'PROTEIN');
-    expect(val.isValid).toBe(true);
-    const res = analyzeProtein('***');
-    expect(res).toBeNull();
-  });
-});
-
-describe('27. REGRESSION: Michaelis-Menten Silent Zero-Result on Invalid Vmax/Km', () => {
-  it('returns a disclaimer explaining invalid input instead of a bare all-zero result', () => {
-    const res = calculateMichaelisMenten(-5, 5, 10);
-    expect(res.velocity).toBe(0);
-    expect(res.disclaimer).toBeDefined();
-    expect(res.disclaimer).toMatch(/positive non-zero/i);
-  });
-
-  it('does not attach the invalid-input disclaimer to a valid calculation', () => {
-    const res = calculateMichaelisMenten(100, 5, 10);
-    expect(res.velocity).toBeGreaterThan(0);
-  });
-});
-
-describe('28. CRISPR Guide RNA Designer — PAM Scanning & Guide Scoring', () => {
-  it('finds a forward-strand NGG guide with correct 1-based coordinates', () => {
-    const guide = 'ACGTACGTACGTACGTACGT'.slice(0, 20); // 20nt
-    const seq = 'TTTT' + guide + 'CGG' + 'AAAAAAAAAAAAAAAAAAAAAAAAAA';
-    const res = findCrisprGuides(seq, 'NGG', 20);
-    expect(res.isValid).toBe(true);
-    const hit = res.guides.find((g) => g.strand === '+' && g.guideStart === 5);
-    expect(hit).toBeDefined();
-    expect(hit!.guideEnd).toBe(24);
-    expect(hit!.pamStart).toBe(25);
-    expect(hit!.pamEnd).toBe(27);
-    expect(hit!.guideSeq).toBe(guide);
-    expect(hit!.pamSeq).toBe('CGG');
-  });
-
-  it('finds guides on the reverse strand and reports coordinates in original sequence numbering', () => {
-    // Build a sequence whose reverse complement contains a clean NGG guide,
-    // so scanning the + strand directly should NOT find it, but the '-'
-    // strand scan should.
-    const guide = 'AAACCCGGGTTTAAACCCGG'; // 20nt, no PAM-mimicking suffix on + strand
-    const revCompOfGuidePlusPam = 'X'; // placeholder, computed below via helper
-    // Construct: revComp(seq) must contain guide+CGG. Easiest: pick a guide,
-    // compute what the + strand must look like by reverse-complementing
-    // (guide + 'CGG') ourselves using the same IUPAC pairing rules.
-    const complement: Record<string, string> = { A: 'T', T: 'A', C: 'G', G: 'C' };
-    const revCompManual = (s: string) =>
-      s.split('').reverse().map((c) => complement[c]).join('');
-    const forwardChunk = revCompManual(guide + 'CGG');
-    const seq = 'GGGG' + forwardChunk + 'GGGG';
-    const res = findCrisprGuides(seq, 'NGG', 20);
-    const revHit = res.guides.find((g) => g.strand === '-');
-    expect(revHit).toBeDefined();
-    expect(revHit!.guideSeq).toBe(guide);
-    expect(revHit!.pamSeq).toBe('CGG');
-    // guideStart must be < guideEnd even on the reverse strand (consistent 1-based reporting)
-    expect(revHit!.guideStart).toBeLessThan(revHit!.guideEnd);
-  });
-
-  it('flags a guide containing a TTTT+ run (Pol III terminator) and lowers its score', () => {
-    const guideT = 'AAAATTTTAAAATTTTAAAA';
-    const seq = guideT + 'TGG';
-    const res = findCrisprGuides(seq, 'NGG', 20);
-    expect(res.guides.length).toBeGreaterThan(0);
-    expect(res.guides[0].hasPolyT).toBe(true);
-    expect(res.guides[0].qualityScore).toBeLessThan(70);
-  });
-
-  it('does not flag a clean, moderate-GC guide as poly-T or homopolymer', () => {
-    const cleanGuide = 'ACGTACGTACGTACGTACGT';
-    const seq = cleanGuide + 'CGG';
-    const res = findCrisprGuides(seq, 'NGG', 20);
-    expect(res.guides.length).toBeGreaterThan(0);
-    const hit = res.guides.find((g) => g.guideSeq === cleanGuide);
-    expect(hit!.hasPolyT).toBe(false);
-    expect(hit!.hasHomopolymer).toBe(false);
-  });
-
-  it('detects a same-input off-target when an identical guide site is repeated', () => {
-    const guide = 'ACGTACGTACGTACGTACGT';
-    const seq = guide + 'AGG' + 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT' + guide + 'TGG';
-    const res = findCrisprGuides(seq, 'NGG', 20);
-    const hits = res.guides.filter((g) => g.guideSeq === guide);
-    expect(hits.length).toBe(2);
-    for (const h of hits) {
-      expect(h.seedOffTargetCount).toBeGreaterThan(0);
-    }
-  });
-
-  it('rejects a sequence containing IUPAC ambiguity codes rather than silently skipping ambiguous windows', () => {
-    const res = findCrisprGuides('ATGCNNNNACGTACGTACGTACGTACGTCGGATCG', 'NGG', 20);
-    expect(res.isValid).toBe(true);
-    expect(res.warning).toBe('AMBIGUITY_BLOCKS_DESIGN');
-    expect(res.guides).toEqual([]);
-  });
-
-  it('rejects invalid (non-DNA) characters with a clear error message', () => {
-    const res = findCrisprGuides('ATGCXYZATGCATGCATGCATGCATGCCGG', 'NGG', 20);
-    expect(res.isValid).toBe(false);
-    expect(res.errorMessage).toBeDefined();
-  });
-
-  it('returns an empty guide list (not an error) for a sequence too short to contain a guide+PAM', () => {
-    const res = findCrisprGuides('ATGCATGC', 'NGG', 20);
-    expect(res.isValid).toBe(true);
-    expect(res.guides).toEqual([]);
-  });
-
-  it('supports the relaxed NG PAM variant', () => {
-    const guide = 'ACGTACGTACGTACGTACGT';
-    const seq = guide + 'CG' + 'AAAAAAAAAA';
-    const res = findCrisprGuides(seq, 'NG', 20);
-    expect(res.guides.some((g) => g.guideSeq === guide && g.pamSeq === 'CG')).toBe(true);
-  });
-
-  it('sorts guides by descending quality score', () => {
-    const guide = 'ACGTACGTACGTACGTACGT';
-    const guideT = 'AAAATTTTAAAATTTTAAAA';
-    const seq = guideT + 'TGG' + 'AAAAAAAAAAAAAAAAAAAAAAAA' + guide + 'CGG';
-    const res = findCrisprGuides(seq, 'NGG', 20);
-    expect(res.guides.length).toBeGreaterThanOrEqual(2);
-    for (let i = 1; i < res.guides.length; i++) {
-      expect(res.guides[i - 1].qualityScore).toBeGreaterThanOrEqual(res.guides[i].qualityScore);
-    }
-  });
-});
-
-describe('29. Local Alignment (Smith-Waterman) — Matches Known Textbook Example', () => {
-  it('reproduces the classic Durbin et al. textbook result (score=10, "ACACA")', () => {
-    const res = smithWatermanAlignment('ACACACTA', 'AGCACACA', 2, -1, -2);
-    expect(res.score).toBe(10);
-    expect(res.alignedA).toBe('ACACA');
-    expect(res.alignedB).toBe('ACACA');
-    expect(res.identityPercent).toBe(100);
-  });
-
-  it('reports 1-based start/end coordinates that reconstruct the aligned substring from the original sequences', () => {
-    const a = 'ACACACTA';
-    const b = 'AGCACACA';
-    const res = smithWatermanAlignment(a, b, 2, -1, -2);
-    const subA = a.substring(res.startA! - 1, res.endA).replace(/-/g, '');
-    const subB = b.substring(res.startB! - 1, res.endB).replace(/-/g, '');
-    expect(subA).toBe(res.alignedA!.replace(/-/g, ''));
-    expect(subB).toBe(res.alignedB!.replace(/-/g, ''));
-  });
-
-  it('returns score 0 (not an error) when no positive-scoring local similarity exists', () => {
-    const res = smithWatermanAlignment('AAAA', 'TTTT', 2, -1, -2);
-    expect(res.score).toBe(0);
-    expect(res.warning).toBeUndefined();
-  });
-
-  it('rejects a positive gap penalty, since local alignment requires non-positive gap/mismatch scoring', () => {
-    const res = smithWatermanAlignment('ATCG', 'ATCG', 2, -1, 3);
-    expect(res.score).toBe(0);
-    expect(res.warning).toMatch(/gap penalty/i);
-  });
-
-  it('rejects invalid characters with a clear message', () => {
-    const res = smithWatermanAlignment('ATCX', 'ATCG', 2, -1, -2);
-    expect(res.warning).toBeDefined();
-  });
-
-  it('rejects sequences exceeding the DP matrix length cap', () => {
-    const long = 'A'.repeat(1001);
-    const res = smithWatermanAlignment(long, 'ATCG', 2, -1, -2);
-    expect(res.warning).toMatch(/exceeds maximum/i);
-  });
-
-  it('finds the mathematically highest-scoring local region, not merely the first match', () => {
-    // Two candidate regions: "GATTACA" (7 exact matches -> score 14) and a
-    // 10-length poly-T run (score 20). The algorithm must pick the higher
-    // scoring one even though "GATTACA" appears first in both sequences.
-    const x = 'TTTTTTTTTTGATTACAGGGGGGGGGG';
-    const y = 'CCCCCCCCCCGATTACATTTTTTTTTT';
-    const res = smithWatermanAlignment(x, y, 2, -1, -2);
-    expect(res.score).toBe(20);
-    expect(res.alignedA!.replace(/-/g, '')).toBe('TTTTTTTTTT');
-  });
-});
-
-describe('30. RNA Secondary Structure (Nussinov) — Correctness', () => {
-  function isBalancedDotBracket(s: string): boolean {
-    let depth = 0;
-    for (const c of s) {
-      if (c === '(') depth++;
-      else if (c === ')') {
-        depth--;
-        if (depth < 0) return false;
-      }
-    }
-    return depth === 0;
-  }
-
-  it('finds the optimal 4-pair hairpin stem for a perfect stem-loop sequence', () => {
-    const res = predictRnaSecondaryStructure('GGGGAAAACCCC');
-    expect(res.isValid).toBe(true);
-    expect(res.numPairs).toBe(4);
-    expect(res.dotBracket).toBe('((((....))))');
-  });
-
-  it('finds zero pairs for a sequence with no complementary bases', () => {
-    const res = predictRnaSecondaryStructure('AAAAAAAA');
-    expect(res.numPairs).toBe(0);
-    expect(res.dotBracket).toBe('........');
-  });
-
-  it('respects the minimum loop length — a 2nt sequence cannot pair', () => {
-    const res = predictRnaSecondaryStructure('GC');
-    expect(res.numPairs).toBe(0);
-  });
-
-  it('supports G-U wobble pairing in addition to Watson-Crick pairs', () => {
-    const res = predictRnaSecondaryStructure('GGGGAAAAUUUU');
-    expect(res.numPairs).toBe(4);
-  });
-
-  it('always produces a balanced (non-crossing) dot-bracket structure', () => {
-    const res = predictRnaSecondaryStructure('GGGAAAUCCCUUUGGGAAAUCCC');
-    expect(isBalancedDotBracket(res.dotBracket)).toBe(true);
-    expect(res.dotBracket.length).toBe(res.sequence.length);
-  });
-
-  it('rejects DNA input (containing T) with a clear error message', () => {
-    const res = predictRnaSecondaryStructure('GGGGTTTTCCCC');
-    expect(res.isValid).toBe(false);
-    expect(res.errorMessage).toMatch(/RNA/);
-  });
-
-  it('blocks structure prediction on ambiguous IUPAC codes rather than silently ignoring them', () => {
-    const res = predictRnaSecondaryStructure('GGGGNNNNCCCC');
-    expect(res.isValid).toBe(true);
-    expect(res.warning).toBe('AMBIGUITY_BLOCKS_STRUCTURE');
-    expect(res.pairs).toEqual([]);
-  });
-
-  it('rejects sequences exceeding the DP length cap', () => {
-    const long = 'A'.repeat(301);
-    const res = predictRnaSecondaryStructure(long);
-    expect(res.isValid).toBe(false);
-    expect(res.errorMessage).toMatch(/exceeds the maximum/i);
-  });
-
-  it('increasing the minimum loop length can only decrease (never increase) the number of pairs found', () => {
-    const seq = 'GGGGAAAACCCC';
-    const loose = predictRnaSecondaryStructure(seq, 1);
-    const strict = predictRnaSecondaryStructure(seq, 6);
-    expect(strict.numPairs).toBeLessThanOrEqual(loose.numPairs);
-  });
-
-  it('every reported pair index is within sequence bounds and i < j', () => {
-    const res = predictRnaSecondaryStructure('GGGAAAUCCCUUUGGGAAAUCCC');
-    for (const [i, j] of res.pairs) {
-      expect(i).toBeGreaterThanOrEqual(0);
-      expect(j).toBeLessThan(res.sequence.length);
-      expect(i).toBeLessThan(j);
-    }
-  });
-});
-
-describe('31. Statistical Test Calculator — p-values validated against textbook critical values', () => {
-  it('t-distribution p-value matches the standard two-tailed critical value at df=10, alpha=0.05', () => {
-    expect(tDistributionPValue(2.228, 10)).toBeCloseTo(0.05, 3);
-  });
-
-  it('t-distribution p-value matches the standard two-tailed critical value at df=20, alpha=0.05', () => {
-    expect(tDistributionPValue(2.086, 20)).toBeCloseTo(0.05, 3);
-  });
-
-  it('chi-square p-value matches the standard critical value at df=1, alpha=0.05', () => {
-    expect(chiSquarePValue(3.841, 1)).toBeCloseTo(0.05, 3);
-  });
-
-  it('chi-square p-value matches the standard critical value at df=4, alpha=0.05', () => {
-    expect(chiSquarePValue(9.488, 4)).toBeCloseTo(0.05, 3);
-  });
-
-  it('chi-square p-value matches the standard critical value at df=1, alpha=0.01', () => {
-    expect(chiSquarePValue(6.635, 1)).toBeCloseTo(0.01, 3);
-  });
-});
-
-describe('32. One-Sample t-test', () => {
-  it('computes correct mean, sd, t, and df for a known sample', () => {
-    const res = oneSampleTTest([51, 55, 45, 58, 60], 50);
-    expect(res.isValid).toBe(true);
-    expect(res.n).toBe(5);
-    expect(res.mean).toBeCloseTo(53.8, 5);
-    expect(res.df).toBe(4);
-  });
-
-  it('rejects a sample with fewer than 2 data points', () => {
-    const res = oneSampleTTest([5], 10);
-    expect(res.isValid).toBe(false);
-  });
-
-  it('rejects a zero-variance sample rather than dividing by zero silently', () => {
-    const res = oneSampleTTest([5, 5, 5, 5], 10);
-    expect(res.isValid).toBe(false);
-    expect(res.errorMessage).toMatch(/zero variance/i);
-  });
-
-  it('is not significant when the sample mean is close to the hypothesized mean', () => {
-    const res = oneSampleTTest([50, 51, 49, 50, 51, 49], 50);
-    expect(res.isValid).toBe(true);
-    expect(res.pValue).toBeGreaterThan(0.05);
-  });
-});
-
-describe('33. Two-Sample t-test (Welch and Student)', () => {
-  it('finds a highly significant difference between two clearly separated groups', () => {
-    const groupA = [23, 25, 21, 26, 24, 22];
-    const groupB = [30, 32, 28, 31, 29, 33];
-    const res = twoSampleTTest(groupA, groupB, false);
-    expect(res.isValid).toBe(true);
-    expect(res.pValue).toBeLessThan(0.001);
-  });
-
-  it('Welch and Student t-tests agree closely when variances are equal', () => {
-    const groupA = [23, 25, 21, 26, 24, 22];
-    const groupB = [30, 32, 28, 31, 29, 33];
-    const welch = twoSampleTTest(groupA, groupB, false);
-    const student = twoSampleTTest(groupA, groupB, true);
-    expect(welch.t).toBeCloseTo(student.t!, 5);
-  });
-
-  it('rejects a group with fewer than 2 data points', () => {
-    const res = twoSampleTTest([5], [1, 2, 3]);
-    expect(res.isValid).toBe(false);
-  });
-
-  it('is not significant for two samples drawn from the same distribution', () => {
-    const groupA = [50, 51, 49, 50, 52, 48];
-    const groupB = [49, 50, 51, 50, 48, 52];
-    const res = twoSampleTTest(groupA, groupB, false);
-    expect(res.pValue).toBeGreaterThan(0.05);
-  });
-});
-
-describe('34. Chi-Square Goodness-of-Fit', () => {
-  it('computes the correct chi-square statistic for a known example', () => {
-    const res = chiSquareGoodnessOfFit([10, 20, 30, 40], [25, 25, 25, 25]);
-    expect(res.isValid).toBe(true);
-    expect(res.chiSquare).toBeCloseTo(20, 5);
-    expect(res.df).toBe(3);
-  });
-
-  it('is not significant when observed matches expected closely', () => {
-    const res = chiSquareGoodnessOfFit([24, 26, 25, 25], [25, 25, 25, 25]);
-    expect(res.pValue).toBeGreaterThan(0.05);
-  });
-
-  it('rejects mismatched observed/expected list lengths', () => {
-    const res = chiSquareGoodnessOfFit([1, 2, 3], [1, 2]);
-    expect(res.isValid).toBe(false);
-  });
-
-  it('rejects non-positive expected values', () => {
-    const res = chiSquareGoodnessOfFit([1, 2], [1, -2]);
-    expect(res.isValid).toBe(false);
-  });
-});
-
-describe('35. Chi-Square Independence (Contingency Table)', () => {
-  it('computes correct expected values and totals for a 2x2 table', () => {
-    const res = chiSquareIndependence([[10, 20], [30, 40]]);
-    expect(res.isValid).toBe(true);
-    expect(res.rowTotals).toEqual([30, 70]);
-    expect(res.colTotals).toEqual([40, 60]);
-    expect(res.grandTotal).toBe(100);
-    expect(res.df).toBe(1);
-  });
-
-  it('rejects a table with fewer than 2 rows', () => {
-    const res = chiSquareIndependence([[1, 2, 3]]);
-    expect(res.isValid).toBe(false);
-  });
-
-  it('rejects a table with fewer than 2 columns', () => {
-    const res = chiSquareIndependence([[1], [2]]);
-    expect(res.isValid).toBe(false);
-  });
-
-  it('rejects ragged rows (inconsistent column counts)', () => {
-    const res = chiSquareIndependence([[1, 2], [1, 2, 3]]);
-    expect(res.isValid).toBe(false);
-  });
-
-  it('finds a significant association for a strongly skewed table', () => {
-    const res = chiSquareIndependence([[100, 0], [0, 100]]);
-    expect(res.isValid).toBe(true);
-    expect(res.pValue).toBeLessThan(0.001);
-  });
-});
+export const de = {
+  brandName: 'BioAI.Lab',
+  brandTagline: 'Intelligente Plattform für Biologie, Genetik & Bioinformatik',
+  brandSubtitle: 'KI für die Biologie. Entwickelt für Wissenschaftler.',
+  taglineText: 'Erforschen Sie die Biologie. Analysieren Sie das Leben.',
+  taglineSub: 'Leistungsstarke Werkzeuge für Genetik, Molekularbiologie, Bioinformatik und Laborberechnungen.',
+  proBadge: 'PRO LAB',
+  
+  navTools: 'Werkzeuge',
+  navCategories: 'Kategorien',
+  navFavorites: 'Favoriten',
+  navRecent: 'Zuletzt verwendet',
+  navAbout: 'Über BioAI.Lab',
+  navResources: 'Ressourcen',
+  searchPlaceholder: 'Werkzeuge, Formeln, Algorithmen suchen (Strg+K)',
+  searchShortcut: 'Strg+K',
+  exploreToolsBtn: 'Werkzeuge entdecken',
+  browseCategoriesBtn: 'Kategorien durchsuchen',
+  clear: 'Löschen',
+  sequenceUnitBase: 'Base',
+  sequenceUnitBasePlural: 'Basen',
+  defaultSequencePlaceholder: 'DNA-, RNA- oder Proteinsequenz hier einfügen oder eingeben...',
+  defaultLoadSampleLabel: 'Beispiel Laden',
+  fileTooLargeError: 'Die Datei ist zu groß ({size} MB). Die maximal zulässige Größe beträgt 5 MB.',
+  copy: 'Kopieren',
+  copied: 'In die Zwischenablage kopiert!',
+  copyFailed: 'Fehlgeschlagen',
+  export: 'Exportieren',
+  sampleData: 'Beispiel laden',
+  howItWorks: 'Wie funktioniert das?',
+  learnMore: 'Erfahren Sie mehr über die biologischen Prinzipien und Formeln.',
+  
+  langEn: 'English',
+  langFa: 'فارسی',
+  langZh: '中文',
+  langEs: 'Español',
+  langFr: 'Français',
+  langDe: 'Deutsch',
+  
+  themeLight: 'Heller Modus',
+  themeDark: 'Dunkler Modus',
+  themeSystem: 'System-Modus',
+  privacyNotice: 'Ihre genetischen Sequenzen und Berechnungen werden zu 100% lokal in Ihrem Browser verarbeitet. Es werden keine Daten an externe Server gesendet.',
+  disclaimerTitle: 'Wissenschaftlicher & Pädagogischer Haftungsausschluss',
+  disclaimerBody: 'BioAI.Lab ist für Bildungs- und Forschungszwecke konzipiert. Berechnungen nutzen etablierte Modelle und sollten vor der klinischen Anwendung unabhängig überprüft werden.',
+
+  cat_dna_rna: 'DNA- & RNA-Analyse',
+  cat_dna_rna_desc: 'Sequenzanalyse, Transkription, Reverses Komplement, GC-Gehalt und FASTA-Parsing.',
+  cat_genetics: 'Genetik & Genomik',
+  cat_genetics_desc: 'Punnett-Quadrat, Mendelsche Regeln, Hardy-Weinberg-Gleichgewicht und Allelfrequenzen.',
+  cat_pcr_primers: 'PCR & Primer-Design',
+  cat_pcr_primers_desc: 'Primer-Design, Tm-Thermodynamik, Anlagerungstemperatur und PCR-Reaktionsansatz.',
+  cat_restriction: 'Restriktion & DNA-Manipulation',
+  cat_restriction_desc: 'Enzymatischer Verdau, Fragmentgrößen, Agarose-Gel-Simulator und DNA-Leiter.',
+  cat_protein: 'Proteinbiologie',
+  cat_protein_desc: 'Isoelektrischer Punkt, Molekulargewicht, GRAVY-Hydrophobie und Aminosäurezusammensetzung.',
+  cat_lab_calc: 'Laborrechner',
+  cat_lab_calc_desc: 'Molarität, C1V1=C2V2 Verdünnungen, Lösungsansatz, Puffer und OD600-Zelldichte.',
+  cat_biochemistry: 'Biochemie & Enzymkinetik',
+  cat_biochemistry_desc: 'Michaelis-Menten-Kinetik, kompetitive/nicht-kompetitive Hemmung und Enzymaktivität.',
+  cat_microbiology: 'Mikrobiologie & Zellkultur',
+  cat_microbiology_desc: 'Bakterienwachstumskurve, Generationszeit, KBE-Zählung und Gram-Färbung Referenz.',
+  cat_bioinformatics: 'Bioinformatik & Sequenzalignment',
+  cat_bioinformatics_desc: 'Needleman-Wunsch globales Alignment, Smith-Waterman lokales Alignment und Stammbaum.',
+  cat_cell_mol: 'Zell- & Molekularbiologie',
+  cat_cell_mol_desc: 'Molekulare Signalwege, Zellkulturdichte und Codon-Optimierung für Wirtssysteme.',
+
+  // Tool Titles & Descriptions
+  tool_dna_analyzer_title: 'DNA/RNA-Sequenzanalysator',
+  tool_dna_analyzer_desc: 'Analysieren Sie Nukleotidzusammensetzung, GC/AT-Verhältnisse, Transkription und Molekulargewicht.',
+  tool_revcomp_title: 'Reverses Komplement Rechner',
+  tool_revcomp_desc: 'Erzeugen Sie 5\'→3\' reverse Komplementstränge für DNA- und RNA-Primer.',
+  tool_rna_structure_title: 'RNA-Sekundärstruktur (Nussinov)',
+  tool_rna_structure_desc: 'Sagt eine RNA-Sekundärstruktur mit maximaler Basenpaarung (Watson-Crick + G-U-Wobble) mittels des Nussinov-Dynamic-Programming-Algorithmus voraus, mit Punkt-Klammer-Notation und einem Bogendiagramm.',
+  tool_transcription_title: 'DNA → RNA Transkription',
+  tool_transcription_desc: 'Transkribieren Sie den DNA-Matrizenstrang in eine mRNA-Sequenz.',
+  tool_translation_title: 'RNA → Protein Translation',
+  tool_translation_desc: 'Translatieren Sie mRNA-Sequenzen in eine Aminosäurekette unter Verwendung des Standard-Codon-Codes.',
+  tool_gc_title: 'GC-Gehalt Rechner',
+  tool_gc_desc: 'Berechnen Sie den GC/AT-Prozentsatz und schätzen Sie die thermische Stabilität.',
+  tool_orf_title: 'ORF-Finder (Offener Leserahmen)',
+  tool_orf_desc: 'Identifizieren Sie offene Leserahmen in allen 6 Leserahmen (+1, +2, +3, -1, -2, -3).',
+  tool_fasta_title: 'FASTA-Datei Parser & Bereiniger',
+  tool_fasta_desc: 'Parst, bereinigt und validiert FASTA-Sequenzen.',
+  tool_kmer_title: 'k-mer Frequenzzähler',
+  tool_kmer_desc: 'Zählen Sie Oligomerfrequenzen und k-mer-Verteilungen in Nukleotidsequenzen.',
+
+  tool_punnett_title: 'Punnett-Quadrat Rechner',
+  tool_punnett_desc: 'Simulieren Sie monohybritische und dihybritische Erbgänge mit Genotyp/Phänotyp-Verhältnissen.',
+  tool_hw_title: 'Hardy-Weinberg-Gleichgewicht',
+  tool_hw_desc: 'Berechnen Sie Allel- und Genotypfrequenzen (p, q, p², 2pq, q²) in Populationen.',
+  tool_mutation_title: 'DNA-Mutationsanalysator',
+  tool_mutation_desc: 'Identifizieren Sie stumme, Missense-, Nonsense- und Rastermutationen.',
+  tool_codon_opt_title: 'Codon-Optimierungs-Engine',
+  tool_codon_opt_desc: 'Optimieren Sie die Codon-Nutzung für hohe Proteinexpression in E. coli, Hefe oder menschlichen Wirten.',
+  tool_crispr_title: 'CRISPR-Guide-RNA-Designer (gRNA)',
+  tool_crispr_desc: 'Durchsucht eine Ziel-DNA-Sequenz nach PAM-Stellen der Cas9-Familie und entwirft Kandidaten-Guide-RNAs (20 nt) auf beiden Strängen, mit GC-Gehalt-, Homopolymer- und Off-Target-Prüfung innerhalb derselben Eingabe.',
+
+  tool_primer_design_title: 'PCR-Primer-Designer',
+  tool_primer_design_desc: 'Entwerfen Sie Vorwärts-/Rückwärts-Primer mit Tm-Thermodynamik und Spezifitätsprüfungen.',
+  tool_primer_tm_title: 'Primer Tm-Rechner',
+  tool_primer_tm_desc: 'Schätzen Sie die Schmelztemperatur mithilfe einer GC-Gehalt-basierten Formel (keine vollständige Thermodynamik).',
+  tool_pcr_setup_title: 'PCR-Reaktionsansatz-Rechner',
+  tool_pcr_setup_desc: 'Berechnen Sie Mastermix-Volumina für Einzel- oder Mehrfachproben (+10% Pipettierüberschuss).',
+
+  tool_restriction_title: 'Restriktionsenzym-Verdau',
+  tool_restriction_desc: 'Finden Sie Schnittstellen für EcoRI, BamHI, HindIII, NotI und weitere Endonukleasen.',
+  tool_gel_sim_title: 'Agarose-Gelelektrophorese-Simulator',
+  tool_agarose: 'Agarose',
+  tool_upload_fasta: 'FASTA hochladen',
+  tool_dna_ladder: 'DNA-Leiter',
+  tool_lane_label: 'Spur',
+  tool_digest_label: 'Verdau',
+  tool_cathode_anode_label: '(-) Kathode Oben → (+) Anode Unten',
+  tool_gel_model_note_title: 'Hinweis zum Lehrmodell:',
+  tool_gel_model_note_body: 'Dies ist eine pädagogische Agarosegel-Simulation. Die Migrationsdistanz wird hier anhand der Fragmentgröße und der gewählten Agarosekonzentration mit einer vereinfachten, monotonen Näherung geschätzt. Die tatsächliche elektrophoretische Migration und Bandenauflösung hängen zudem von der angelegten Spannung, der Ionenstärke des Laufpuffers (TAE vs. TBE), der DNA-Konformation (superspiralisiert, linear oder eingekerbt zirkulär), der Temperatur, dem Ladefarbstoff und der Laufzeit ab.',
+  tool_site: 'Stelle',
+  tool_none: 'Keine',
+  tool_total_seq_length: 'Gesamtsequenzlänge',
+  favoriteToggle: 'Favorit umschalten',
+  backToDashboard: 'Zurück zum Dashboard',
+  tool_gel_sim_desc: 'Simulieren Sie DNA-Bandenwanderung gegen 100bp- und 1kb-Leitern in Agarosegelen.',
+
+  tool_protein_analyzer_title: 'Protein-Eigenschaften & pI-Analysator',
+  tool_protein_analyzer_desc: 'Berechnen Sie den isoelektrischen Punkt (pI), das Molekulargewicht, den GRAVY-Wert und den Extinktionskoeffizienten.',
+
+  tool_molarity_title: 'Molarität & Masse Rechner',
+  tool_molarity_desc: 'Berechnen Sie Masse (g), Molarität (M) oder Volumen (mL) für Laborlösungen.',
+  tool_stat_test_title: 'Statistischer Test-Rechner (t-Test / Chi-Quadrat)',
+  tool_stat_test_desc: 'Führen Sie Ein- und Zwei-Stichproben-t-Tests sowie Chi-Quadrat-Anpassungs- oder Unabhängigkeitstests durch, mit p-Werten und Signifikanzinterpretation.',
+  tool_c1v1_title: 'Verdünnungsrechner (C₁V₁ = C₂V₂)',
+  tool_c1v1_desc: 'Berechnen Sie Stammlösungsvolumen und Lösungsmittelbedarf für Zielkonzentrationen.',
+  tool_od600_title: 'OD₆₀₀ Zelldichte Rechner',
+  tool_od600_desc: 'Schätzen Sie die Bakterienkonzentration (Zellen/mL) aus Photometer-OD600-Werten.',
+
+  tool_mm_title: 'Michaelis-Menten Enzymkinetik',
+  tool_mm_desc: 'Simulieren Sie Reaktionsgeschwindigkeit (v), Vmax, Km und Hemmungskurven.',
+
+  tool_growth_title: 'Bakterien-Wachstumskurven-Simulator',
+  tool_growth_desc: 'Berechnen Sie Verdopplungszeit, Generationenzahl und Wachstumsrate k.',
+  tool_gram_title: 'Interaktive Gram-Färbung Referenz',
+  tool_gram_desc: 'Schritt-für-Schritt-Anleitung für Kristallviolett, Lugol-Lösung, Entfärbung und Safranin.',
+
+  tool_align_title: 'Needleman-Wunsch Globales Alignment',
+  tool_align_desc: 'Paarweiser Sequenzalignment-Algorithmus für DNA-, RNA- und Proteinsequenzen.',
+  tool_local_align_title: 'Lokales Alignment (Smith-Waterman)',
+  tool_local_align_desc: 'Findet die höchstbewertete ähnliche Teilregion zwischen zwei Sequenzen — nützlich, um eine konservierte Domäne oder ein Motiv zu lokalisieren, statt die gesamte Sequenzlänge auszurichten.',
+  tool_phylo_title: 'Stammbaum-Betrachter (Newick)',
+  tool_phylo_desc: 'Visualisieren Sie phylogenetische Stammbäume aus Newick-Format-Strings.',
+
+  featuredTools: 'Hervorgehobene Wissenschaftliche Werkzeuge',
+  popularCalculators: 'Beliebte Laborrechner',
+  educationalSimulations: 'Interaktive Lernsimulationen',
+  allTools: 'Alle Wissenschaftlichen Werkzeuge',
+  noToolsFound: 'Keine Werkzeuge gefunden, die Ihren Suchkriterien entsprechen.',
+  favoriteTools: 'Ihre Favoriten',
+  noFavoritesYet: 'Klicken Sie auf den Stern bei einer Karte, um sie zu den Favoriten hinzuzufügen.',
+  recentlyUsed: 'Zuletzt verwendete Werkzeuge',
+
+  inputSequence: 'Eingabesequenz (DNA / RNA / Protein):',
+  validSequence: 'Gültige Sequenz',
+  invalidSequence: 'Ungültige Zeichen in der Sequenz erkannt:',
+  sequenceLength: 'Sequenzlänge (bp / aa):',
+  gcContent: 'GC-Gehalt:',
+  atContent: 'AT-Gehalt:',
+  molecularWeight: 'Molekulargewicht:',
+  transcribedRna: 'Transkribierte mRNA (5\' → 3\'):',
+  translatedProtein: 'Translatiertes Protein:',
+  reverseComplement: 'Reverses Komplement (5\' → 3\'):',
+  resultsHeader: 'Ergebnisse & Analyse',
+  formulaHeader: 'Mathematische Formel & Biologische Annahmen',
+  biologicalPrinciples: 'Biologische Prinzipien:',
+  modelAssumptions: 'Modellannahmen:',
+  limitationsHeader: 'Modelleinschränkungen',
+  kbd_navigate: 'Navigieren',
+  kbd_select: 'Auswählen',
+  kbd_close: 'Schließen',
+  favoritesOnly: 'Nur Favoriten',
+  showAllTools: 'Alle Werkzeuge Anzeigen',
+  retryComponent: 'Komponente Wiederholen',
+
+  tool_select_molecule_mode: 'Molekültyp-Modus auswählen:',
+  tool_dna_mode: 'DNA-Modus',
+  tool_rna_mode: 'RNA-Modus',
+  tool_protein_mode: 'Protein-Modus',
+  tool_load_sample_dna: 'Beispiel-DNA laden',
+  tool_load_sample_rna: 'Beispiel-RNA laden',
+  tool_load_sample_gene: 'Beispiel-Gen laden',
+  tool_load_sample_egfp: 'eGFP-Sequenz laden',
+  tool_complement_strands: 'Komplementärstränge',
+  tool_original_strand: 'Originalstrang (5\' → 3\')',
+  tool_reverse_complement_strand: 'Reverses Komplement (5\' → 3\')',
+  tool_antiparallel_strand: '(Antiparalleler Strang)',
+  tool_direct_complement_strand: 'Direktes Komplement (3\' → 5\')',
+  tool_aligned_antiparallel: '(Direkter 3\' → 5\' Antiparalleler Strang)',
+  tool_length: 'Länge',
+  tool_gc_content: 'GC-Gehalt',
+  tool_at_content: 'AT-Gehalt',
+  tool_mol_weight: 'Mol.-Gewicht',
+  tool_nucleotide_comp: 'Nukleotidzusammensetzung',
+  tool_orfs_found: 'Gefundene offene Leserahmen',
+  tool_no_orfs_found: 'Keine ORFs (Start-ATG bis Stopp) in der Sequenz erkannt.',
+  tool_frame: 'Leserahmen',
+  tool_transcribed_mrna: 'Transkribierte mRNA (5\' → 3\')',
+  tool_translated_protein: 'Translatiertes Protein',
+  tool_multi_fasta_input: 'Multi-FASTA-Eingabe',
+  tool_parsed_records: 'Verarbeitete Einträge',
+  tool_load_sample_fasta: 'Beispiel-Multi-FASTA laden',
+  tool_parsed_fasta_records: 'Geparste FASTA-Einträge',
+  tool_valid: 'Gültig',
+  tool_invalid_bases: 'Ungültige Base(n)',
+  tool_kmer_size: 'k-mer Größe (k):',
+  tool_kmer_distribution: 'k-mer Frequenzverteilung',
+  tool_total_kmers: 'Gesamte k-mere',
+  tool_unique_kmers: 'Eindeutige k-mere',
+  tool_kmer_table: 'k-mer Häufigkeitstabelle',
+  tool_count: 'Anzahl',
+  tool_frequency: 'Häufigkeit (%)',
+  tool_visual_bar: 'Visueller Balken',
+  tool_punnett_tab: 'Punnett-Quadrat (Monohybrid & Dihybrid)',
+  tool_hardy_tab: 'Hardy-Weinberg-Gleichgewicht',
+  tool_parental_cross: 'Elterliche Genotyp-Kreuzung',
+  tool_monohybrid_btn: 'Monohybrid (Aa × Aa)',
+  tool_dihybrid_btn: 'Dihybrid (AaBb × AaBb)',
+  tool_parent1_genotype: 'Genotyp Elternteil 1',
+  tool_parent2_genotype: 'Genotyp Elternteil 2',
+  tool_assumptions: 'Annahmen:',
+  tool_punnett_error: 'Bitte geben Sie gültige Genotypen gleicher Länge ein: 2 Allele für Monohybrid oder 4 Allele für Dihybrid.',
+  tool_allele_freq_inputs: 'Allelfrequenz-Eingaben',
+  tool_dominant_freq: 'Dominante Allelfrequenz (p)',
+  tool_recessive_freq: 'Rezessive Allelfrequenz (q)',
+  tool_genotype_freq_pop: 'Genotypfrequenzen in der Population',
+  tool_homo_dom: 'Homozygot dominant (p²)',
+  tool_hetero: 'Heterozygot (2pq)',
+  tool_homo_rec: 'Homozygot rezessiv (q²)',
+  tool_hw_error: 'Bitte geben Sie die Allelfrequenz p oder q (zwischen 0 und 1) ein.',
+  tool_orig_seq: 'Originalsequenz',
+  tool_mut_seq: 'Mutierte Sequenz',
+  tool_mutation_analysis: 'Mutationsklassifizierung & Wirkungsanalyse',
+  tool_altered_codons: 'Aufschlüsselung veränderter Codons',
+  tool_position: 'Position',
+  tool_orig_codon_aa: 'Ursprüngliches Codon → AS',
+  tool_mut_codon_aa: 'Mutiertes Codon → AS',
+  tool_effect: 'Effekt',
+  tool_nonsense: 'Nonsense (Stopp)',
+  tool_missense: 'Missense',
+  tool_silent: 'Stumm (Synonym)',
+  tool_select_host_system: 'Wirtsexpressionssystem auswählen:',
+  tool_codon_opt_metrics: 'Codon-Optimierungsmetriken',
+  tool_orig_cai: 'Ursprünglicher CAI',
+  tool_opt_cai: 'Optimierter CAI',
+  tool_codons_replaced: 'Ersetzte Codons',
+  tool_opt_dna_seq: 'Optimierte DNA-Sequenz (5\' → 3\')',
+  tool_translated_protein_preserved: 'Translatierte Proteinsequenz (100% erhalten)',
+  tool_pair_primer_design: 'Paar-Primer-Design',
+  tool_primer_tm_calc: 'Primer Tm-Rechner',
+  tool_mastermix_setup: 'Mastermix-Ansatz',
+  tool_load_template_dna: 'Matrizen-DNA laden',
+  tool_desired_primer_len: 'Gewünschte Primerlänge (bp):',
+  tool_designed_primer_pair: 'Entworfenes PCR-Primerpaar',
+  tool_recommended_ta: 'Empfohlene PCR-Anlagerungstemperatur (Ta)',
+  tool_forward_primer: 'Vorwärts-Primer (5\' → 3\')',
+  tool_reverse_primer: 'Rückwärts-Primer (5\' → 3\')',
+  tool_primer_warnings: 'Primer-Warnungen:',
+  tool_single_primer_seq: 'Einzelne Primersequenz (5\' → 3\')',
+  tool_approx_tm: 'Ungefähre Tm',
+  tool_formula_used: 'Verwendete Formel',
+  tool_pcr_mastermix_params: 'PCR-Mastermix-Reaktionsparameter',
+  tool_num_reactions: 'Anzahl der Reaktionen / Proben',
+  tool_single_rxn_vol: 'Einzelreaktionsvolumen (µL)',
+  tool_mastermix_recipe: 'Mastermix-Rezept',
+  tool_component: 'Komponente',
+  tool_per_1_rxn: 'Pro 1 Reaktion',
+  tool_mastermix_total: 'Mastermix Gesamt',
+  tool_water: 'Nukleasefreies Wasser',
+  tool_buffer: '10X PCR-Reaktionspuffer',
+  tool_dntp: 'dNTP-Mix (jeweils 10 mM)',
+  tool_taq: 'Taq-DNA-Polymerase (5 U/µL)',
+  tool_total_mastermix_vol: 'Gesamtes Mastermix-Volumen',
+  tool_load_sample_plasmid: 'Beispiel-Plasmid/Gen laden',
+  tool_select_restriction_enzymes: 'Restriktionsenzym(e) auswählen:',
+  tool_linear_dna: 'Lineare DNA',
+  tool_circular_plasmid: 'Zirkuläres Plasmid',
+  tool_digest_fragment_analysis: 'Kombinierte Verdaufragment-Analyse',
+  tool_total_cut_sites: 'Gesamte Schnittstellen',
+  tool_fragments_generated: 'Erzeugte Fragmente',
+  tool_selected_enzymes: 'Ausgewählte Enzyme',
+  tool_ordered_cut_positions: 'Geordnete Schnittpositionen (5\' → 3\')',
+  tool_cut_num: 'Schnitt #',
+  tool_cut_pos: 'Schnittposition (bp)',
+  tool_cutting_enzyme: 'Schneidendes Enzym',
+  tool_combined_fragment_sizes: 'Kombinierte Fragmentgrößen (bp)',
+  tool_fragment: 'Fragment',
+  tool_configure_gel_sim: 'Lern-Gelsimulation konfigurieren',
+  tool_gel_percent: 'Gel %:',
+  tool_input_target_dna: 'Ziel-DNA-Sequenz (bp) eingeben',
+  tool_lane1_enzyme: 'Spur 1 Einzelverdau-Enzym',
+  tool_lane2_enzymes: 'Spur 2 Doppelverdau-Enzyme',
+  tool_protein_properties: 'Berechnete physikochemische Proteineigenschaften',
+  tool_isoelectric_point: 'Isoelektrischer Punkt (pI)',
+  tool_gravy_hydropathy: 'GRAVY-Hydrophobie',
+  tool_extinction_coeff: 'Extinktionskoeffizient (280 nm):',
+  tool_net_charge: 'Nettoladung bei pH 7.0:',
+  tool_molarity_calc_title: 'Molaritätsrechner',
+  tool_solution_dilution: 'Lösungsverdünnung (C1V1 = C2V2)',
+  tool_od600_cell_density: 'OD600 Zelldichte',
+  tool_solution_params: 'Lösungsansatz-Parameter',
+  tool_target_conc: 'Zielkonzentration (M oder mol/L)',
+  tool_desired_vol: 'Gewünschtes Lösungsvolumen (mL)',
+  tool_solute_mw: 'Molekulargewicht des gelösten Stoffs (g/mol)',
+  tool_required_mass: 'Erforderliche Masse des gelösten Stoffs',
+  tool_dilution_calc: 'Verdünnungsrechner (C1V1 = C2V2)',
+  tool_solve_for: 'Berechnen für:',
+  tool_stock_vol_v1: 'Stammlösung Vol (V1)',
+  tool_target_conc_c2: 'Zielkonzentration (C2)',
+  tool_stock_conc_c1: 'Stammlösung Konz (C1)',
+  tool_target_vol_v2: 'Zielvolumen (V2)',
+  tool_solvent_vol: 'Erforderliches Lösungsmittelvolumen (V2 - V1)',
+  tool_od600_value: 'Spektralphotometer-OD600-Messwert',
+  tool_target_organism: 'Zielmikroorganismus',
+  tool_est_cell_conc: 'Geschätzte Bakterienkonzentration',
+  tool_enzyme_kinetic_params: 'Enzymkinetische Parameter',
+  tool_max_velocity_vmax: 'Maximalgeschwindigkeit Vmax (µmol/min)',
+  tool_michaelis_km: 'Michaelis-Konstante Km (mM)',
+  tool_substrate_conc: 'Substratkonz. [S] (mM)',
+  tool_reaction_velocity_output: 'Reaktionsgeschwindigkeit & Kinetik-Ausgabe',
+  tool_initial_velocity: 'Anfangsgeschwindigkeit (v)',
+  tool_percent_vmax: '% von Vmax erreicht',
+  tool_catalytic_efficiency: 'Katalytische Effizienz',
+  tool_lineweaver_burk_title: 'Lineweaver-Burk Lineartransformation (1/v vs 1/[S])',
+  tool_transformation_warning: 'Transformationsfehler-Warnung:',
+  tool_bacterial_growth_params: 'Bakterienpopulations-Kinetikparameter',
+  tool_bacterial_growth_invalid_input: 'Die Endpopulation muss größer sein als die Ausgangspopulation – dieses exponentielle Wachstumsmodell kann keine Verdopplungszeit für eine schrumpfende oder unveränderte Population berechnen.',
+  tool_initial_pop_n0: 'Anfangspopulation (N₀)',
+  tool_final_pop_nt: 'Endpopulation (Nₜ)',
+  tool_elapsed_time: 'Dauer der Log-Phase (t in Stunden)',
+  tool_generation_metrics: 'Generations- & Verdopplungsmetriken',
+  tool_num_generations: 'Anzahl der Generationen (n)',
+  tool_generation_time: 'Generationszeit (g)',
+  tool_doubling_time_mins: 'Verdopplungszeit in Min.',
+  tool_growth_rate_k: 'Spezifische Wachstumsrate (k)',
+  tool_growth_phases: 'Phasen der Bakterienwachstumskurve',
+  tool_time_hours: 'Zeit (Stunden)',
+  tool_est_population: 'Geschätzte Population',
+  tool_growth_phase: 'Wachstumsphase',
+  tool_gram_stain_protocol: '4-Schritt Differential-Gram-Färbung Laborprotokoll',
+  tool_duration: 'Dauer:',
+  tool_gram_positive: 'Gram-Positiv (+):',
+  tool_gram_negative: 'Gram-Negativ (-):',
+  tool_alignment_params: 'Alignment-Parameter',
+  tool_match_score: 'Match-Punktzahl',
+  tool_mismatch_penalty: 'Mismatch-Strafe',
+  tool_gap_penalty: 'Lücken-Strafe (Gap Penalty)',
+  tool_seq_length_cap: 'Sequenzlängen-Sicherheitsgrenze:',
+  tool_needleman_output: 'Needleman-Wunsch Alignment-Ausgabe',
+  tool_alignment_score: 'Alignment-Punktzahl',
+  tool_identity_percent: 'Identität %',
+  tool_matches: 'Übereinstimmungen',
+  tool_mismatches: 'Nichtübereinstimmungen',
+  tool_gaps: 'Lücken (Gaps)',
+  tool_aligned_seq_map: 'Ausgerichtete Sequenzkarte',
+  tool_newick_string_label: 'Baum-String im Newick-Format',
+
+  // Additional missing keys
+  tool_master_mix_setup: 'Master-Mix-Ansatz',
+  tool_designed_pcr_pair: 'Entworfenes PCR-Primerpaar',
+  tool_rec_anneal_temp: 'Empfohlene Anlagerungstemperatur (Ta)',
+  tool_calc_ta_sub: 'Berechnet als min(Tm) - 5 °C',
+  tool_fwd_primer: 'Forward-Primer',
+  tool_rev_primer: 'Reverse-Primer',
+  tool_fwd_prefix: 'Vorwärts:',
+  tool_rev_prefix: 'Rückwärts:',
+  tool_pcr_master_mix_params: 'PCR Master-Mix Rezeptur-Parameter',
+  tool_num_rxns: 'Anzahl der Reaktionen',
+  tool_mm_recipe: 'Master-Mix Rezeptur',
+  tool_mm_total: 'Gesamtvolumen Master-Mix',
+  tool_nuclease_free_water: 'Nukleasefreies Wasser',
+  tool_pcr_buffer_10x: '10X PCR-Puffer',
+  tool_dntp_mix: 'dNTP-Mix (10 mM)',
+  tool_fwd_primer_10um: 'Forward-Primer (10 µM)',
+  tool_rev_primer_10um: 'Reverse-Primer (10 µM)',
+  tool_taq_poly: 'Taq-DNA-Polymerase',
+  tool_total_mm_vol: 'Gesamtreaktionsvolumen',
+  tool_pipetting_excess: 'Pipettierüberschuss',
+  tool_pcr_note_label: 'Hinweis:',
+  tool_template_dna_add_separately: 'Template-DNA (separat pro Reaktion zugeben)',
+  tool_add_separately_per_rxn: 'Separat pro Reaktion zugeben',
+  tool_load_egfp_seq: 'eGFP-Beispiel laden',
+  tool_calc_protein_props: 'Berechnete Proteineigenschaften',
+  tool_isoelectric_pi: 'Isoelektrischer Punkt (pI)',
+  tool_molecular_weight: 'Molekulargewicht',
+  tool_net_charge_ph7: 'Nettoladung bei pH 7,0',
+  tool_load_seq_a: 'Beispiel-Sequenz A laden',
+  tool_load_seq_b: 'Beispiel-Sequenz B laden',
+  tool_seq_cap_title: 'Sicherheitsbeschränkung für Sequenzlänge',
+  tool_seq_cap_desc: 'Maximale Matrixgröße für dynamische Programmierung',
+  tool_nw_alignment_output: 'Needleman-Wunsch Ausrichtungsergebnis',
+  tool_identity_pct: 'Identität %',
+  tool_molarity_calc: 'Molarität & Lösungsherstellung',
+  tool_od600_density: 'OD600 Zelldichte-Umrechnung',
+  tool_sol_prep_params: 'Parameter für Lösungsherstellung',
+  tool_req_solute_mass: 'Erforderliche Masse der Substanz',
+  tool_final_conc_c2: 'Ziel-Endkonzentration (C₂)',
+  tool_target_label: 'Ziel',
+  tool_final_vol_v2: 'Ziel-Endvolumen (V₂)',
+  tool_calculated: 'Berechnetes Ergebnis',
+  tool_add_stock_1: 'Volumen der Stammlösung (V₁)',
+  tool_add_stock_2: 'Volumen des Lösungsmittels',
+  tool_add_stock_3: 'Gesamtes Endvolumen',
+  tool_od_spec: 'OD600-Messung',
+  tool_measured_od600: 'Gemessener OD600-Wert',
+  tool_microorganism_type: 'Mikroorganismustyp',
+  tool_est_cell_density: 'Geschätzte Zelldichte',
+  tool_calib_disc_title: 'Kalibrierungshinweis',
+  tool_vmax_label: 'Vmax (Maximalgeschwindigkeit)',
+  tool_km_label: 'Km (Michaelis-Konstante)',
+  tool_enzyme_params: 'Eingabeparameter Enzymkinetik',
+  tool_reaction_vel_output: 'Berechnete Reaktionsgeschwindigkeit',
+  tool_substrate_s: 'Substrat [S]',
+  tool_init_velocity: 'Anfangsgeschwindigkeit (v)',
+  tool_pct_vmax: '% von Vmax',
+  tool_cat_efficiency: 'Katalytische Effizienz',
+  tool_lineweaver_burk: 'Lineweaver-Burk-Transformation',
+  tool_transform_error_warn: 'Transformationsfehler-Warnung',
+  tool_gram_pos: 'Gram-Positiv',
+  tool_gram_neg: 'Gram-Negativ',
+  tool_newick_tree_format: 'Newick-Stammbaum-Format',
+
+  // Plattform-Leitfaden
+  guideBadge: 'Vollständige Referenz',
+  guideIntro: 'Ein vollständiger Leitfaden zu allen Kategorien und Werkzeugen von BioAI.Lab — was jedes Werkzeug leistet, wann man es einsetzt und welche Wissenschaft dahintersteckt. Unten stöbern oder ein Werkzeug direkt öffnen.',
+  guideLevelLabel: 'Stufe',
+  badgePopular: 'Beliebt',
+  badgeFeatured: 'Empfohlen',
+
+  // DNA-Analysator v2 — Molekültyp & QC
+  tool_molecule_type: 'Molekültyp',
+  tool_molecule_dna: 'DNA',
+  tool_molecule_rna: 'RNA',
+  tool_mw_model: 'Molekulargewicht-Modell',
+  tool_mw_model_ssdna: 'ssDNA (Einzelstrang)',
+  tool_mw_model_dsdna: 'dsDNA (Doppelstrang)',
+  tool_mw_model_rna: 'RNA (Einzelstrang)',
+  tool_mw_approx_note: 'Näherungswert — siehe Einschränkungen unten.',
+  tool_qc_header: 'Sequenz-Qualitätskontrolle (QC)',
+  tool_qc_canonical_bases: 'Kanonische Basen',
+  tool_qc_ambiguous_bases: 'Mehrdeutige (IUPAC) Basen',
+  tool_qc_n_count: 'N-Anzahl',
+  tool_qc_invalid_count: 'Ungültige Zeichen',
+  tool_gc_ambiguous_note: 'Diese Sequenz enthält IUPAC-Mehrdeutigkeitscodes. GC%/AT% beziehen sich nur auf eindeutig beobachtete G/C/A/T(U)-Basen — Mehrdeutigkeitscodes werden aus dem Nenner ausgeschlossen und nicht geschätzt.',
+  tool_ambiguous_bases_header: 'Vorhandene mehrdeutige (IUPAC) Basen',
+  tool_rna_transcription_note: 'Die aktuelle Eingabe ist bereits RNA. Die DNA → RNA-Transkription gilt nur für eine DNA-Eingabe und wird daher hier nicht angezeigt.',
+  tool_rna_orf_note: 'Die ORF-Analyse in diesem Werkzeug basiert auf DNA-Leserastern (ATG/TAA/TAG/TGA). Wechseln Sie in den DNA-Modus, um die ORF-Analyse auszuführen, oder geben Sie die entsprechende DNA-Sequenz an.',
+  tool_reading_frame_used: 'Verwendetes Leseraster',
+  tool_start_position: 'Startposition',
+  tool_stop_codon_present: 'Stopcodon Vorhanden',
+  tool_aa_length: 'Aminosäurelänge',
+  tool_translation_depends_on_frame: 'Die Übersetzung beginnt immer an Position 1 im Leseraster +1 der Eingabe wie angegeben — es wird nicht nach dem biologischen Startcodon gesucht. Kürzen Sie die Eingabesequenz, um ein anderes Leseraster zu verwenden.',
+  tool_orf_ambiguous_codon_warning: 'Enthält mindestens ein mehrdeutiges (IUPAC) Codon, dargestellt als "X"; dies ist kein vollständig aufgelöstes kanonisches Protein.',
+  tool_multi_fasta_rejected_hint: 'Dieser Analysator verarbeitet jeweils nur eine Sequenz.',
+  tool_yes: 'Ja',
+  tool_no: 'Nein',
+
+  // Visualizer-i18n (Phylogenetischer Baum & Punnett-Quadrat)
+  tool_phylo_cladogram_header: 'Gerendertes Phylogenetisches Kladogramm',
+  tool_phylo_taxa_leaves: 'Taxa / Blätter',
+  tool_phylo_invalid_format: 'Ungültiges Newick-Baumformat.',
+  tool_phylo_taxon_fallback: 'Taxon',
+  tool_punnett_interactive_header: 'Interaktives Punnett-Quadrat',
+  tool_punnett_monohybrid: '2×2 Monohybrid',
+  tool_punnett_dihybrid: '4×4 Dihybrid',
+  tool_punnett_cross: 'Kreuzung',
+  tool_punnett_parent_axis: 'Elternteil 1 \\ Elternteil 2',
+  tool_expected_genotypes: 'Erwartete Genotypen',
+  tool_expected_phenotypes: 'Erwartete Phänotypen (Vollständige Dominanz)',
+  tool_approx_starting_temp: 'Ungefähre Starttemperatur (erfordert experimentelle Optimierung)',
+  hero_local_browser_privacy: 'Lokaler Browser-Datenschutz',
+  hero_bio_genetics_tools: 'Bio-/Genetik-Werkzeuge',
+  hero_supported_languages: 'Unterstützte Sprachen',
+  tool_no_residues_after_stop: 'Diese Sequenz enthält nur Stopcodon-Marker (*) und keine tatsächlichen Aminosäurereste zur Analyse.',
+  tool_vmax_km_positive: 'Vmax und Km müssen positive, von Null verschiedene Zahlen sein.',
+
+  // CRISPR-Guide-RNA-Designer
+  tool_load_sample_target: 'Beispielziel Laden',
+  tool_select_pam: 'PAM / Cas-Variante Auswählen',
+  tool_ambiguity_blocks_guide_design: 'Diese Sequenz enthält IUPAC-Mehrdeutigkeitscodes. Das Guide-RNA-Design erfordert eine vollständig eindeutige Sequenz, da eine mehrdeutige Base nicht in einer synthetisierten Guide festgelegt werden kann.',
+  tool_candidate_guides_found: 'Gefundene Kandidaten-Guide-RNAs',
+  tool_pam_pattern: 'PAM-Muster',
+  tool_guide_length: 'Guide-Länge',
+  tool_no_guides_found: 'In dieser Sequenz wurden keine PAM-Stellen gefunden, die dem gewählten Muster entsprechen.',
+  tool_strand: 'Strang',
+  tool_quality_score: 'Bewertung',
+  tool_score_high: 'hoch',
+  tool_score_medium: 'mittel',
+  tool_score_low: 'niedrig',
+  tool_polyt_warning: 'TTTT+-Lauf (Pol-III-Terminator)',
+  tool_homopolymer_warning: 'Homopolymer-Lauf (4+)',
+  tool_offtarget_warning: 'Wiederholt sich an anderer Stelle der Eingabe',
+  tool_offtarget_scope_note: 'Die Off-Target-Prüfung hier prüft nur auf wiederholte 12-nt-Seed-Sequenzen innerhalb der oben eingefügten Sequenz — dies ist KEINE genomweite Off-Target-Suche. Überprüfen Sie Kandidaten-Guides vor der Bestellung von Oligonukleotiden immer gegen eine vollständige Genom-/Transkriptom-Datenbank.',
+
+  // Lokales Alignment (Smith-Waterman)
+  tool_sw_alignment_output: 'Smith-Waterman-Alignment-Ergebnis',
+  tool_no_local_similarity: 'Bei den aktuellen Bewertungsparametern wurde keine lokale Ähnlichkeit mit positivem Score zwischen diesen beiden Sequenzen gefunden.',
+  tool_aligned_region_a: 'Ausgerichteter Bereich (Sequenz A)',
+  tool_aligned_region_b: 'Ausgerichteter Bereich (Sequenz B)',
+
+  // RNA-Sekundärstruktur (Nussinov)
+  tool_load_sample_rna_hairpin: 'Beispiel-Haarnadel Laden',
+  tool_min_loop_length: 'Minimale Schleifenlänge',
+  tool_min_loop_length_desc: 'Mindestanzahl ungepaarter Basen, die innerhalb einer Haarnadelschleife erforderlich sind (RNA kann sich nicht eng genug falten, um unmittelbar benachbarte Basen zu paaren).',
+  tool_ambiguity_blocks_structure: 'Diese Sequenz enthält IUPAC-Mehrdeutigkeitscodes. Die Basenpaarvorhersage erfordert eine vollständig eindeutige Sequenz, da eine mehrdeutige Base nicht zuverlässig auf Watson-Crick-/Wobble-Komplementarität geprüft werden kann.',
+  tool_predicted_structure: 'Vorhergesagte Sekundärstruktur',
+  tool_base_pairs_found: 'Gefundene Basenpaare',
+  tool_too_long_for_diagram: 'Diese Sequenz ist zu lang, um hier als Bogendiagramm dargestellt zu werden. Die Punkt-Klammer-Notation und die Paarliste unten bleiben vollständig korrekt — exportieren Sie das JSON für die vollständige Paarliste.',
+  tool_dot_bracket_notation: 'Punkt-Klammer-Notation',
+  tool_wc_pair: 'Watson-Crick-Paar',
+  tool_wobble_pair: 'G-U-Wobble-Paar',
+
+  // Statistischer Test-Rechner
+  tool_one_sample_ttest: 'Ein-Stichproben-t-Test',
+  tool_two_sample_ttest: 'Zwei-Stichproben-t-Test',
+  tool_chi_gof: 'Chi-Quadrat-Anpassungstest',
+  tool_chi_indep: 'Chi-Quadrat-Unabhängigkeitstest',
+  tool_sample_data: 'Stichprobendaten',
+  tool_comma_separated_numbers: 'Durch Komma, Leerzeichen oder Zeilenumbruch getrennte Zahlen',
+  tool_population_mean_h0: 'Populationsmittelwert (H₀)',
+  tool_n: 'n',
+  tool_sample_mean: 'Stichprobenmittelwert',
+  tool_sample_sd: 'Stichproben-SD',
+  tool_df: 'df',
+  tool_group_a: 'Gruppe A',
+  tool_group_b: 'Gruppe B',
+  tool_welch_unequal_var: 'Welch (ungleiche Varianz)',
+  tool_student_equal_var: 'Student (gleiche Varianz)',
+  tool_mean_a: 'Mittelwert A',
+  tool_mean_b: 'Mittelwert B',
+  tool_observed_counts: 'Beobachtete Häufigkeiten',
+  tool_expected_counts: 'Erwartete Häufigkeiten',
+  tool_contingency_table: 'Kontingenztabelle',
+  tool_one_row_per_line: 'Eine Zeile pro Reihe, Zellenwerte durch Komma getrennt',
+  tool_significant_at_alpha: 'Signifikant',
+  tool_not_significant_at_alpha: 'Nicht Signifikant',
+
+  launchTool: 'Starten',
+  localClientSide: 'Lokale 100% Client-Ausführung',
+  footerRights: 'BioAI.Lab © 2026. Entwickelt für Forschung & Bildung.',
+  githubRepo: 'GitHub-Repository',
+};
