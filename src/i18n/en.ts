@@ -75,6 +75,8 @@ export const en = {
   tool_dna_analyzer_desc: 'Analyze nucleotide composition, GC/AT ratios, transcription, and molecular weight.',
   tool_revcomp_title: 'Reverse Complement Calculator',
   tool_revcomp_desc: 'Generate 5\'→3\' reverse complement strands for DNA and RNA primers.',
+  tool_rna_structure_title: 'RNA Secondary Structure (Nussinov)',
+  tool_rna_structure_desc: 'Predict a maximum base-pairing RNA secondary structure (Watson-Crick + G-U wobble) via the Nussinov dynamic-programming algorithm, with dot-bracket notation and an arc diagram.',
   tool_transcription_title: 'DNA → RNA Transcription',
   tool_transcription_desc: 'Transcribe DNA coding/template strand into mRNA sequence.',
   tool_translation_title: 'RNA → Protein Translation',
@@ -129,6 +131,8 @@ export const en = {
 
   tool_molarity_title: 'Molarity & Mass Calculator',
   tool_molarity_desc: 'Calculate solute mass (g), molarity (M), or volume (mL) for lab solutions.',
+  tool_stat_test_title: 'Statistical Test Calculator (t-test / Chi-Square)',
+  tool_stat_test_desc: 'Run one-sample and two-sample t-tests, and chi-square goodness-of-fit or independence tests, with p-values and significance interpretation.',
   tool_c1v1_title: 'Dilution Calculator (C₁V₁ = C₂V₂)',
   tool_c1v1_desc: 'Calculate stock volume and solvent required for target concentrations.',
   tool_od600_title: 'OD₆₀₀ Cell Density Calculator',
@@ -144,6 +148,8 @@ export const en = {
 
   tool_align_title: 'Needleman-Wunsch Global Alignment',
   tool_align_desc: 'Pairwise sequence alignment algorithm for DNA, RNA, and protein sequences.',
+  tool_local_align_title: 'Local Alignment (Smith-Waterman)',
+  tool_local_align_desc: 'Find the highest-scoring similar subregion shared between two sequences — useful for locating a conserved domain or motif rather than aligning full sequence length.',
   tool_phylo_title: 'Phylogenetic Tree Viewer (Newick)',
   tool_phylo_desc: 'Parse and render evolutionary phylogenetic trees from Newick format strings.',
 
@@ -498,6 +504,49 @@ export const en = {
   tool_homopolymer_warning: 'Homopolymer run (4+)',
   tool_offtarget_warning: 'Repeats elsewhere in input',
   tool_offtarget_scope_note: 'Off-target screening here only checks for repeated 12nt seed sequences within the sequence you pasted above — it is NOT a genome-wide off-target search. Always verify candidate guides against a full genome/transcriptome database before ordering oligos.',
+
+  // Local Alignment (Smith-Waterman)
+  tool_sw_alignment_output: 'Smith-Waterman Alignment Output',
+  tool_no_local_similarity: 'No positive-scoring local similarity was found between these two sequences under the current scoring parameters.',
+  tool_aligned_region_a: 'Aligned Region (Seq A)',
+  tool_aligned_region_b: 'Aligned Region (Seq B)',
+
+  // RNA Secondary Structure (Nussinov)
+  tool_load_sample_rna_hairpin: 'Load Sample Hairpin',
+  tool_min_loop_length: 'Minimum Loop Length',
+  tool_min_loop_length_desc: 'Minimum number of unpaired bases required inside a hairpin loop (RNA cannot fold sharply enough to pair immediately adjacent bases).',
+  tool_ambiguity_blocks_structure: 'This sequence contains IUPAC ambiguity codes. Base-pair prediction requires a fully unambiguous sequence, since an ambiguous base cannot be reliably evaluated for Watson-Crick/wobble complementarity.',
+  tool_predicted_structure: 'Predicted Secondary Structure',
+  tool_base_pairs_found: 'Base Pairs Found',
+  tool_too_long_for_diagram: 'This sequence is too long to render as an arc diagram here. The dot-bracket notation and pair list below remain fully accurate — export the JSON for the complete pair list.',
+  tool_dot_bracket_notation: 'Dot-Bracket Notation',
+  tool_wc_pair: 'Watson-Crick pair',
+  tool_wobble_pair: 'G-U wobble pair',
+
+  // Statistical Test Calculator
+  tool_one_sample_ttest: 'One-Sample t-test',
+  tool_two_sample_ttest: 'Two-Sample t-test',
+  tool_chi_gof: 'Chi-Square Goodness-of-Fit',
+  tool_chi_indep: 'Chi-Square Independence',
+  tool_sample_data: 'Sample Data',
+  tool_comma_separated_numbers: 'Comma, space, or newline separated numbers',
+  tool_population_mean_h0: 'Population Mean (H₀)',
+  tool_n: 'n',
+  tool_sample_mean: 'Sample Mean',
+  tool_sample_sd: 'Sample SD',
+  tool_df: 'df',
+  tool_group_a: 'Group A',
+  tool_group_b: 'Group B',
+  tool_welch_unequal_var: "Welch (unequal variance)",
+  tool_student_equal_var: "Student's (equal variance)",
+  tool_mean_a: 'Mean A',
+  tool_mean_b: 'Mean B',
+  tool_observed_counts: 'Observed Counts',
+  tool_expected_counts: 'Expected Counts',
+  tool_contingency_table: 'Contingency Table',
+  tool_one_row_per_line: 'One row per line, comma-separated cell counts',
+  tool_significant_at_alpha: 'Significant',
+  tool_not_significant_at_alpha: 'Not Significant',
 
   // Footer & Links
   launchTool: 'Launch',
