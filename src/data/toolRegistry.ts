@@ -37,6 +37,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     featured: true,
   },
   {
+    id: 'rna_secondary_structure',
+    titleKey: 'tool_rna_structure_title',
+    descKey: 'tool_rna_structure_desc',
+    category: 'dna_rna',
+    iconName: 'Waves',
+    keywords: ['rna', 'secondary structure', 'folding', 'nussinov', 'base pairing', 'hairpin', 'dot-bracket'],
+    educationalLevel: 'advanced',
+    featured: true,
+  },
+  {
     id: 'transcription',
     titleKey: 'tool_transcription_title',
     descKey: 'tool_transcription_desc',
@@ -289,6 +299,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     keywords: ['needleman', 'wunsch', 'alignment', 'global', 'similarity', 'gaps'],
     educationalLevel: 'advanced',
     popular: true,
+    featured: true,
+  },
+  {
+    id: 'local_alignment',
+    titleKey: 'tool_local_align_title',
+    descKey: 'tool_local_align_desc',
+    category: 'bioinformatics',
+    iconName: 'GitCompare',
+    keywords: ['smith', 'waterman', 'alignment', 'local', 'domain', 'motif', 'subsequence'],
+    educationalLevel: 'advanced',
     featured: true,
   },
   {
