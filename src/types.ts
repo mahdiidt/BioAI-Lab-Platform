@@ -139,6 +139,12 @@ export interface AlignmentResult {
   matches?: number;
   mismatchesCount?: number;
   mismatches?: number;
+  // Local alignment (Smith-Waterman) only: 1-based start/end positions of
+  // the aligned region within each original input sequence.
+  startA?: number;
+  endA?: number;
+  startB?: number;
+  endB?: number;
 }
 
 export interface EnzymeKineticsPoint {
