@@ -16,6 +16,16 @@ import {
   getDetailedBaseComposition,
 } from '../dna';
 import { findCrisprGuides } from '../crispr';
+import { smithWatermanAlignment } from '../localAlignment';
+import { predictRnaSecondaryStructure } from '../rnaStructure';
+import {
+  oneSampleTTest,
+  twoSampleTTest,
+  chiSquareGoodnessOfFit,
+  chiSquareIndependence,
+  tDistributionPValue,
+  chiSquarePValue,
+} from '../statistics';
 import { analyzeProtein } from '../protein';
 
 import { calculatePrimerTm, calculatePcrReactionSetup, calculateAnnealingTemperature } from '../pcr';
@@ -958,5 +968,273 @@ describe('28. CRISPR Guide RNA Designer — PAM Scanning & Guide Scoring', () =>
     for (let i = 1; i < res.guides.length; i++) {
       expect(res.guides[i - 1].qualityScore).toBeGreaterThanOrEqual(res.guides[i].qualityScore);
     }
+  });
+});
+
+describe('29. Local Alignment (Smith-Waterman) — Matches Known Textbook Example', () => {
+  it('reproduces the classic Durbin et al. textbook result (score=10, "ACACA")', () => {
+    const res = smithWatermanAlignment('ACACACTA', 'AGCACACA', 2, -1, -2);
+    expect(res.score).toBe(10);
+    expect(res.alignedA).toBe('ACACA');
+    expect(res.alignedB).toBe('ACACA');
+    expect(res.identityPercent).toBe(100);
+  });
+
+  it('reports 1-based start/end coordinates that reconstruct the aligned substring from the original sequences', () => {
+    const a = 'ACACACTA';
+    const b = 'AGCACACA';
+    const res = smithWatermanAlignment(a, b, 2, -1, -2);
+    const subA = a.substring(res.startA! - 1, res.endA).replace(/-/g, '');
+    const subB = b.substring(res.startB! - 1, res.endB).replace(/-/g, '');
+    expect(subA).toBe(res.alignedA!.replace(/-/g, ''));
+    expect(subB).toBe(res.alignedB!.replace(/-/g, ''));
+  });
+
+  it('returns score 0 (not an error) when no positive-scoring local similarity exists', () => {
+    const res = smithWatermanAlignment('AAAA', 'TTTT', 2, -1, -2);
+    expect(res.score).toBe(0);
+    expect(res.warning).toBeUndefined();
+  });
+
+  it('rejects a positive gap penalty, since local alignment requires non-positive gap/mismatch scoring', () => {
+    const res = smithWatermanAlignment('ATCG', 'ATCG', 2, -1, 3);
+    expect(res.score).toBe(0);
+    expect(res.warning).toMatch(/gap penalty/i);
+  });
+
+  it('rejects invalid characters with a clear message', () => {
+    const res = smithWatermanAlignment('ATCX', 'ATCG', 2, -1, -2);
+    expect(res.warning).toBeDefined();
+  });
+
+  it('rejects sequences exceeding the DP matrix length cap', () => {
+    const long = 'A'.repeat(1001);
+    const res = smithWatermanAlignment(long, 'ATCG', 2, -1, -2);
+    expect(res.warning).toMatch(/exceeds maximum/i);
+  });
+
+  it('finds the mathematically highest-scoring local region, not merely the first match', () => {
+    // Two candidate regions: "GATTACA" (7 exact matches -> score 14) and a
+    // 10-length poly-T run (score 20). The algorithm must pick the higher
+    // scoring one even though "GATTACA" appears first in both sequences.
+    const x = 'TTTTTTTTTTGATTACAGGGGGGGGGG';
+    const y = 'CCCCCCCCCCGATTACATTTTTTTTTT';
+    const res = smithWatermanAlignment(x, y, 2, -1, -2);
+    expect(res.score).toBe(20);
+    expect(res.alignedA!.replace(/-/g, '')).toBe('TTTTTTTTTT');
+  });
+});
+
+describe('30. RNA Secondary Structure (Nussinov) — Correctness', () => {
+  function isBalancedDotBracket(s: string): boolean {
+    let depth = 0;
+    for (const c of s) {
+      if (c === '(') depth++;
+      else if (c === ')') {
+        depth--;
+        if (depth < 0) return false;
+      }
+    }
+    return depth === 0;
+  }
+
+  it('finds the optimal 4-pair hairpin stem for a perfect stem-loop sequence', () => {
+    const res = predictRnaSecondaryStructure('GGGGAAAACCCC');
+    expect(res.isValid).toBe(true);
+    expect(res.numPairs).toBe(4);
+    expect(res.dotBracket).toBe('((((....))))');
+  });
+
+  it('finds zero pairs for a sequence with no complementary bases', () => {
+    const res = predictRnaSecondaryStructure('AAAAAAAA');
+    expect(res.numPairs).toBe(0);
+    expect(res.dotBracket).toBe('........');
+  });
+
+  it('respects the minimum loop length — a 2nt sequence cannot pair', () => {
+    const res = predictRnaSecondaryStructure('GC');
+    expect(res.numPairs).toBe(0);
+  });
+
+  it('supports G-U wobble pairing in addition to Watson-Crick pairs', () => {
+    const res = predictRnaSecondaryStructure('GGGGAAAAUUUU');
+    expect(res.numPairs).toBe(4);
+  });
+
+  it('always produces a balanced (non-crossing) dot-bracket structure', () => {
+    const res = predictRnaSecondaryStructure('GGGAAAUCCCUUUGGGAAAUCCC');
+    expect(isBalancedDotBracket(res.dotBracket)).toBe(true);
+    expect(res.dotBracket.length).toBe(res.sequence.length);
+  });
+
+  it('rejects DNA input (containing T) with a clear error message', () => {
+    const res = predictRnaSecondaryStructure('GGGGTTTTCCCC');
+    expect(res.isValid).toBe(false);
+    expect(res.errorMessage).toMatch(/RNA/);
+  });
+
+  it('blocks structure prediction on ambiguous IUPAC codes rather than silently ignoring them', () => {
+    const res = predictRnaSecondaryStructure('GGGGNNNNCCCC');
+    expect(res.isValid).toBe(true);
+    expect(res.warning).toBe('AMBIGUITY_BLOCKS_STRUCTURE');
+    expect(res.pairs).toEqual([]);
+  });
+
+  it('rejects sequences exceeding the DP length cap', () => {
+    const long = 'A'.repeat(301);
+    const res = predictRnaSecondaryStructure(long);
+    expect(res.isValid).toBe(false);
+    expect(res.errorMessage).toMatch(/exceeds the maximum/i);
+  });
+
+  it('increasing the minimum loop length can only decrease (never increase) the number of pairs found', () => {
+    const seq = 'GGGGAAAACCCC';
+    const loose = predictRnaSecondaryStructure(seq, 1);
+    const strict = predictRnaSecondaryStructure(seq, 6);
+    expect(strict.numPairs).toBeLessThanOrEqual(loose.numPairs);
+  });
+
+  it('every reported pair index is within sequence bounds and i < j', () => {
+    const res = predictRnaSecondaryStructure('GGGAAAUCCCUUUGGGAAAUCCC');
+    for (const [i, j] of res.pairs) {
+      expect(i).toBeGreaterThanOrEqual(0);
+      expect(j).toBeLessThan(res.sequence.length);
+      expect(i).toBeLessThan(j);
+    }
+  });
+});
+
+describe('31. Statistical Test Calculator — p-values validated against textbook critical values', () => {
+  it('t-distribution p-value matches the standard two-tailed critical value at df=10, alpha=0.05', () => {
+    expect(tDistributionPValue(2.228, 10)).toBeCloseTo(0.05, 3);
+  });
+
+  it('t-distribution p-value matches the standard two-tailed critical value at df=20, alpha=0.05', () => {
+    expect(tDistributionPValue(2.086, 20)).toBeCloseTo(0.05, 3);
+  });
+
+  it('chi-square p-value matches the standard critical value at df=1, alpha=0.05', () => {
+    expect(chiSquarePValue(3.841, 1)).toBeCloseTo(0.05, 3);
+  });
+
+  it('chi-square p-value matches the standard critical value at df=4, alpha=0.05', () => {
+    expect(chiSquarePValue(9.488, 4)).toBeCloseTo(0.05, 3);
+  });
+
+  it('chi-square p-value matches the standard critical value at df=1, alpha=0.01', () => {
+    expect(chiSquarePValue(6.635, 1)).toBeCloseTo(0.01, 3);
+  });
+});
+
+describe('32. One-Sample t-test', () => {
+  it('computes correct mean, sd, t, and df for a known sample', () => {
+    const res = oneSampleTTest([51, 55, 45, 58, 60], 50);
+    expect(res.isValid).toBe(true);
+    expect(res.n).toBe(5);
+    expect(res.mean).toBeCloseTo(53.8, 5);
+    expect(res.df).toBe(4);
+  });
+
+  it('rejects a sample with fewer than 2 data points', () => {
+    const res = oneSampleTTest([5], 10);
+    expect(res.isValid).toBe(false);
+  });
+
+  it('rejects a zero-variance sample rather than dividing by zero silently', () => {
+    const res = oneSampleTTest([5, 5, 5, 5], 10);
+    expect(res.isValid).toBe(false);
+    expect(res.errorMessage).toMatch(/zero variance/i);
+  });
+
+  it('is not significant when the sample mean is close to the hypothesized mean', () => {
+    const res = oneSampleTTest([50, 51, 49, 50, 51, 49], 50);
+    expect(res.isValid).toBe(true);
+    expect(res.pValue).toBeGreaterThan(0.05);
+  });
+});
+
+describe('33. Two-Sample t-test (Welch and Student)', () => {
+  it('finds a highly significant difference between two clearly separated groups', () => {
+    const groupA = [23, 25, 21, 26, 24, 22];
+    const groupB = [30, 32, 28, 31, 29, 33];
+    const res = twoSampleTTest(groupA, groupB, false);
+    expect(res.isValid).toBe(true);
+    expect(res.pValue).toBeLessThan(0.001);
+  });
+
+  it('Welch and Student t-tests agree closely when variances are equal', () => {
+    const groupA = [23, 25, 21, 26, 24, 22];
+    const groupB = [30, 32, 28, 31, 29, 33];
+    const welch = twoSampleTTest(groupA, groupB, false);
+    const student = twoSampleTTest(groupA, groupB, true);
+    expect(welch.t).toBeCloseTo(student.t!, 5);
+  });
+
+  it('rejects a group with fewer than 2 data points', () => {
+    const res = twoSampleTTest([5], [1, 2, 3]);
+    expect(res.isValid).toBe(false);
+  });
+
+  it('is not significant for two samples drawn from the same distribution', () => {
+    const groupA = [50, 51, 49, 50, 52, 48];
+    const groupB = [49, 50, 51, 50, 48, 52];
+    const res = twoSampleTTest(groupA, groupB, false);
+    expect(res.pValue).toBeGreaterThan(0.05);
+  });
+});
+
+describe('34. Chi-Square Goodness-of-Fit', () => {
+  it('computes the correct chi-square statistic for a known example', () => {
+    const res = chiSquareGoodnessOfFit([10, 20, 30, 40], [25, 25, 25, 25]);
+    expect(res.isValid).toBe(true);
+    expect(res.chiSquare).toBeCloseTo(20, 5);
+    expect(res.df).toBe(3);
+  });
+
+  it('is not significant when observed matches expected closely', () => {
+    const res = chiSquareGoodnessOfFit([24, 26, 25, 25], [25, 25, 25, 25]);
+    expect(res.pValue).toBeGreaterThan(0.05);
+  });
+
+  it('rejects mismatched observed/expected list lengths', () => {
+    const res = chiSquareGoodnessOfFit([1, 2, 3], [1, 2]);
+    expect(res.isValid).toBe(false);
+  });
+
+  it('rejects non-positive expected values', () => {
+    const res = chiSquareGoodnessOfFit([1, 2], [1, -2]);
+    expect(res.isValid).toBe(false);
+  });
+});
+
+describe('35. Chi-Square Independence (Contingency Table)', () => {
+  it('computes correct expected values and totals for a 2x2 table', () => {
+    const res = chiSquareIndependence([[10, 20], [30, 40]]);
+    expect(res.isValid).toBe(true);
+    expect(res.rowTotals).toEqual([30, 70]);
+    expect(res.colTotals).toEqual([40, 60]);
+    expect(res.grandTotal).toBe(100);
+    expect(res.df).toBe(1);
+  });
+
+  it('rejects a table with fewer than 2 rows', () => {
+    const res = chiSquareIndependence([[1, 2, 3]]);
+    expect(res.isValid).toBe(false);
+  });
+
+  it('rejects a table with fewer than 2 columns', () => {
+    const res = chiSquareIndependence([[1], [2]]);
+    expect(res.isValid).toBe(false);
+  });
+
+  it('rejects ragged rows (inconsistent column counts)', () => {
+    const res = chiSquareIndependence([[1, 2], [1, 2, 3]]);
+    expect(res.isValid).toBe(false);
+  });
+
+  it('finds a significant association for a strongly skewed table', () => {
+    const res = chiSquareIndependence([[100, 0], [0, 100]]);
+    expect(res.isValid).toBe(true);
+    expect(res.pValue).toBeLessThan(0.001);
   });
 });
