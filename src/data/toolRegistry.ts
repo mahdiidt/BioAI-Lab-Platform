@@ -237,6 +237,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     featured: true,
   },
   {
+    id: 'statistical_test',
+    titleKey: 'tool_stat_test_title',
+    descKey: 'tool_stat_test_desc',
+    category: 'lab_calc',
+    iconName: 'Sigma',
+    keywords: ['t-test', 'chi-square', 'statistics', 'p-value', 'significance', 'anova'],
+    educationalLevel: 'intermediate',
+    featured: true,
+  },
+  {
     id: 'c1v1_calc',
     titleKey: 'tool_c1v1_title',
     descKey: 'tool_c1v1_desc',
