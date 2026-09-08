@@ -1,240 +1,185 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { FeaturedCategories } from './components/FeaturedCategories';
-import { ToolDashboard } from './components/ToolDashboard';
-import { ToolDetailModal } from './components/ToolDetailModal';
-import { SearchDialog } from './components/common/SearchDialog';
-import { PlatformGuideModal } from './components/PlatformGuideModal';
-import { Footer } from './components/Footer';
-import { Language, Theme } from './types';
+import React, { useState } from 'react';
+import { Dna, Search, Star, Menu, X, ShieldCheck, Sparkles, BookOpen } from 'lucide-react';
+import { LanguageSelector } from './common/LanguageSelector';
+import { ThemeSelector } from './common/ThemeSelector';
+import { AuthNavControl } from './auth/AuthNavControl';
+import { getTranslation } from '../i18n';
+import { Language, Theme } from '../types';
 
-const VALID_LANGUAGES: Language[] = ['en', 'fa', 'zh', 'es', 'fr', 'de'];
-const VALID_THEMES: Theme[] = ['light', 'dark', 'system'];
-
-function getValidInitialLang(): Language {
-  try {
-    const saved = localStorage.getItem('bioai_lang');
-    if (saved && VALID_LANGUAGES.includes(saved as Language)) {
-      return saved as Language;
-    }
-  } catch {
-    // Ignore storage access errors
-  }
-  return 'en';
+interface NavbarProps {
+  currentLang: Language;
+  onLanguageChange: (lang: Language) => void;
+  currentTheme: Theme;
+  onThemeChange: (theme: Theme) => void;
+  onOpenSearch: () => void;
+  favoriteCount: number;
+  onOpenFavorites: () => void;
+  onNavigateHome: () => void;
+  onSelectCategory: (catId: string) => void;
+  onOpenGuide: () => void;
+  onOpenAuth: () => void;
 }
 
-function getValidInitialTheme(): Theme {
-  try {
-    const saved = localStorage.getItem('bioai_theme');
-    if (saved && VALID_THEMES.includes(saved as Theme)) {
-      return saved as Theme;
-    }
-  } catch {
-    // Ignore storage access errors
-  }
-  return 'light';
-}
-
-function getValidInitialFavorites(): string[] {
-  const defaultFavorites = ['dna_analyzer', 'primer_designer', 'protein_analyzer'];
-  try {
-    const saved = localStorage.getItem('bioai_favorites');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
-        return parsed;
-      }
-    }
-  } catch {
-    // Fallback on error
-  }
-  return defaultFavorites;
-}
-
-export default function App() {
-  const [lang, setLang] = useState<Language>(getValidInitialLang);
-  const [theme, setTheme] = useState<Theme>(getValidInitialTheme);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState<boolean>(false);
-  const [activeToolId, setActiveToolId] = useState<string | null>(null);
-  const [searchOpen, setSearchOpen] = useState<boolean>(false);
-  const [guideOpen, setGuideOpen] = useState<boolean>(false);
-  const [favorites, setFavorites] = useState<string[]>(getValidInitialFavorites);
-
-
-  // Handle language switch HTML attributes
-  useEffect(() => {
-    try {
-      localStorage.setItem('bioai_lang', lang);
-    } catch {
-      // Storage unavailable
-    }
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
-  }, [lang]);
-
-  // Handle Theme mode
-  useEffect(() => {
-    try {
-      localStorage.setItem('bioai_theme', theme);
-    } catch {
-      // Storage unavailable
-    }
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-    const applyTheme = () => {
-      if (theme === 'system') {
-        if (mediaQuery.matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      } else if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    };
-
-    applyTheme();
-
-    if (theme === 'system') {
-      mediaQuery.addEventListener('change', applyTheme);
-      return () => mediaQuery.removeEventListener('change', applyTheme);
-    }
-  }, [theme]);
-
-  // Handle Ctrl+K shortcut for Search
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setSearchOpen((prev) => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Save favorites to localStorage
-  const handleToggleFavorite = (toolId: string) => {
-    setFavorites((prev) => {
-      const updated = prev.includes(toolId)
-        ? prev.filter((id) => id !== toolId)
-        : [...prev, toolId];
-      try {
-        localStorage.setItem('bioai_favorites', JSON.stringify(updated));
-      } catch {
-        // Storage unavailable
-      }
-      return updated;
-    });
-  };
-
-  const handleNavigateHome = () => {
-    setActiveToolId(null);
-    setSelectedCategory('all');
-    setShowFavoritesOnly(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleExploreClick = () => {
-    const el = document.getElementById('tools');
-    el?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleBrowseCategoriesClick = () => {
-    const el = document.getElementById('categories');
-    el?.scrollIntoView({ behavior: 'smooth' });
-  };
+export const Navbar: React.FC<NavbarProps> = ({
+  currentLang,
+  onLanguageChange,
+  currentTheme,
+  onThemeChange,
+  onOpenSearch,
+  favoriteCount,
+  onOpenFavorites,
+  onNavigateHome,
+  onSelectCategory,
+  onOpenGuide,
+  onOpenAuth,
+}) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F3FAF7] text-[#12312B] font-sans antialiased selection:bg-[#14B8A6]/20 selection:text-[#0F766E] dark:bg-slate-950 dark:text-slate-100">
-      {/* Navigation Header */}
-      <Navbar
-        currentLang={lang}
-        onLanguageChange={setLang}
-        currentTheme={theme}
-        onThemeChange={setTheme}
-        onOpenSearch={() => setSearchOpen(true)}
-        favoriteCount={favorites.length}
-        onOpenFavorites={() => {
-          setShowFavoritesOnly(true);
-          setSelectedCategory('all');
-          handleExploreClick();
-        }}
-        onNavigateHome={handleNavigateHome}
-        onSelectCategory={(catId) => {
-          setShowFavoritesOnly(false);
-          setSelectedCategory(catId);
-          handleExploreClick();
-        }}
-        onOpenGuide={() => setGuideOpen(true)}
-      />
+    <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-[#DDEDE8] dark:border-slate-800 shadow-2xs transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Brand Logo */}
+        <div
+          onClick={onNavigateHome}
+          className="flex items-center gap-2.5 cursor-pointer group"
+        >
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0F766E] to-[#14B8A6] flex items-center justify-center text-white shadow-md shadow-[#0F766E]/20 group-hover:scale-105 transition-transform">
+            <Dna className="w-5 h-5 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-extrabold text-lg text-[#12312B] dark:text-slate-100 tracking-tight">
+                BioAI<span className="text-[#0F766E] dark:text-teal-400">.Lab</span>
+              </span>
+              <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-[#ECFDF5] dark:bg-slate-900 text-[#0F766E] dark:text-teal-400 border border-[#DDEDE8] dark:border-slate-800 rounded-md tracking-wider">
+                PRO LAB
+              </span>
+            </div>
+            <span className="text-[10px] text-[#64748B] dark:text-slate-400 block font-medium">
+              {getTranslation(currentLang, 'brandSubtitle')}
+            </span>
+          </div>
+        </div>
 
-      {/* Hero Section */}
-      <Hero
-        lang={lang}
-        onExploreClick={handleExploreClick}
-        onBrowseCategoriesClick={handleBrowseCategoriesClick}
-      />
+        {/* Global Search Button Trigger (Center Desktop) */}
+        <button
+          onClick={onOpenSearch}
+          type="button"
+          className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-[#F3FAF7] dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-800 text-[#64748B] dark:text-slate-400 hover:border-[#14B8A6] hover:bg-white dark:hover:bg-slate-800 text-xs font-medium transition-all w-80 cursor-pointer shadow-2xs"
+        >
+          <Search className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
+          <span className="flex-1 text-left">{getTranslation(currentLang, 'searchPlaceholder')}</span>
+          <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white dark:bg-slate-800 border border-[#DDEDE8] dark:border-slate-700 rounded text-[#0F766E] dark:text-teal-400 font-bold">
+            Ctrl+K
+          </kbd>
+        </button>
 
-      {/* Featured Categories Grid */}
-      <FeaturedCategories
-        lang={lang}
-        onSelectCategory={(catId) => {
-          setShowFavoritesOnly(false);
-          setSelectedCategory(catId);
-          handleExploreClick();
-        }}
-      />
+        {/* Action Controls Right */}
+        <div className="hidden md:flex items-center gap-3">
+          {/* Platform & Tools Guide Button */}
+          <button
+            onClick={onOpenGuide}
+            type="button"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#DDEDE8] dark:border-slate-800 bg-white dark:bg-slate-900 text-[#12312B] dark:text-slate-100 hover:bg-[#ECFDF5] dark:hover:bg-slate-800 hover:border-[#14B8A6] transition-all cursor-pointer shadow-2xs text-xs font-semibold"
+            title={getTranslation(currentLang, 'navAbout')}
+          >
+            <BookOpen className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
+            <span className="hidden lg:inline">{getTranslation(currentLang, 'navAbout')}</span>
+          </button>
 
-      {/* Main Tools Dashboard */}
-      <ToolDashboard
-        lang={lang}
-        selectedCategory={selectedCategory}
-        onSelectCategory={(catId) => {
-          setShowFavoritesOnly(false);
-          setSelectedCategory(catId);
-        }}
-        showFavoritesOnly={showFavoritesOnly}
-        onClearFavoritesFilter={() => setShowFavoritesOnly(false)}
-        favorites={favorites}
-        onToggleFavorite={handleToggleFavorite}
-        onOpenTool={(toolId) => setActiveToolId(toolId)}
-      />
+          {/* Favorites Button */}
+          <button
+            onClick={onOpenFavorites}
+            type="button"
+            className="relative p-2 rounded-lg border border-[#DDEDE8] dark:border-slate-800 bg-white dark:bg-slate-900 text-[#12312B] dark:text-slate-100 hover:bg-[#ECFDF5] dark:hover:bg-slate-800 hover:border-[#14B8A6] transition-all cursor-pointer shadow-2xs"
+            title={getTranslation(currentLang, 'navFavorites')}
+          >
+            <Star className="w-4 h-4 text-[#F59E0B] fill-[#F59E0B]" />
+            {favoriteCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-[#0F766E] text-white">
+                {favoriteCount}
+              </span>
+            )}
+          </button>
 
-      {/* Tool Detail View Modal */}
-      {activeToolId && (
-        <ToolDetailModal
-          toolId={activeToolId}
-          lang={lang}
-          onClose={() => setActiveToolId(null)}
-          isFavorite={favorites.includes(activeToolId)}
-          onToggleFavorite={() => handleToggleFavorite(activeToolId)}
-        />
+          {/* Privacy Client-Side Badge */}
+          <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#ECFDF5] dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-800 text-[11px] font-medium text-[#0F766E] dark:text-teal-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#22C55E]" />
+            <span>{getTranslation(currentLang, 'localClientSide')}</span>
+          </div>
+
+          <LanguageSelector currentLang={currentLang} onLanguageChange={onLanguageChange} />
+          <ThemeSelector currentTheme={currentTheme} onThemeChange={onThemeChange} lang={currentLang} />
+          <AuthNavControl lang={currentLang} onOpenAuth={onOpenAuth} />
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={onOpenSearch}
+            type="button"
+            className="p-2 rounded-lg border border-[#DDEDE8] dark:border-slate-800 bg-white dark:bg-slate-900 text-[#0F766E] dark:text-teal-400"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            type="button"
+            className="p-2 rounded-lg border border-[#DDEDE8] dark:border-slate-800 bg-white dark:bg-slate-900 text-[#12312B] dark:text-slate-100"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-[#DDEDE8] dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-4 animate-in slide-in-from-top-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-[#64748B] dark:text-slate-400">Language & Theme</span>
+            <div className="flex items-center gap-2">
+              <LanguageSelector currentLang={currentLang} onLanguageChange={onLanguageChange} />
+              <ThemeSelector currentTheme={currentTheme} onThemeChange={onThemeChange} lang={currentLang} />
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              onOpenGuide();
+              setMobileMenuOpen(false);
+            }}
+            type="button"
+            className="w-full py-2.5 px-3 rounded-lg bg-[#ECFDF5] dark:bg-slate-900 text-[#0F766E] dark:text-teal-400 font-semibold text-xs flex items-center gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>{getTranslation(currentLang, 'navAbout')}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              onOpenFavorites();
+              setMobileMenuOpen(false);
+            }}
+            type="button"
+            className="w-full py-2.5 px-3 rounded-lg bg-[#ECFDF5] dark:bg-slate-900 text-[#0F766E] dark:text-teal-400 font-semibold text-xs flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2">
+              <Star className="w-4 h-4 fill-current text-[#F59E0B]" />
+              <span>{getTranslation(currentLang, 'favoriteTools')}</span>
+            </span>
+            <span className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 text-xs font-mono text-[#12312B] dark:text-slate-200">{favoriteCount}</span>
+          </button>
+
+          <AuthNavControl
+            lang={currentLang}
+            onOpenAuth={() => {
+              onOpenAuth();
+              setMobileMenuOpen(false);
+            }}
+            variant="mobile"
+          />
+        </div>
       )}
-
-      {/* Global Interactive Search Modal */}
-      <SearchDialog
-        isOpen={searchOpen}
-        onClose={() => setSearchOpen(false)}
-        onSelectTool={(toolId) => setActiveToolId(toolId)}
-        lang={lang}
-      />
-
-      {/* Platform & Tools Guide Modal */}
-      {guideOpen && (
-        <PlatformGuideModal
-          lang={lang}
-          onClose={() => setGuideOpen(false)}
-          onOpenTool={(toolId) => setActiveToolId(toolId)}
-        />
-      )}
-
-      {/* Footer */}
-      <Footer lang={lang} onLanguageChange={setLang} />
-    </div>
+    </header>
   );
-}
+};
