@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Dna, Search, Star, Menu, X, ShieldCheck, Sparkles, BookOpen } from 'lucide-react';
 import { LanguageSelector } from './common/LanguageSelector';
 import { ThemeSelector } from './common/ThemeSelector';
+import { AuthNavControl } from './auth/AuthNavControl';
 import { getTranslation } from '../i18n';
 import { Language, Theme } from '../types';
 
@@ -16,6 +17,7 @@ interface NavbarProps {
   onNavigateHome: () => void;
   onSelectCategory: (catId: string) => void;
   onOpenGuide: () => void;
+  onOpenAuth: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -29,6 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateHome,
   onSelectCategory,
   onOpenGuide,
+  onOpenAuth,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -107,6 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <LanguageSelector currentLang={currentLang} onLanguageChange={onLanguageChange} />
           <ThemeSelector currentTheme={currentTheme} onThemeChange={onThemeChange} lang={currentLang} />
+          <AuthNavControl lang={currentLang} onOpenAuth={onOpenAuth} />
         </div>
 
         {/* Mobile Menu Button */}
@@ -165,6 +169,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
             <span className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 text-xs font-mono text-[#12312B] dark:text-slate-200">{favoriteCount}</span>
           </button>
+
+          <AuthNavControl
+            lang={currentLang}
+            onOpenAuth={() => {
+              onOpenAuth();
+              setMobileMenuOpen(false);
+            }}
+            variant="mobile"
+          />
         </div>
       )}
     </header>
