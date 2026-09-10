@@ -135,6 +135,12 @@ describe('Auth UI — i18n Completeness', () => {
     'authCheckEmailResetDesc',
     'authResendEmail',
     'authEnterResetLinkManually',
+    'authAccount',
+    'authPlanFree',
+    'authPlanPro',
+    'authSignOutBtn',
+    'authNotConfigured',
+    'authEmailResent',
   ];
 
   it('every auth UI key has a real (non-fallback) translation in every supported language', () => {
