@@ -738,4 +738,12 @@ export const fa = {
   authPlanFree: 'رایگان',
   authPlanPro: 'حرفه‌ای',
   authSignOutBtn: 'خروج',
+
+  // Auth modal fun-fact ticker (purely decorative)
+  authFunFact1: '🧬 اگه DNA یک سلول انسانی رو باز کنی، حدود ۲ متر طول می‌کشه.',
+  authFunFact2: '🔬 در شرایط ایده‌آل، E. coli هر ~۲۰ دقیقه یک‌بار تقسیم می‌شه.',
+  authFunFact3: '🧫 CRISPR در اصل یه سیستم ایمنی باکتریایی بود، نه یه ابزار آزمایشگاهی.',
+  authFunFact4: '🍌 حدود ۶۰٪ از DNA انسان با موز مشترکه.',
+  authFunFact5: '💧 یک قاشق چای‌خوری خاک می‌تونه بیش از یک میلیارد باکتری داشته باشه.',
+  authFunFact6: '🐙 اختاپوس‌ها سه قلب دارن و خونشون آبی و مس‌محوره.',
 };
