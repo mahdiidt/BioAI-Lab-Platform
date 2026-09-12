@@ -97,6 +97,26 @@ body {
   animation: bio-pulse 4s ease-in-out infinite;
 }
 
+/* Auth modal: gentle drift for the background helix strands */
+@keyframes auth-helix-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+.auth-helix-strand {
+  animation: auth-helix-drift 7s ease-in-out infinite;
+}
+
+/* Auth modal: fun-fact ticker fade-in on each rotation */
+@keyframes auth-fact-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fact-fade-in {
+  animation: auth-fact-fade-in 0.5s ease-out;
+}
+
 /* RTL / LTR Helpers */
 .dir-rtl {
   direction: rtl;
