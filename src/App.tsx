@@ -64,7 +64,8 @@ export default function App() {
   const [guideOpen, setGuideOpen] = useState<boolean>(false);
   const [authOpen, setAuthOpen] = useState<boolean>(false);
   const [authInitialView, setAuthInitialView] = useState<'login' | 'reset'>('login');
-  const { passwordRecoveryPending } = useAuth();
+  const [pendingToolId, setPendingToolId] = useState<string | null>(null);
+  const { passwordRecoveryPending, user } = useAuth();
 
   // If the user arrived by clicking a "reset password" email link, Supabase
   // signs them into a temporary recovery session and fires PASSWORD_RECOVERY.
@@ -75,6 +76,27 @@ export default function App() {
       setAuthOpen(true);
     }
   }, [passwordRecoveryPending]);
+
+  // Tools require a signed-in user. If someone signs in after being
+  // prompted this way, automatically open the tool they originally clicked
+  // instead of dropping them back on the dashboard.
+  useEffect(() => {
+    if (user && pendingToolId) {
+      setActiveToolId(pendingToolId);
+      setPendingToolId(null);
+      setAuthOpen(false);
+    }
+  }, [user, pendingToolId]);
+
+  const handleOpenTool = (toolId: string) => {
+    if (user) {
+      setActiveToolId(toolId);
+    } else {
+      setPendingToolId(toolId);
+      setAuthInitialView('login');
+      setAuthOpen(true);
+    }
+  };
   const [favorites, setFavorites] = useState<string[]>(getValidInitialFavorites);
 
 
@@ -221,7 +243,7 @@ export default function App() {
         onClearFavoritesFilter={() => setShowFavoritesOnly(false)}
         favorites={favorites}
         onToggleFavorite={handleToggleFavorite}
-        onOpenTool={(toolId) => setActiveToolId(toolId)}
+        onOpenTool={handleOpenTool}
       />
 
       {/* Tool Detail View Modal */}
@@ -239,7 +261,7 @@ export default function App() {
       <SearchDialog
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
-        onSelectTool={(toolId) => setActiveToolId(toolId)}
+        onSelectTool={handleOpenTool}
         lang={lang}
       />
 
@@ -248,7 +270,7 @@ export default function App() {
         <PlatformGuideModal
           lang={lang}
           onClose={() => setGuideOpen(false)}
-          onOpenTool={(toolId) => setActiveToolId(toolId)}
+          onOpenTool={handleOpenTool}
         />
       )}
 
