@@ -739,4 +739,12 @@ export const en = {
   authPlanFree: 'Free',
   authPlanPro: 'Pro',
   authSignOutBtn: 'Sign Out',
+
+  // Auth modal fun-fact ticker (purely decorative)
+  authFunFact1: '🧬 Uncoiled, the DNA in one human cell would stretch about 2 meters.',
+  authFunFact2: '🔬 Under ideal conditions, E. coli can divide every ~20 minutes.',
+  authFunFact3: '🧫 CRISPR started out as a bacterial immune system, not a lab tool.',
+  authFunFact4: '🍌 Humans share about 60% of their DNA with a banana.',
+  authFunFact5: '💧 A single teaspoon of soil can hold over a billion bacteria.',
+  authFunFact6: '🐙 Octopuses have three hearts and blue, copper-based blood.',
 };
