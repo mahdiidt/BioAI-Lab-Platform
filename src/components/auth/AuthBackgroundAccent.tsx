@@ -26,14 +26,16 @@ export const AuthBackgroundAccent: React.FC = () => {
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
-        className="text-[#0F766E]"
+        className="text-[#0F766E] auth-helix-strand"
+        style={{ animationDelay: '0s' }}
       />
       <path
         d="M0,80 C40,110 80,50 120,80 C160,110 200,50 240,80 C280,110 320,50 360,80 C380,95 395,85 400,80"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
-        className="text-[#14B8A6]"
+        className="text-[#14B8A6] auth-helix-strand"
+        style={{ animationDelay: '-3.5s' }}
       />
     </svg>
   );
