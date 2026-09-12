@@ -3,6 +3,8 @@ import { X, Dna } from 'lucide-react';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { AuthBackgroundAccent } from './AuthBackgroundAccent';
+import { MiniHelix3D } from './MiniHelix3D';
+import { FunFactTicker } from './FunFactTicker';
 import { LoginView } from './LoginView';
 import { RegisterView } from './RegisterView';
 import { ForgotPasswordView } from './ForgotPasswordView';
@@ -74,14 +76,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ lang, initialView = 'login
               </div>
             </div>
 
-            <button
-              onClick={onClose}
-              type="button"
-              className="p-1.5 rounded-lg bg-white/70 dark:bg-slate-900/70 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] dark:text-slate-400 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors cursor-pointer shrink-0"
-              aria-label={getTranslation(lang, 'clear')}
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <MiniHelix3D />
+              <button
+                onClick={onClose}
+                type="button"
+                className="p-1.5 rounded-lg bg-white/70 dark:bg-slate-900/70 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] dark:text-slate-400 hover:text-[#0F766E] dark:hover:text-teal-400 transition-colors cursor-pointer shrink-0"
+                aria-label={getTranslation(lang, 'clear')}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="relative mt-3 pt-3 border-t border-dashed border-[#DDEDE8] dark:border-slate-700">
+            <FunFactTicker lang={lang} />
           </div>
         </div>
 
