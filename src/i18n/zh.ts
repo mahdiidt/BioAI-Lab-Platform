@@ -731,4 +731,12 @@ export const zh = {
   authPlanFree: '免费版',
   authPlanPro: '专业版',
   authSignOutBtn: '退出登录',
+
+  // Auth modal fun-fact ticker (purely decorative)
+  authFunFact1: '🧬 展开后，一个人体细胞中的 DNA 大约有 2 米长。',
+  authFunFact2: '🔬 在理想条件下，大肠杆菌大约每 20 分钟分裂一次。',
+  authFunFact3: '🧫 CRISPR 最初是细菌的免疫系统，而非实验室工具。',
+  authFunFact4: '🍌 人类与香蕉共享约 60% 的 DNA。',
+  authFunFact5: '💧 一茶匙土壤中可能含有超过十亿个细菌。',
+  authFunFact6: '🐙 章鱼有三颗心脏，血液是铜基的蓝色血液。',
 };
