@@ -141,6 +141,12 @@ describe('Auth UI — i18n Completeness', () => {
     'authSignOutBtn',
     'authNotConfigured',
     'authEmailResent',
+    'authFunFact1',
+    'authFunFact2',
+    'authFunFact3',
+    'authFunFact4',
+    'authFunFact5',
+    'authFunFact6',
   ];
 
   it('every auth UI key has a real (non-fallback) translation in every supported language', () => {
