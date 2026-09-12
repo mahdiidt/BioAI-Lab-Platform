@@ -731,4 +731,12 @@ export const de = {
   authPlanFree: 'Kostenlos',
   authPlanPro: 'Pro',
   authSignOutBtn: 'Abmelden',
+
+  // Auth modal fun-fact ticker (purely decorative)
+  authFunFact1: '🧬 Abgewickelt wäre die DNA einer menschlichen Zelle etwa 2 Meter lang.',
+  authFunFact2: '🔬 Unter idealen Bedingungen kann sich E. coli etwa alle 20 Minuten teilen.',
+  authFunFact3: '🧫 CRISPR war ursprünglich ein bakterielles Immunsystem, kein Laborwerkzeug.',
+  authFunFact4: '🍌 Menschen teilen etwa 60 % ihrer DNA mit einer Banane.',
+  authFunFact5: '💧 Ein einziger Teelöffel Erde kann über eine Milliarde Bakterien enthalten.',
+  authFunFact6: '🐙 Oktopusse haben drei Herzen und blaues, kupferbasiertes Blut.',
 };
