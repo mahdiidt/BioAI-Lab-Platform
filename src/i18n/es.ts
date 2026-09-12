@@ -731,4 +731,12 @@ export const es = {
   authPlanFree: 'Gratis',
   authPlanPro: 'Pro',
   authSignOutBtn: 'Cerrar sesión',
+
+  // Auth modal fun-fact ticker (purely decorative)
+  authFunFact1: '🧬 Desenrollado, el ADN de una célula humana mediría unos 2 metros.',
+  authFunFact2: '🔬 En condiciones ideales, la E. coli puede dividirse cada ~20 minutos.',
+  authFunFact3: '🧫 El CRISPR empezó siendo un sistema inmunitario bacteriano, no una herramienta de laboratorio.',
+  authFunFact4: '🍌 Los humanos comparten cerca del 60% de su ADN con un plátano.',
+  authFunFact5: '💧 Una sola cucharadita de tierra puede contener más de mil millones de bacterias.',
+  authFunFact6: '🐙 Los pulpos tienen tres corazones y sangre azul a base de cobre.',
 };
