@@ -152,6 +152,8 @@ export const en = {
   tool_local_align_desc: 'Find the highest-scoring similar subregion shared between two sequences — useful for locating a conserved domain or motif rather than aligning full sequence length.',
   tool_phylo_title: 'Phylogenetic Tree Viewer (Newick)',
   tool_phylo_desc: 'Parse and render evolutionary phylogenetic trees from Newick format strings.',
+  tool_distance_matrix_title: 'Sequence Similarity / Distance Matrix',
+  tool_distance_matrix_desc: 'Compare multiple sequences pairwise (Needleman-Wunsch) and view an N x N percent-identity matrix.',
 
   // Dashboard Sections
   featuredTools: 'Featured Scientific Tools',
@@ -213,6 +215,10 @@ export const en = {
   tool_multi_fasta_input: 'Multi-FASTA Input',
   tool_parsed_records: 'Parsed Records',
   tool_load_sample_fasta: 'Load Sample Multi-FASTA',
+  tool_distance_matrix_output: 'Percent Identity Matrix',
+  tool_distance_matrix_excluded: 'Sequences excluded from the matrix',
+  tool_distance_matrix_most_similar: 'Most similar pair',
+  tool_distance_matrix_least_similar: 'Least similar pair',
   tool_parsed_fasta_records: 'Parsed FASTA Records',
   tool_valid: 'Valid',
   tool_invalid_bases: 'Invalid Base(s)',
