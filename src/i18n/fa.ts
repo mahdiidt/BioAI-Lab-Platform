@@ -152,6 +152,8 @@ export const fa = {
   tool_local_align_desc: 'پیدا کردن پرامتیازترین زیرناحیه‌ی مشابه مشترک بین دو توالی — برای پیدا کردن دومین یا موتیف حفاظت‌شده به‌جای هم‌ردیف‌سازی کل طول.',
   tool_phylo_title: 'نمایشگر درخت تبارشناسی (Newick)',
   tool_phylo_desc: 'تجزیه و رسم گرافیکی درخت‌های تکاملی از رشته‌های استاندارد Newick.',
+  tool_distance_matrix_title: 'ماتریس شباهت / فاصله‌ی توالی‌ها',
+  tool_distance_matrix_desc: 'مقایسه‌ی دوتایی چند توالی (با Needleman-Wunsch) و نمایش ماتریس درصد شباهت N×N.',
 
   // Dashboard Sections
   featuredTools: 'ابزارهای شاخص علمی',
@@ -213,6 +215,10 @@ export const fa = {
   tool_multi_fasta_input: 'ورودی Multi-FASTA',
   tool_parsed_records: 'رکورد‌های پردازش‌شده',
   tool_load_sample_fasta: 'بارگذاری نمونه Multi-FASTA',
+  tool_distance_matrix_output: 'ماتریس درصد شباهت',
+  tool_distance_matrix_excluded: 'توالی‌های حذف‌شده از ماتریس',
+  tool_distance_matrix_most_similar: 'شبیه‌ترین جفت',
+  tool_distance_matrix_least_similar: 'کم‌شباهت‌ترین جفت',
   tool_parsed_fasta_records: 'رکوردهای FASTA استخراج‌شده',
   tool_valid: 'معتبر',
   tool_invalid_bases: 'باز(های) نامعتبر',
