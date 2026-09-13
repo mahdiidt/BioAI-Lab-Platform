@@ -27,6 +27,7 @@ import { RnaSecondaryStructureTool } from './tools/RnaSecondaryStructureTool';
 import { StatisticalTestTool } from './tools/StatisticalTestTool';
 import { PhylogeneticTreeTool } from './tools/PhylogeneticTreeTool';
 import { GramStainTool } from './tools/GramStainTool';
+import { SequenceDistanceMatrixTool } from './tools/SequenceDistanceMatrixTool';
 
 interface ToolDetailModalProps {
   toolId: string;
@@ -148,6 +149,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'phylogenetic_tree':
         return <PhylogeneticTreeTool lang={lang} />;
+
+      case 'sequence_distance_matrix':
+        return <SequenceDistanceMatrixTool lang={lang} />;
 
       default:
         return <DnaAnalyzerTool lang={lang} />;
