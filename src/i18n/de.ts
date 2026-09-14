@@ -147,8 +147,6 @@ export const de = {
   tool_local_align_desc: 'Findet die höchstbewertete ähnliche Teilregion zwischen zwei Sequenzen — nützlich, um eine konservierte Domäne oder ein Motiv zu lokalisieren, statt die gesamte Sequenzlänge auszurichten.',
   tool_phylo_title: 'Stammbaum-Betrachter (Newick)',
   tool_phylo_desc: 'Visualisieren Sie phylogenetische Stammbäume aus Newick-Format-Strings.',
-  tool_distance_matrix_title: 'Sequenz-Ähnlichkeits-/Distanzmatrix',
-  tool_distance_matrix_desc: 'Vergleichen Sie mehrere Sequenzen paarweise (Needleman-Wunsch) und sehen Sie eine N x N Prozent-Identitätsmatrix.',
 
   featuredTools: 'Hervorgehobene Wissenschaftliche Werkzeuge',
   popularCalculators: 'Beliebte Laborrechner',
@@ -208,10 +206,6 @@ export const de = {
   tool_multi_fasta_input: 'Multi-FASTA-Eingabe',
   tool_parsed_records: 'Verarbeitete Einträge',
   tool_load_sample_fasta: 'Beispiel-Multi-FASTA laden',
-  tool_distance_matrix_output: 'Prozent-Identitätsmatrix',
-  tool_distance_matrix_excluded: 'Von der Matrix ausgeschlossene Sequenzen',
-  tool_distance_matrix_most_similar: 'Ähnlichstes Paar',
-  tool_distance_matrix_least_similar: 'Unähnlichstes Paar',
   tool_parsed_fasta_records: 'Geparste FASTA-Einträge',
   tool_valid: 'Gültig',
   tool_invalid_bases: 'Ungültige Base(n)',
@@ -745,4 +739,14 @@ export const de = {
   authFunFact4: '🍌 Menschen teilen etwa 60 % ihrer DNA mit einer Banane.',
   authFunFact5: '💧 Ein einziger Teelöffel Erde kann über eine Milliarde Bakterien enthalten.',
   authFunFact6: '🐙 Oktopusse haben drei Herzen und blaues, kupferbasiertes Blut.',
+
+  // Sequence Distance / Similarity Matrix
+  tool_distance_matrix_title: 'Sequenz-Distanz-/Ähnlichkeitsmatrix',
+  tool_distance_matrix_desc: 'Berechnet eine NxN-Prozent-Identitäts- oder Distanzmatrix über mehrere Sequenzen gleichzeitig, mit derselben bereits getesteten Global-Alignment-Engine wie das Global-Alignment-Werkzeug.',
+  tool_distance_matrix_output: 'Distanz-/Ähnlichkeitsmatrix',
+  tool_similarity_pct: 'Ähnlichkeit %',
+  tool_distance_pct: 'Distanz %',
+  tool_skipped_invalid_sequences: 'Übersprungene ungültige Sequenzen',
+  tool_some_pairs_not_computed: 'Einige Paare konnten nicht berechnet werden (eine Sequenz überschritt das Längenlimit für diesen Vergleich) und werden als „—" statt eines irreführenden 0 % angezeigt.',
+  tool_distance_matrix_note: 'Diese Matrix wird aus N×(N-1)/2 vollständigen paarweisen globalen Alignments erstellt (derselbe Algorithmus wie das Global-Alignment-Werkzeug) — keine neue wissenschaftliche Methode. Sie fasst zusammen, wie ähnlich jede Sequenz allen anderen ist — der Standard-Erstschritt vor dem manuellen Erstellen eines phylogenetischen Baums.',
 };
