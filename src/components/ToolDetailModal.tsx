@@ -23,11 +23,11 @@ import { MichaelisMentenTool } from './tools/MichaelisMentenTool';
 import { BacterialGrowthTool } from './tools/BacterialGrowthTool';
 import { GlobalAlignmentTool } from './tools/GlobalAlignmentTool';
 import { LocalAlignmentTool } from './tools/LocalAlignmentTool';
+import { DistanceMatrixTool } from './tools/DistanceMatrixTool';
 import { RnaSecondaryStructureTool } from './tools/RnaSecondaryStructureTool';
 import { StatisticalTestTool } from './tools/StatisticalTestTool';
 import { PhylogeneticTreeTool } from './tools/PhylogeneticTreeTool';
 import { GramStainTool } from './tools/GramStainTool';
-import { SequenceDistanceMatrixTool } from './tools/SequenceDistanceMatrixTool';
 
 interface ToolDetailModalProps {
   toolId: string;
@@ -141,6 +141,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
       case 'local_alignment':
         return <LocalAlignmentTool lang={lang} />;
 
+      case 'distance_matrix':
+        return <DistanceMatrixTool lang={lang} />;
+
       case 'rna_secondary_structure':
         return <RnaSecondaryStructureTool lang={lang} />;
 
@@ -149,9 +152,6 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'phylogenetic_tree':
         return <PhylogeneticTreeTool lang={lang} />;
-
-      case 'sequence_distance_matrix':
-        return <SequenceDistanceMatrixTool lang={lang} />;
 
       default:
         return <DnaAnalyzerTool lang={lang} />;
