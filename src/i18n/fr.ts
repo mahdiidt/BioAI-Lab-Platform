@@ -147,8 +147,6 @@ export const fr = {
   tool_local_align_desc: 'Trouve la sous-région similaire au score le plus élevé partagée entre deux séquences — utile pour localiser un domaine ou motif conservé plutôt que d\'aligner toute la longueur.',
   tool_phylo_title: 'Visualiseur d\'Arbre Phylogénétique (Newick)',
   tool_phylo_desc: 'Visualisez les arbres phylogénétiques évolutifs à partir de chaînes au format Newick.',
-  tool_distance_matrix_title: 'Matrice de Similarité / Distance des Séquences',
-  tool_distance_matrix_desc: 'Comparez plusieurs séquences deux à deux (Needleman-Wunsch) et consultez une matrice d\'identité en pourcentage N x N.',
 
   featuredTools: 'Outils Scientifiques À la Une',
   popularCalculators: 'Calculateurs de Laboratoire Populaires',
@@ -208,10 +206,6 @@ export const fr = {
   tool_multi_fasta_input: 'Entrée Multi-FASTA',
   tool_parsed_records: 'Enregistrements Analysés',
   tool_load_sample_fasta: 'Charger un Exemple Multi-FASTA',
-  tool_distance_matrix_output: 'Matrice d\'Identité en Pourcentage',
-  tool_distance_matrix_excluded: 'Séquences exclues de la matrice',
-  tool_distance_matrix_most_similar: 'Paire la plus similaire',
-  tool_distance_matrix_least_similar: 'Paire la moins similaire',
   tool_parsed_fasta_records: 'Enregistrements FASTA Traités',
   tool_valid: 'Valide',
   tool_invalid_bases: 'Base(s) Non Valide(s)',
@@ -745,4 +739,14 @@ export const fr = {
   authFunFact4: '🍌 Les humains partagent environ 60 % de leur ADN avec une banane.',
   authFunFact5: '💧 Une seule cuillère à café de terre peut contenir plus d\'un milliard de bactéries.',
   authFunFact6: '🐙 Les poulpes ont trois cœurs et un sang bleu à base de cuivre.',
+
+  // Sequence Distance / Similarity Matrix
+  tool_distance_matrix_title: 'Matrice de Distance / Similarité de Séquences',
+  tool_distance_matrix_desc: 'Calcule une matrice NxN de pourcentage d\'identité ou de distance entre plusieurs séquences à la fois, en utilisant le même moteur d\'alignement global déjà testé que l\'outil Global Alignment.',
+  tool_distance_matrix_output: 'Matrice de Distance / Similarité',
+  tool_similarity_pct: '% de Similarité',
+  tool_distance_pct: '% de Distance',
+  tool_skipped_invalid_sequences: 'Séquences invalides ignorées',
+  tool_some_pairs_not_computed: 'Certaines paires n\'ont pas pu être calculées (une séquence a dépassé la limite de longueur pour cette comparaison) et sont affichées comme « — » plutôt qu\'un 0 % trompeur.',
+  tool_distance_matrix_note: 'Cette matrice est construite à partir de N×(N-1)/2 alignements globaux par paires complets (le même algorithme que l\'outil Global Alignment), et non une nouvelle méthode scientifique. Elle résume à quel point chaque séquence ressemble aux autres, la première étape standard avant de construire un arbre phylogénétique à la main.',
 };
