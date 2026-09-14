@@ -147,8 +147,6 @@ export const es = {
   tool_local_align_desc: 'Encuentra la subregión similar con mayor puntuación compartida entre dos secuencias — útil para localizar un dominio o motivo conservado en lugar de alinear toda la longitud.',
   tool_phylo_title: 'Visor de Árbol Filogenético (Newick)',
   tool_phylo_desc: 'Visualice árboles filogenéticos evolutivos a partir de cadenas en formato Newick.',
-  tool_distance_matrix_title: 'Matriz de Similitud / Distancia de Secuencias',
-  tool_distance_matrix_desc: 'Compare múltiples secuencias por pares (Needleman-Wunsch) y vea una matriz de identidad porcentual N x N.',
 
   featuredTools: 'Herramientas Científicas Destacadas',
   popularCalculators: 'Calculadoras Populares de Laboratorio',
@@ -208,10 +206,6 @@ export const es = {
   tool_multi_fasta_input: 'Entrada Multi-FASTA',
   tool_parsed_records: 'Registros Analizados',
   tool_load_sample_fasta: 'Cargar Muestra Multi-FASTA',
-  tool_distance_matrix_output: 'Matriz de Identidad Porcentual',
-  tool_distance_matrix_excluded: 'Secuencias excluidas de la matriz',
-  tool_distance_matrix_most_similar: 'Par más similar',
-  tool_distance_matrix_least_similar: 'Par menos similar',
   tool_parsed_fasta_records: 'Registros FASTA Procesados',
   tool_valid: 'Válido',
   tool_invalid_bases: 'Base(s) No Válida(s)',
@@ -745,4 +739,14 @@ export const es = {
   authFunFact4: '🍌 Los humanos comparten cerca del 60% de su ADN con un plátano.',
   authFunFact5: '💧 Una sola cucharadita de tierra puede contener más de mil millones de bacterias.',
   authFunFact6: '🐙 Los pulpos tienen tres corazones y sangre azul a base de cobre.',
+
+  // Sequence Distance / Similarity Matrix
+  tool_distance_matrix_title: 'Matriz de Distancia / Similitud de Secuencias',
+  tool_distance_matrix_desc: 'Calcula una matriz NxN de porcentaje de identidad o distancia entre múltiples secuencias a la vez, usando el mismo motor de alineamiento global ya probado que usa Global Alignment.',
+  tool_distance_matrix_output: 'Matriz de Distancia / Similitud',
+  tool_similarity_pct: '% de Similitud',
+  tool_distance_pct: '% de Distancia',
+  tool_skipped_invalid_sequences: 'Secuencias inválidas omitidas',
+  tool_some_pairs_not_computed: 'Algunos pares no pudieron calcularse (una secuencia superó el límite de longitud para esta comparación) y se muestran como "—" en lugar de un 0% engañoso.',
+  tool_distance_matrix_note: 'Esta matriz se construye a partir de N×(N-1)/2 alineamientos globales por pares completos (el mismo algoritmo que la herramienta Global Alignment), no un nuevo método científico. Resume qué tan similar es cada secuencia a las demás, el primer paso estándar antes de construir un árbol filogenético a mano.',
 };
