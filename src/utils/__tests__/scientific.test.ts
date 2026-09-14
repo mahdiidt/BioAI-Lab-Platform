@@ -27,6 +27,7 @@ import {
   chiSquarePValue,
 } from '../statistics';
 import { analyzeProtein } from '../protein';
+import { computeDistanceMatrix } from '../distanceMatrix';
 
 import { calculatePrimerTm, calculatePcrReactionSetup, calculateAnnealingTemperature } from '../pcr';
 import { calculateMolarity, calculateC1V1 } from '../lab';
@@ -1236,5 +1237,77 @@ describe('35. Chi-Square Independence (Contingency Table)', () => {
     const res = chiSquareIndependence([[100, 0], [0, 100]]);
     expect(res.isValid).toBe(true);
     expect(res.pValue).toBeLessThan(0.001);
+  });
+});
+
+describe('37. Sequence Distance / Similarity Matrix — Composition of Existing Tested Alignment', () => {
+  it('gives identical sequences 100% similarity and 0% distance', () => {
+    const fasta = '>A\nATCGATCGATCGATCG\n>B\nATCGATCGATCGATCG';
+    const res = computeDistanceMatrix(fasta);
+    expect(res.isValid).toBe(true);
+    expect(res.similarityMatrix[0][1]).toBe(100);
+    expect(res.distanceMatrix[0][1]).toBe(0);
+  });
+
+  it('is symmetric: matrix[i][j] === matrix[j][i] for every pair', () => {
+    const fasta = '>A\nATCGATCGATCGATCG\n>B\nTTCGATCGATCGATGG\n>C\nATCGATGGATCGATCC';
+    const res = computeDistanceMatrix(fasta);
+    for (let i = 0; i < res.labels.length; i++) {
+      for (let j = 0; j < res.labels.length; j++) {
+        expect(res.similarityMatrix[i][j]).toBe(res.similarityMatrix[j][i]);
+        expect(res.distanceMatrix[i][j]).toBe(res.distanceMatrix[j][i]);
+      }
+    }
+  });
+
+  it('always has 100% similarity and 0% distance on the diagonal', () => {
+    const fasta = '>A\nATCGATCGATCGATCG\n>B\nTTTTTTTTTTTTTTTT\n>C\nGGGGCCCCAAAATTTT';
+    const res = computeDistanceMatrix(fasta);
+    for (let i = 0; i < res.labels.length; i++) {
+      expect(res.similarityMatrix[i][i]).toBe(100);
+      expect(res.distanceMatrix[i][i]).toBe(0);
+    }
+  });
+
+  it('distance and similarity are always complementary (sum to 100) when both are computed', () => {
+    const fasta = '>A\nATCGATCGATCGATCG\n>B\nTTCGATCGATCGATGG';
+    const res = computeDistanceMatrix(fasta);
+    const sim = res.similarityMatrix[0][1];
+    const dist = res.distanceMatrix[0][1];
+    expect(sim).not.toBeNull();
+    expect(dist).not.toBeNull();
+    expect(sim! + dist!).toBeCloseTo(100, 5);
+  });
+
+  it('rejects fewer than 2 valid sequences', () => {
+    const res = computeDistanceMatrix('>only\nATCGATCG');
+    expect(res.isValid).toBe(false);
+    expect(res.errorMessage).toMatch(/at least 2/i);
+  });
+
+  it('skips invalid sequences but still computes the matrix for the valid ones', () => {
+    const fasta = '>bad\nATCGXYZ\n>good1\nATCGATCG\n>good2\nATCGATGG';
+    const res = computeDistanceMatrix(fasta);
+    expect(res.isValid).toBe(true);
+    expect(res.labels).toEqual(['good1', 'good2']);
+    expect(res.skippedRecords.map((s) => s.id)).toContain('bad');
+  });
+
+  it('rejects more than the maximum supported number of sequences', () => {
+    let fasta = '';
+    for (let i = 0; i < 13; i++) fasta += `>s${i}\nATCGATCG\n`;
+    const res = computeDistanceMatrix(fasta);
+    expect(res.isValid).toBe(false);
+    expect(res.errorMessage).toMatch(/too many/i);
+  });
+
+  it('never silently reports 0% for a pair that could not be computed (uses null instead)', () => {
+    const long = 'A'.repeat(1001);
+    const fasta = `>long\n${long}\n>short\nATCGATCG`;
+    const res = computeDistanceMatrix(fasta);
+    expect(res.isValid).toBe(true);
+    expect(res.failedPairs.length).toBeGreaterThan(0);
+    expect(res.similarityMatrix[0][1]).toBeNull();
+    expect(res.distanceMatrix[0][1]).toBeNull();
   });
 });
