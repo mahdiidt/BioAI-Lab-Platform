@@ -152,8 +152,6 @@ export const fa = {
   tool_local_align_desc: 'پیدا کردن پرامتیازترین زیرناحیه‌ی مشابه مشترک بین دو توالی — برای پیدا کردن دومین یا موتیف حفاظت‌شده به‌جای هم‌ردیف‌سازی کل طول.',
   tool_phylo_title: 'نمایشگر درخت تبارشناسی (Newick)',
   tool_phylo_desc: 'تجزیه و رسم گرافیکی درخت‌های تکاملی از رشته‌های استاندارد Newick.',
-  tool_distance_matrix_title: 'ماتریس شباهت / فاصله‌ی توالی‌ها',
-  tool_distance_matrix_desc: 'مقایسه‌ی دوتایی چند توالی (با Needleman-Wunsch) و نمایش ماتریس درصد شباهت N×N.',
 
   // Dashboard Sections
   featuredTools: 'ابزارهای شاخص علمی',
@@ -215,10 +213,6 @@ export const fa = {
   tool_multi_fasta_input: 'ورودی Multi-FASTA',
   tool_parsed_records: 'رکورد‌های پردازش‌شده',
   tool_load_sample_fasta: 'بارگذاری نمونه Multi-FASTA',
-  tool_distance_matrix_output: 'ماتریس درصد شباهت',
-  tool_distance_matrix_excluded: 'توالی‌های حذف‌شده از ماتریس',
-  tool_distance_matrix_most_similar: 'شبیه‌ترین جفت',
-  tool_distance_matrix_least_similar: 'کم‌شباهت‌ترین جفت',
   tool_parsed_fasta_records: 'رکوردهای FASTA استخراج‌شده',
   tool_valid: 'معتبر',
   tool_invalid_bases: 'باز(های) نامعتبر',
@@ -752,4 +746,14 @@ export const fa = {
   authFunFact4: '🍌 حدود ۶۰٪ از DNA انسان با موز مشترکه.',
   authFunFact5: '💧 یک قاشق چای‌خوری خاک می‌تونه بیش از یک میلیارد باکتری داشته باشه.',
   authFunFact6: '🐙 اختاپوس‌ها سه قلب دارن و خونشون آبی و مس‌محوره.',
+
+  // Sequence Distance / Similarity Matrix
+  tool_distance_matrix_title: 'ماتریس فاصله / شباهت توالی',
+  tool_distance_matrix_desc: 'محاسبه‌ی ماتریس NxN درصد تشابه یا فاصله بین چند توالی هم‌زمان، با استفاده از همون موتور هم‌ردیف‌سازی سراسری تست‌شده‌ی Global Alignment.',
+  tool_distance_matrix_output: 'ماتریس فاصله / شباهت',
+  tool_similarity_pct: 'درصد شباهت',
+  tool_distance_pct: 'درصد فاصله',
+  tool_skipped_invalid_sequences: 'توالی‌های نامعتبر نادیده گرفته شدند',
+  tool_some_pairs_not_computed: 'برخی جفت‌ها قابل محاسبه نبودن (یک توالی از محدودیت طول مجاز برای این مقایسه بیشتر بود) و به‌جای یک ۰٪ گمراه‌کننده، با «—» نشون داده شدن.',
+  tool_distance_matrix_note: 'این ماتریس از N×(N-1)/2 هم‌ردیف‌سازی کامل سراسری (همون الگوریتم ابزار Global Alignment) ساخته شده — نه یک روش علمی جدید. خلاصه‌ای از میزان شباهت هر توالی به بقیه‌ی توالی‌ها می‌ده، که اولین قدم استاندارد قبل از ساخت دستی یک درخت فیلوژنتیک هست.',
 };
