@@ -147,8 +147,6 @@ export const zh = {
   tool_local_align_desc: '找出两条序列之间得分最高的相似子区域——用于定位保守结构域或基序，而非对整条序列长度进行比对。',
   tool_phylo_title: '系统发育树查看器 (Newick)',
   tool_phylo_desc: '解析并渲染 Newick 格式的进化树图谱。',
-  tool_distance_matrix_title: '序列相似度 / 距离矩阵',
-  tool_distance_matrix_desc: '两两比较多条序列(Needleman-Wunsch),查看 N x N 百分比一致性矩阵。',
 
   featuredTools: '精选科研工具',
   popularCalculators: '常用实验室计算器',
@@ -208,10 +206,6 @@ export const zh = {
   tool_multi_fasta_input: 'Multi-FASTA 输入',
   tool_parsed_records: '解析记录数',
   tool_load_sample_fasta: '加载示例 Multi-FASTA',
-  tool_distance_matrix_output: '百分比一致性矩阵',
-  tool_distance_matrix_excluded: '已从矩阵中排除的序列',
-  tool_distance_matrix_most_similar: '最相似的一对',
-  tool_distance_matrix_least_similar: '最不相似的一对',
   tool_parsed_fasta_records: '已解析 FASTA 记录',
   tool_valid: '有效',
   tool_invalid_bases: '无效碱基',
@@ -745,4 +739,14 @@ export const zh = {
   authFunFact4: '🍌 人类与香蕉共享约 60% 的 DNA。',
   authFunFact5: '💧 一茶匙土壤中可能含有超过十亿个细菌。',
   authFunFact6: '🐙 章鱼有三颗心脏，血液是铜基的蓝色血液。',
+
+  // Sequence Distance / Similarity Matrix
+  tool_distance_matrix_title: '序列距离/相似度矩阵',
+  tool_distance_matrix_desc: '使用与全局比对工具相同的经过测试的全局比对引擎，一次性计算多条序列之间的 NxN 相似度或距离矩阵。',
+  tool_distance_matrix_output: '距离/相似度矩阵',
+  tool_similarity_pct: '相似度 %',
+  tool_distance_pct: '距离 %',
+  tool_skipped_invalid_sequences: '已跳过的无效序列',
+  tool_some_pairs_not_computed: '部分序列对无法计算（某条序列超出了本次比较的长度限制），显示为「—」而非可能误导的 0%。',
+  tool_distance_matrix_note: '该矩阵由 N×(N-1)/2 次完整成对全局比对构建而成（与全局比对工具使用相同算法），而非新的科学方法。它总结了每条序列与其他序列的相似程度，是手动构建系统发育树之前的标准第一步。',
 };
