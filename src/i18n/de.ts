@@ -45,7 +45,7 @@ export const de = {
   disclaimerBody: 'BioAI.Lab ist für Bildungs- und Forschungszwecke konzipiert. Berechnungen nutzen etablierte Modelle und sollten vor der klinischen Anwendung unabhängig überprüft werden.',
 
   cat_dna_rna: 'DNA- & RNA-Analyse',
-  cat_dna_rna_desc: 'Sequenzanalyse, Transkription, Reverses Komplement, GC-Gehalt und FASTA-Parsing.',
+  cat_dna_rna_desc: 'Sequenzanalyse, Transkription, Translation, reverses Komplement und GC-Gehalt.',
   cat_genetics: 'Genetik & Genomik',
   cat_genetics_desc: 'Punnett-Quadrat, Mendelsche Regeln, Hardy-Weinberg-Gleichgewicht und Allelfrequenzen.',
   cat_pcr_primers: 'PCR & Primer-Design',
@@ -61,7 +61,7 @@ export const de = {
   cat_microbiology: 'Mikrobiologie & Zellkultur',
   cat_microbiology_desc: 'Bakterienwachstumskurve, Generationszeit, KBE-Zählung und Gram-Färbung Referenz.',
   cat_bioinformatics: 'Bioinformatik & Sequenzalignment',
-  cat_bioinformatics_desc: 'Needleman-Wunsch globales Alignment, Smith-Waterman lokales Alignment und Stammbaum.',
+  cat_bioinformatics_desc: 'Sequenzalignment, Distanzmatrizen, Stammbäume, RNA-Strukturvorhersage, ORF-Suche, k-mer-Analyse und FASTA-Parsing.',
   cat_cell_mol: 'Zell- & Molekularbiologie',
   cat_cell_mol_desc: 'Molekulare Signalwege, Zellkulturdichte und Codon-Optimierung für Wirtssysteme.',
 
