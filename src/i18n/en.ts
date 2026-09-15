@@ -50,7 +50,7 @@ export const en = {
 
   // Categories
   cat_dna_rna: 'DNA & RNA Analysis',
-  cat_dna_rna_desc: 'Sequence analysis, transcription, reverse complement, GC content, and FASTA parsing.',
+  cat_dna_rna_desc: 'Sequence analysis, transcription, translation, reverse complement, and GC content.',
   cat_genetics: 'Genetics & Genomics',
   cat_genetics_desc: 'Punnett squares, Mendelian inheritance, Hardy-Weinberg equilibrium, and allele frequencies.',
   cat_pcr_primers: 'PCR & Primers',
@@ -66,7 +66,7 @@ export const en = {
   cat_microbiology: 'Microbiology & Cell Culture',
   cat_microbiology_desc: 'Bacterial growth curves, generation times, CFU counters, and Gram stain reference.',
   cat_bioinformatics: 'Bioinformatics & Alignment',
-  cat_bioinformatics_desc: 'Needleman-Wunsch global alignment, Smith-Waterman local alignment, and phylogenetic trees.',
+  cat_bioinformatics_desc: 'Sequence alignment, distance matrices, phylogenetic trees, RNA structure prediction, ORF finding, k-mer analysis, and FASTA parsing.',
   cat_cell_mol: 'Cell & Molecular Biology',
   cat_cell_mol_desc: 'Molecular pathways, cell culture density, and codon optimization for host systems.',
 
