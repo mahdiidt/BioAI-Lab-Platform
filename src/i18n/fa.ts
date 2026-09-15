@@ -50,7 +50,7 @@ export const fa = {
 
   // Categories
   cat_dna_rna: 'آنالیز DNA و RNA',
-  cat_dna_rna_desc: 'تحلیل توالی، نسخه برداری، مکمل معکوس، درصد GC و پارسر FASTA.',
+  cat_dna_rna_desc: 'تحلیل توالی، رونویسی، ترجمه، مکمل معکوس و درصد GC.',
   cat_genetics: 'ژنتیک و ژنومیکس',
   cat_genetics_desc: 'مربع پانت، تعادل هاردی-واینبرگ، و محاسبات فراوانی آللی.',
   cat_pcr_primers: 'PCR و پرایمرها',
@@ -66,7 +66,7 @@ export const fa = {
   cat_microbiology: 'میکروبیولوژی و کشت سلول',
   cat_microbiology_desc: 'منحنی رشد باکتری، زمان نسل، شمارش CFU و مرجع رنگ‌آمیزی گرم.',
   cat_bioinformatics: 'بیوانفورماتیک و هم‌ردیف‌سازی',
-  cat_bioinformatics_desc: 'هم‌ردیف‌سازی سراسری Needleman-Wunsch، موضعی Smith-Waterman و درخت تبارشناسی.',
+  cat_bioinformatics_desc: 'هم‌ردیف‌سازی توالی، ماتریس فاصله، درخت تبارشناسی، پیش‌بینی ساختار RNA، شناسایی ORF، آنالیز k-mer و پارسر FASTA.',
   cat_cell_mol: 'زیست‌شناسی سلولی و مولکولی',
   cat_cell_mol_desc: 'مسیرهای مولکولی، تراکم کشت سلولی و بهینه‌سازی کدون ارگانیسم میزبان.',
 
