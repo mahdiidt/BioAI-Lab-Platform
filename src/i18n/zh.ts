@@ -45,7 +45,7 @@ export const zh = {
   disclaimerBody: 'BioAI.Lab 专为教学、科研和探索设计。计算与模拟基于标准生物数学模型，在用于临床、诊断或实验操作前应独立验证。',
 
   cat_dna_rna: 'DNA & RNA 分析',
-  cat_dna_rna_desc: '序列分析、转录、反向互补、GC含量和FASTA解析。',
+  cat_dna_rna_desc: '序列分析、转录、翻译、反向互补和GC含量。',
   cat_genetics: '遗传学与基因组学',
   cat_genetics_desc: '庞氏表、孟德尔遗传、哈代-温伯格平衡与基因频率计算。',
   cat_pcr_primers: 'PCR & 引物设计',
@@ -61,7 +61,7 @@ export const zh = {
   cat_microbiology: '微生物学与细胞培养',
   cat_microbiology_desc: '细菌生长曲线、代时计算、CFU菌落计数与革兰氏染色参考。',
   cat_bioinformatics: '生物信息学与序列比对',
-  cat_bioinformatics_desc: 'Needleman-Wunsch全局比对、Smith-Waterman局部比对与系统发育树。',
+  cat_bioinformatics_desc: '序列比对、距离矩阵、系统发育树、RNA结构预测、ORF查找、k-mer分析与FASTA解析。',
   cat_cell_mol: '细胞与分子生物学',
   cat_cell_mol_desc: '分子通路、细胞培养密度与宿主系统密码子优化。',
 
