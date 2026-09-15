@@ -15,6 +15,7 @@
 
 import { validateSequence } from './sequenceValidator';
 import { needlemanWunschAlignment } from './bioinformatics';
+import { parseMultiFasta } from './fastaParser';
 
 export interface DistanceMatrixInputSequence {
   id: string;
@@ -103,4 +104,126 @@ export function computeSequenceDistanceMatrix(
   }
 
   return { ids, identityMatrix, distanceMatrix, excluded, warning };
+}
+
+// ---------------------------------------------------------------------------
+// computeDistanceMatrix — FASTA-text-in wrapper used by DistanceMatrixTool.
+//
+// Unlike computeSequenceDistanceMatrix() above (which takes pre-parsed
+// {id, sequence} records and silently truncates + warns past MAX_SEQUENCES),
+// this version parses raw multi-FASTA text directly and reports "too many
+// sequences" as an explicit isValid:false error, since a truncate-and-warn
+// result is easy for a UI to render as if it were the user's full input.
+// ---------------------------------------------------------------------------
+
+export interface DistanceMatrixSkippedRecord {
+  id: string;
+  reason: string;
+}
+
+export interface DistanceMatrixFailedPair {
+  i: number;
+  j: number;
+  labelA: string;
+  labelB: string;
+  reason: string;
+}
+
+export interface DistanceMatrixComputeResult {
+  isValid: boolean;
+  errorMessage?: string;
+  /** Sequence IDs, in input order, for every sequence actually included in the matrix. */
+  labels: string[];
+  /** similarityMatrix[i][j]: percent identity between labels[i] and labels[j]. null if that pair could not be aligned. */
+  similarityMatrix: (number | null)[][];
+  /** distanceMatrix[i][j]: 100 - similarityMatrix[i][j]. null if that pair could not be aligned. */
+  distanceMatrix: (number | null)[][];
+  /** Records dropped for being invalid DNA (bad characters, empty, etc.) - never entered the matrix. */
+  skippedRecords: DistanceMatrixSkippedRecord[];
+  /** Pairs that were attempted but could not be aligned (e.g. one sequence exceeds the DP length cap). */
+  failedPairs: DistanceMatrixFailedPair[];
+}
+
+const MIN_SEQUENCES = 2;
+
+export function computeDistanceMatrix(
+  fastaInput: string,
+  matchScore: number = 2,
+  mismatchPenalty: number = -1,
+  gapPenalty: number = -2
+): DistanceMatrixComputeResult {
+  const parsed = parseMultiFasta(fastaInput, 'DNA');
+
+  const skippedRecords: DistanceMatrixSkippedRecord[] = [];
+  const validRecords: DistanceMatrixInputSequence[] = [];
+
+  for (const rec of parsed.records) {
+    if (!rec.validation.isValid) {
+      skippedRecords.push({ id: rec.id, reason: rec.validation.errorMessage || 'Invalid sequence for DNA alignment.' });
+    } else {
+      validRecords.push({ id: rec.id, sequence: rec.sequence });
+    }
+  }
+
+  if (validRecords.length < MIN_SEQUENCES) {
+    return {
+      isValid: false,
+      errorMessage: `At least ${MIN_SEQUENCES} valid DNA sequences are required to build a distance matrix.`,
+      labels: [],
+      similarityMatrix: [],
+      distanceMatrix: [],
+      skippedRecords,
+      failedPairs: [],
+    };
+  }
+
+  if (validRecords.length > MAX_SEQUENCES) {
+    return {
+      isValid: false,
+      errorMessage: `Too many sequences (${validRecords.length} valid). This tool supports up to ${MAX_SEQUENCES} sequences at once so pairwise alignment stays responsive in the browser. Please remove some sequences and try again.`,
+      labels: validRecords.map((r) => r.id),
+      similarityMatrix: [],
+      distanceMatrix: [],
+      skippedRecords,
+      failedPairs: [],
+    };
+  }
+
+  const n = validRecords.length;
+  const labels = validRecords.map((r) => r.id);
+  const similarityMatrix: (number | null)[][] = Array.from({ length: n }, () => Array(n).fill(null));
+  const distanceMatrix: (number | null)[][] = Array.from({ length: n }, () => Array(n).fill(null));
+  const failedPairs: DistanceMatrixFailedPair[] = [];
+
+  for (let i = 0; i < n; i++) {
+    // Diagonal is trivially "identical to self" by definition, same
+    // convention as computeSequenceDistanceMatrix() above.
+    similarityMatrix[i][i] = 100;
+    distanceMatrix[i][i] = 0;
+  }
+
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const res = needlemanWunschAlignment(validRecords[i].sequence, validRecords[j].sequence, matchScore, mismatchPenalty, gapPenalty);
+      if (res.warning) {
+        failedPairs.push({ i, j, labelA: labels[i], labelB: labels[j], reason: res.warning });
+        continue; // matrix cells stay null
+      }
+      const identity = res.identityPercent;
+      const distance = Number((100 - identity).toFixed(1));
+      similarityMatrix[i][j] = identity;
+      similarityMatrix[j][i] = identity;
+      distanceMatrix[i][j] = distance;
+      distanceMatrix[j][i] = distance;
+    }
+  }
+
+  return {
+    isValid: true,
+    labels,
+    similarityMatrix,
+    distanceMatrix,
+    skippedRecords,
+    failedPairs,
+  };
 }
