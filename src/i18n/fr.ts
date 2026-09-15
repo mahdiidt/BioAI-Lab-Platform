@@ -45,7 +45,7 @@ export const fr = {
   disclaimerBody: 'BioAI.Lab est conçu pour l\'éducation et la recherche. Les calculs utilisent des modèles standards et doivent être validés de manière indépendante avant toute utilisation clinique.',
 
   cat_dna_rna: 'Analyse ADN & ARN',
-  cat_dna_rna_desc: 'Analyse de séquences, transcription, brin complémentaire inverse, taux de GC et FASTA.',
+  cat_dna_rna_desc: 'Analyse de séquences, transcription, traduction, brin complémentaire inverse et taux de GC.',
   cat_genetics: 'Génétique & Génomique',
   cat_genetics_desc: 'Échiquier de Punnett, hérédité mendélienne, équilibre de Hardy-Weinberg et fréquences alléliques.',
   cat_pcr_primers: 'PCR & Amorces',
@@ -61,7 +61,7 @@ export const fr = {
   cat_microbiology: 'Microbiologie & Culture Cellulaire',
   cat_microbiology_desc: 'Courbe de croissance bactérienne, temps de génération, comptage UFC et coloration de Gram.',
   cat_bioinformatics: 'Bioinformatique & Alignement',
-  cat_bioinformatics_desc: 'Alignement global Needleman-Wunsch, local Smith-Waterman et arbre phylogénétique.',
+  cat_bioinformatics_desc: 'Alignement de séquences, matrices de distance, arbres phylogénétiques, prédiction de structure d\'ARN, recherche d\'ORF, analyse k-mer et parsing FASTA.',
   cat_cell_mol: 'Biologie Cellulaire & Moléculaire',
   cat_cell_mol_desc: 'Voies moléculaires, densité de culture et optimisation de codons pour système hôte.',
 
