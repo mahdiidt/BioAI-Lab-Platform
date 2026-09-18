@@ -210,6 +210,17 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     educationalLevel: 'intermediate',
     featured: true,
   },
+  {
+    id: 'plasmid_map',
+    titleKey: 'tool_plasmid_map_reg_title',
+    descKey: 'tool_plasmid_map_reg_desc',
+    category: 'restriction',
+    iconName: 'Orbit',
+    keywords: ['plasmid', 'map', 'circular', 'vector', 'cloning', 'orf', 'unique cutter', 'snapgene'],
+    educationalLevel: 'advanced',
+    popular: true,
+    featured: true,
+  },
 
   // PROTEIN ANALYSIS
   {
@@ -221,6 +232,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     keywords: ['protein', 'molecular weight', 'isoelectric point', 'pi', 'gravy'],
     educationalLevel: 'intermediate',
     popular: true,
+    featured: true,
+  },
+  {
+    id: 'secondary_structure',
+    titleKey: 'tool_ss_reg_title',
+    descKey: 'tool_ss_reg_desc',
+    category: 'protein',
+    iconName: 'Waves',
+    keywords: ['secondary structure', 'chou-fasman', 'helix', 'sheet', 'protein folding', 'prediction'],
+    educationalLevel: 'advanced',
     featured: true,
   },
 
