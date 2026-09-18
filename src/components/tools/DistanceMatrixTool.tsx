@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { computeDistanceMatrix } from '../../utils/distanceMatrix';
 import { DistanceMatrixHeatmap } from '../visualizers/DistanceMatrixHeatmap';
+import { SequenceInput } from '../common/SequenceInput';
 import { ExportButton } from '../common/ExportButton';
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
@@ -34,19 +35,13 @@ export const DistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <label className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <Grid3x3 className="w-4 h-4 text-[#0F766E]" />
-            {getTranslation(lang, 'tool_multi_fasta_input')}
-          </label>
-        </div>
-
-        <textarea
+        <SequenceInput
           value={fastaInput}
-          onChange={(e) => setFastaInput(e.target.value)}
+          onChange={setFastaInput}
+          label={getTranslation(lang, 'tool_multi_fasta_input')}
+          sampleSequence={SAMPLE_FASTA}
           rows={7}
-          placeholder=">header_id&#10;ATGC..."
-          className="w-full p-3 font-mono text-xs bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 text-[#12312B] sequence-mono-ltr"
+          lang={lang}
         />
 
         <div className="grid grid-cols-3 gap-3">
