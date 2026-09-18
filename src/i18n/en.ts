@@ -757,4 +757,31 @@ export const en = {
   tool_skipped_invalid_sequences: 'Skipped invalid sequences',
   tool_some_pairs_not_computed: 'Some pairs could not be computed (a sequence exceeded the length limit for this comparison) and are shown as "—" rather than a misleading 0%.',
   tool_distance_matrix_note: 'This matrix is built from N×(N-1)/2 full pairwise global alignments (the same algorithm as the Global Alignment tool) — not a new scientific method. It summarizes how similar every sequence is to every other one, which is the standard first step before building a phylogenetic tree by hand.',
+
+  // Plasmid Map Maker
+  tool_plasmid_map_reg_title: 'Plasmid Map Maker',
+  tool_plasmid_map_reg_desc: 'Interactive circular plasmid map: restriction sites, unique cutters, ORFs, GC content, and custom features.',
+  tool_plasmid_name: 'Plasmid Name',
+  tool_plasmid_min_orf_aa: 'Min. ORF Length (aa)',
+  tool_plasmid_show_orfs: 'Show ORFs',
+  tool_plasmid_show_sites: 'Show Restriction Sites',
+  tool_plasmid_unique_only: 'Unique Cutters Only',
+  tool_plasmid_custom_features: 'Custom Features',
+  tool_plasmid_feature_label: 'Feature name (e.g. AmpR, Ori)',
+  tool_plasmid_add_feature: 'Add',
+  tool_plasmid_map_title: 'Circular Plasmid Map',
+  tool_plasmid_unique_cutters: 'Unique Cutters',
+  tool_plasmid_orfs_found: 'ORFs Found',
+  tool_plasmid_unique_cutter: 'Unique cutter — cuts exactly once',
+  tool_plasmid_cuts: 'cut sites',
+
+  // Protein Secondary Structure (Chou-Fasman)
+  tool_ss_reg_title: 'Protein Secondary Structure (Chou-Fasman)',
+  tool_ss_reg_desc: 'Predicts alpha-helix, beta-sheet, and coil regions from a protein sequence using the classic Chou-Fasman propensity method.',
+  tool_ss_helix: 'Helix',
+  tool_ss_sheet: 'Sheet',
+  tool_ss_coil: 'Coil',
+  tool_ss_predicted_structure: 'Predicted Secondary Structure',
+  tool_ss_segments: 'Predicted Helix & Sheet Segments',
+  tool_ss_no_segments: 'No helix or sheet regions predicted - entirely coil.',
 };
