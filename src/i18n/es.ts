@@ -749,4 +749,31 @@ export const es = {
   tool_skipped_invalid_sequences: 'Secuencias inválidas omitidas',
   tool_some_pairs_not_computed: 'Algunos pares no pudieron calcularse (una secuencia superó el límite de longitud para esta comparación) y se muestran como "—" en lugar de un 0% engañoso.',
   tool_distance_matrix_note: 'Esta matriz se construye a partir de N×(N-1)/2 alineamientos globales por pares completos (el mismo algoritmo que la herramienta Global Alignment), no un nuevo método científico. Resume qué tan similar es cada secuencia a las demás, el primer paso estándar antes de construir un árbol filogenético a mano.',
+
+  // Plasmid Map Maker
+  tool_plasmid_map_reg_title: 'Creador de Mapas de Plásmidos',
+  tool_plasmid_map_reg_desc: 'Mapa circular interactivo de plásmidos: sitios de restricción, cortadores únicos, ORFs, contenido GC y características personalizadas.',
+  tool_plasmid_name: 'Nombre del Plásmido',
+  tool_plasmid_min_orf_aa: 'Longitud mínima de ORF (aa)',
+  tool_plasmid_show_orfs: 'Mostrar ORFs',
+  tool_plasmid_show_sites: 'Mostrar Sitios de Restricción',
+  tool_plasmid_unique_only: 'Solo Cortadores Únicos',
+  tool_plasmid_custom_features: 'Características Personalizadas',
+  tool_plasmid_feature_label: 'Nombre (p. ej. AmpR, Ori)',
+  tool_plasmid_add_feature: 'Añadir',
+  tool_plasmid_map_title: 'Mapa Circular del Plásmido',
+  tool_plasmid_unique_cutters: 'Cortadores Únicos',
+  tool_plasmid_orfs_found: 'ORFs Encontrados',
+  tool_plasmid_unique_cutter: 'Cortador único — corta exactamente una vez',
+  tool_plasmid_cuts: 'sitios de corte',
+
+  // Protein Secondary Structure (Chou-Fasman)
+  tool_ss_reg_title: 'Estructura Secundaria de Proteínas (Chou-Fasman)',
+  tool_ss_reg_desc: 'Predice regiones de hélice alfa, lámina beta y espiral a partir de una secuencia proteica usando el método clásico de Chou-Fasman.',
+  tool_ss_helix: 'Hélice',
+  tool_ss_sheet: 'Lámina',
+  tool_ss_coil: 'Espiral',
+  tool_ss_predicted_structure: 'Estructura Secundaria Predicha',
+  tool_ss_segments: 'Segmentos de Hélice y Lámina Predichos',
+  tool_ss_no_segments: 'No se predijeron regiones de hélice o lámina - totalmente espiral.',
 };
