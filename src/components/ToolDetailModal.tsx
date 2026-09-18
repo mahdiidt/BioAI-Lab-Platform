@@ -17,7 +17,9 @@ import { CrisprGuideDesignerTool } from './tools/CrisprGuideDesignerTool';
 import { PrimerDesignerTool } from './tools/PrimerDesignerTool';
 import { RestrictionDigestTool } from './tools/RestrictionDigestTool';
 import { AgaroseGelSimTool } from './tools/AgaroseGelSimTool';
+import { PlasmidMapTool } from './tools/PlasmidMapTool';
 import { ProteinAnalyzerTool } from './tools/ProteinAnalyzerTool';
+import { SecondaryStructureTool } from './tools/SecondaryStructureTool';
 import { MolarityCalcTool } from './tools/MolarityCalcTool';
 import { MichaelisMentenTool } from './tools/MichaelisMentenTool';
 import { BacterialGrowthTool } from './tools/BacterialGrowthTool';
@@ -116,8 +118,14 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
       case 'agarose_gel_simulator':
         return <AgaroseGelSimTool lang={lang} />;
 
+      case 'plasmid_map':
+        return <PlasmidMapTool lang={lang} />;
+
       case 'protein_analyzer':
         return <ProteinAnalyzerTool lang={lang} />;
+
+      case 'secondary_structure':
+        return <SecondaryStructureTool lang={lang} />;
 
       case 'molarity_calc':
         return <MolarityCalcTool lang={lang} initialTab="molarity" />;
