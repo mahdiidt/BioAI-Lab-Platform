@@ -749,4 +749,31 @@ export const zh = {
   tool_skipped_invalid_sequences: '已跳过的无效序列',
   tool_some_pairs_not_computed: '部分序列对无法计算（某条序列超出了本次比较的长度限制），显示为「—」而非可能误导的 0%。',
   tool_distance_matrix_note: '该矩阵由 N×(N-1)/2 次完整成对全局比对构建而成（与全局比对工具使用相同算法），而非新的科学方法。它总结了每条序列与其他序列的相似程度，是手动构建系统发育树之前的标准第一步。',
+
+  // Plasmid Map Maker
+  tool_plasmid_map_reg_title: '质粒图谱制作器',
+  tool_plasmid_map_reg_desc: '交互式环状质粒图谱：限制性酶切位点、单一切割酶、ORF、GC含量与自定义特征。',
+  tool_plasmid_name: '质粒名称',
+  tool_plasmid_min_orf_aa: '最小ORF长度（氨基酸）',
+  tool_plasmid_show_orfs: '显示ORF',
+  tool_plasmid_show_sites: '显示酶切位点',
+  tool_plasmid_unique_only: '仅显示单一切割酶',
+  tool_plasmid_custom_features: '自定义特征',
+  tool_plasmid_feature_label: '特征名称（如 AmpR、Ori）',
+  tool_plasmid_add_feature: '添加',
+  tool_plasmid_map_title: '环状质粒图谱',
+  tool_plasmid_unique_cutters: '单一切割酶',
+  tool_plasmid_orfs_found: '发现的ORF',
+  tool_plasmid_unique_cutter: '单一切割酶 — 仅切割一次',
+  tool_plasmid_cuts: '个切割位点',
+
+  // Protein Secondary Structure (Chou-Fasman)
+  tool_ss_reg_title: '蛋白质二级结构（Chou-Fasman）',
+  tool_ss_reg_desc: '使用经典的Chou-Fasman倾向性方法，从蛋白质序列预测α螺旋、β折叠和卷曲区域。',
+  tool_ss_helix: '螺旋',
+  tool_ss_sheet: '折叠',
+  tool_ss_coil: '卷曲',
+  tool_ss_predicted_structure: '预测的二级结构',
+  tool_ss_segments: '预测的螺旋与折叠区段',
+  tool_ss_no_segments: '未预测到螺旋或折叠区域——完全为卷曲结构。',
 };
