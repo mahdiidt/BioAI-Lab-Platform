@@ -756,4 +756,31 @@ export const fa = {
   tool_skipped_invalid_sequences: 'توالی‌های نامعتبر نادیده گرفته شدند',
   tool_some_pairs_not_computed: 'برخی جفت‌ها قابل محاسبه نبودن (یک توالی از محدودیت طول مجاز برای این مقایسه بیشتر بود) و به‌جای یک ۰٪ گمراه‌کننده، با «—» نشون داده شدن.',
   tool_distance_matrix_note: 'این ماتریس از N×(N-1)/2 هم‌ردیف‌سازی کامل سراسری (همون الگوریتم ابزار Global Alignment) ساخته شده — نه یک روش علمی جدید. خلاصه‌ای از میزان شباهت هر توالی به بقیه‌ی توالی‌ها می‌ده، که اولین قدم استاندارد قبل از ساخت دستی یک درخت فیلوژنتیک هست.',
+
+  // Plasmid Map Maker
+  tool_plasmid_map_reg_title: 'نقشه‌ساز پلاسمید',
+  tool_plasmid_map_reg_desc: 'نقشه‌ی دایره‌ای تعاملی پلاسمید: سایت‌های برش، برش‌دهنده‌های یکتا، ORFها، درصد GC و ویژگی‌های دلخواه.',
+  tool_plasmid_name: 'نام پلاسمید',
+  tool_plasmid_min_orf_aa: 'حداقل طول ORF (اسید آمینه)',
+  tool_plasmid_show_orfs: 'نمایش ORFها',
+  tool_plasmid_show_sites: 'نمایش سایت‌های برش',
+  tool_plasmid_unique_only: 'فقط برش‌دهنده‌های یکتا',
+  tool_plasmid_custom_features: 'ویژگی‌های دلخواه',
+  tool_plasmid_feature_label: 'نام ویژگی (مثل AmpR، Ori)',
+  tool_plasmid_add_feature: 'افزودن',
+  tool_plasmid_map_title: 'نقشه‌ی دایره‌ای پلاسمید',
+  tool_plasmid_unique_cutters: 'برش‌دهنده‌های یکتا',
+  tool_plasmid_orfs_found: 'ORFهای یافت‌شده',
+  tool_plasmid_unique_cutter: 'برش‌دهنده‌ی یکتا — دقیقاً یک‌بار برش می‌زند',
+  tool_plasmid_cuts: 'محل برش',
+
+  // Protein Secondary Structure (Chou-Fasman)
+  tool_ss_reg_title: 'ساختار دوم پروتئین (Chou-Fasman)',
+  tool_ss_reg_desc: 'پیش‌بینی نواحی آلفا-هلیکس، بتا-شیت و کویل از روی توالی پروتئین با روش کلاسیک Chou-Fasman.',
+  tool_ss_helix: 'آلفا-هلیکس',
+  tool_ss_sheet: 'بتا-شیت',
+  tool_ss_coil: 'کویل',
+  tool_ss_predicted_structure: 'ساختار دوم پیش‌بینی‌شده',
+  tool_ss_segments: 'نواحی هلیکس و شیت پیش‌بینی‌شده',
+  tool_ss_no_segments: 'هیچ ناحیه‌ی هلیکس یا شیتی پیش‌بینی نشد — کاملاً کویل است.',
 };
