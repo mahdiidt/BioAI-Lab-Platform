@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { digestDna, COMMON_ENZYMES } from '../../utils/restriction';
 import { AgaroseGelVisualizer } from '../visualizers/AgaroseGelVisualizer';
+import { SequenceInput } from '../common/SequenceInput';
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
@@ -56,15 +57,13 @@ export const AgaroseGelSimTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
         </div>
 
-        <div className="space-y-3">
-          <label className="text-xs font-bold text-[#64748B] block">{getTranslation(lang, 'tool_input_target_dna')}</label>
-          <textarea
-            value={sequence}
-            onChange={(e) => setSequence(e.target.value)}
-            rows={2}
-            className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-xs text-[#0F766E] bg-[#F3FAF7] focus:ring-2 focus:ring-[#0F766E]/20 outline-none"
-          />
-        </div>
+        <SequenceInput
+          value={sequence}
+          onChange={setSequence}
+          label={getTranslation(lang, 'tool_input_target_dna')}
+          rows={2}
+          lang={lang}
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
           <div>
