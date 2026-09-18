@@ -749,4 +749,31 @@ export const fr = {
   tool_skipped_invalid_sequences: 'Séquences invalides ignorées',
   tool_some_pairs_not_computed: 'Certaines paires n\'ont pas pu être calculées (une séquence a dépassé la limite de longueur pour cette comparaison) et sont affichées comme « — » plutôt qu\'un 0 % trompeur.',
   tool_distance_matrix_note: 'Cette matrice est construite à partir de N×(N-1)/2 alignements globaux par paires complets (le même algorithme que l\'outil Global Alignment), et non une nouvelle méthode scientifique. Elle résume à quel point chaque séquence ressemble aux autres, la première étape standard avant de construire un arbre phylogénétique à la main.',
+
+  // Plasmid Map Maker
+  tool_plasmid_map_reg_title: 'Créateur de Carte Plasmidique',
+  tool_plasmid_map_reg_desc: "Carte circulaire interactive d'un plasmide : sites de restriction, coupeurs uniques, ORF, taux de GC et caractéristiques personnalisées.",
+  tool_plasmid_name: 'Nom du Plasmide',
+  tool_plasmid_min_orf_aa: "Longueur min. d'ORF (aa)",
+  tool_plasmid_show_orfs: 'Afficher les ORF',
+  tool_plasmid_show_sites: 'Afficher les Sites de Restriction',
+  tool_plasmid_unique_only: 'Coupeurs Uniques Seulement',
+  tool_plasmid_custom_features: 'Caractéristiques Personnalisées',
+  tool_plasmid_feature_label: 'Nom (ex. AmpR, Ori)',
+  tool_plasmid_add_feature: 'Ajouter',
+  tool_plasmid_map_title: 'Carte Circulaire du Plasmide',
+  tool_plasmid_unique_cutters: 'Coupeurs Uniques',
+  tool_plasmid_orfs_found: 'ORF Trouvés',
+  tool_plasmid_unique_cutter: 'Coupeur unique — coupe exactement une fois',
+  tool_plasmid_cuts: 'sites de coupe',
+
+  // Protein Secondary Structure (Chou-Fasman)
+  tool_ss_reg_title: 'Structure Secondaire des Protéines (Chou-Fasman)',
+  tool_ss_reg_desc: "Prédit les régions d'hélice alpha, de feuillet bêta et de pelote aléatoire à partir d'une séquence protéique avec la méthode classique de Chou-Fasman.",
+  tool_ss_helix: 'Hélice',
+  tool_ss_sheet: 'Feuillet',
+  tool_ss_coil: 'Pelote',
+  tool_ss_predicted_structure: 'Structure Secondaire Prédite',
+  tool_ss_segments: 'Segments d\'Hélice et de Feuillet Prédits',
+  tool_ss_no_segments: "Aucune région d'hélice ou de feuillet prédite - entièrement en pelote.",
 };
