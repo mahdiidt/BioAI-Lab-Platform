@@ -749,4 +749,31 @@ export const de = {
   tool_skipped_invalid_sequences: 'Übersprungene ungültige Sequenzen',
   tool_some_pairs_not_computed: 'Einige Paare konnten nicht berechnet werden (eine Sequenz überschritt das Längenlimit für diesen Vergleich) und werden als „—" statt eines irreführenden 0 % angezeigt.',
   tool_distance_matrix_note: 'Diese Matrix wird aus N×(N-1)/2 vollständigen paarweisen globalen Alignments erstellt (derselbe Algorithmus wie das Global-Alignment-Werkzeug) — keine neue wissenschaftliche Methode. Sie fasst zusammen, wie ähnlich jede Sequenz allen anderen ist — der Standard-Erstschritt vor dem manuellen Erstellen eines phylogenetischen Baums.',
+
+  // Plasmid Map Maker
+  tool_plasmid_map_reg_title: 'Plasmidkarten-Generator',
+  tool_plasmid_map_reg_desc: 'Interaktive zirkuläre Plasmidkarte: Restriktionsschnittstellen, Einzelschneider, ORFs, GC-Gehalt und benutzerdefinierte Merkmale.',
+  tool_plasmid_name: 'Plasmidname',
+  tool_plasmid_min_orf_aa: 'Min. ORF-Länge (aa)',
+  tool_plasmid_show_orfs: 'ORFs anzeigen',
+  tool_plasmid_show_sites: 'Schnittstellen anzeigen',
+  tool_plasmid_unique_only: 'Nur Einzelschneider',
+  tool_plasmid_custom_features: 'Benutzerdefinierte Merkmale',
+  tool_plasmid_feature_label: 'Name (z.B. AmpR, Ori)',
+  tool_plasmid_add_feature: 'Hinzufügen',
+  tool_plasmid_map_title: 'Zirkuläre Plasmidkarte',
+  tool_plasmid_unique_cutters: 'Einzelschneider',
+  tool_plasmid_orfs_found: 'Gefundene ORFs',
+  tool_plasmid_unique_cutter: 'Einzelschneider — schneidet genau einmal',
+  tool_plasmid_cuts: 'Schnittstellen',
+
+  // Protein Secondary Structure (Chou-Fasman)
+  tool_ss_reg_title: 'Protein-Sekundärstruktur (Chou-Fasman)',
+  tool_ss_reg_desc: 'Sagt Alpha-Helix-, Beta-Faltblatt- und Coil-Regionen anhand einer Proteinsequenz mit der klassischen Chou-Fasman-Methode voraus.',
+  tool_ss_helix: 'Helix',
+  tool_ss_sheet: 'Faltblatt',
+  tool_ss_coil: 'Coil',
+  tool_ss_predicted_structure: 'Vorhergesagte Sekundärstruktur',
+  tool_ss_segments: 'Vorhergesagte Helix- und Faltblatt-Segmente',
+  tool_ss_no_segments: 'Keine Helix- oder Faltblattregionen vorhergesagt - vollständig Coil.',
 };
