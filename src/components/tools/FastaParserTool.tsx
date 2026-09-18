@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { parseMultiFasta, FastaParseResult } from '../../utils/fastaParser';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
 import { CopyButton } from '../common/CopyButton';
 import { ExportButton } from '../common/ExportButton';
 import { ScientificExplanation } from '../common/ScientificExplanation';
-import { FileText, CheckCircle2, AlertTriangle, Layers, XCircle } from 'lucide-react';
+import { FileText, CheckCircle2, AlertTriangle, Layers, XCircle, FileUp } from 'lucide-react';
 
 interface ToolProps {
   lang: Language;
@@ -23,6 +23,27 @@ ATGCGATACGCTTACGCATCG`;
 export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
   const [fastaInput, setFastaInput] = useState(SAMPLE_FASTA);
   const [seqType, setSeqType] = useState<'DNA' | 'RNA' | 'PROTEIN'>('DNA');
+  const [fileError, setFileError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      const sizeMb = (file.size / 1024 / 1024).toFixed(1);
+      setFileError(getTranslation(lang, 'fileTooLargeError').replace('{size}', sizeMb));
+      e.target.value = '';
+      return;
+    }
+    setFileError(null);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) setFastaInput(text);
+    };
+    reader.readAsText(file);
+  };
 
   const parseResult: FastaParseResult = parseMultiFasta(fastaInput, seqType);
 
@@ -65,13 +86,36 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
 
         <div className="flex items-center justify-between text-xs text-[#64748B]">
           <span>{getTranslation(lang, 'tool_parsed_records')}: <strong className="text-[#0F766E] font-bold">{parseResult.totalRecords}</strong></span>
-          <button
-            onClick={() => setFastaInput(SAMPLE_FASTA)}
-            className="text-[#0F766E] hover:underline font-semibold cursor-pointer"
-          >
-            {getTranslation(lang, 'tool_load_sample_fasta')}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              type="button"
+              className="inline-flex items-center gap-1 text-[#0F766E] hover:underline font-semibold cursor-pointer"
+            >
+              <FileUp className="w-3.5 h-3.5" />
+              {getTranslation(lang, 'tool_upload_fasta')}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".fasta,.fa,.txt,.seq"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => setFastaInput(SAMPLE_FASTA)}
+              className="text-[#0F766E] hover:underline font-semibold cursor-pointer"
+            >
+              {getTranslation(lang, 'tool_load_sample_fasta')}
+            </button>
+          </div>
         </div>
+        {fileError && (
+          <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-xs text-[#EF4444]">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>{fileError}</span>
+          </div>
+        )}
       </div>
 
       {/* Global Parse Error (e.g. sequence data found before the first '>' header) */}
