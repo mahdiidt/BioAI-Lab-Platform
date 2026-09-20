@@ -136,6 +136,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     featured: true,
   },
   {
+    id: 'pedigree_analysis',
+    titleKey: 'tool_pedigree_reg_title',
+    descKey: 'tool_pedigree_reg_desc',
+    category: 'genetics',
+    iconName: 'Users',
+    keywords: ['pedigree', 'family tree', 'inheritance', 'autosomal', 'x-linked', 'dominant', 'recessive'],
+    educationalLevel: 'intermediate',
+    featured: true,
+  },
+  {
     id: 'codon_optimization',
     titleKey: 'tool_codon_opt_title',
     descKey: 'tool_codon_opt_desc',
