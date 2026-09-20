@@ -12,6 +12,7 @@ import { FastaParserTool } from './tools/FastaParserTool';
 import { KmerTool } from './tools/KmerTool';
 import { PunnettSquareTool } from './tools/PunnettSquareTool';
 import { MutationAnalyzerTool } from './tools/MutationAnalyzerTool';
+import { PedigreeAnalysisTool } from './tools/PedigreeAnalysisTool';
 import { CodonOptimizationTool } from './tools/CodonOptimizationTool';
 import { CrisprGuideDesignerTool } from './tools/CrisprGuideDesignerTool';
 import { PrimerDesignerTool } from './tools/PrimerDesignerTool';
@@ -98,6 +99,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'mutation_analyzer':
         return <MutationAnalyzerTool lang={lang} />;
+
+      case 'pedigree_analysis':
+        return <PedigreeAnalysisTool lang={lang} />;
 
       case 'codon_optimization':
         return <CodonOptimizationTool lang={lang} />;
