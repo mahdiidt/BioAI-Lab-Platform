@@ -801,4 +801,23 @@ export const fr = {
   tool_pedigree_error_id_required: 'Veuillez saisir un identifiant pour cette personne.',
   tool_pedigree_error_duplicate_id: 'Cet identifiant est déjà utilisé - choisissez-en un unique.',
   tool_pedigree_error_bad_generation: 'La génération doit être un nombre supérieur ou égal à 1.',
+
+  // qPCR Efficiency Calculator
+  tool_qpcr_reg_title: "Calculateur d'Efficacité qPCR",
+  tool_qpcr_reg_desc: "Calcule l'efficacité d'amplification de la PCR en temps réel à partir d'une courbe standard de dilutions en série (Ct vs log de dilution).",
+  tool_qpcr_standard_curve_data: 'Données de la Courbe Standard',
+  tool_qpcr_load_sample: "Charger des Données d'Exemple",
+  tool_qpcr_dilution: 'Quantité Relative (plus élevé = plus de matrice)',
+  tool_qpcr_ct: 'Valeur de Ct',
+  tool_qpcr_add_row: 'Ajouter une Ligne',
+  tool_qpcr_efficiency: "Efficacité d'Amplification",
+  tool_qpcr_slope: 'Pente',
+  tool_qpcr_intercept: "Ordonnée à l'Origine",
+  tool_qpcr_verdict_ideal: 'Idéale (90-110%)',
+  tool_qpcr_verdict_acceptable: 'Acceptable',
+  tool_qpcr_verdict_poor: 'Faible',
+
+  // qPCR CSV upload
+  tool_qpcr_upload_csv: 'Importer un CSV',
+  tool_qpcr_csv_parse_error: "Au moins 2 lignes numériques valides sont introuvables dans ce fichier. Format attendu : 1000,18.2",
 };
