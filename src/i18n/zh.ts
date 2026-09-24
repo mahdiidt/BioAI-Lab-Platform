@@ -801,4 +801,23 @@ export const zh = {
   tool_pedigree_error_id_required: '请输入该成员的编号。',
   tool_pedigree_error_duplicate_id: '该编号已被使用，请选择唯一编号。',
   tool_pedigree_error_bad_generation: '世代必须是大于等于1的数字。',
+
+  // qPCR Efficiency Calculator
+  tool_qpcr_reg_title: 'qPCR效率计算器',
+  tool_qpcr_reg_desc: '根据稀释系列标准曲线（Ct对数稀释度）计算实时PCR的扩增效率。',
+  tool_qpcr_standard_curve_data: '标准曲线数据',
+  tool_qpcr_load_sample: '加载示例数据',
+  tool_qpcr_dilution: '相对量（数值越高 = 模板越多）',
+  tool_qpcr_ct: 'Ct值',
+  tool_qpcr_add_row: '添加一行',
+  tool_qpcr_efficiency: '扩增效率',
+  tool_qpcr_slope: '斜率',
+  tool_qpcr_intercept: '截距',
+  tool_qpcr_verdict_ideal: '理想（90-110%）',
+  tool_qpcr_verdict_acceptable: '可接受',
+  tool_qpcr_verdict_poor: '较差',
+
+  // qPCR CSV upload
+  tool_qpcr_upload_csv: '上传CSV',
+  tool_qpcr_csv_parse_error: '未能在此文件中找到至少2行有效的数字数据。行格式应类似：1000,18.2',
 };
