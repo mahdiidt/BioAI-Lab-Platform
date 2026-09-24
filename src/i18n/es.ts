@@ -801,4 +801,23 @@ export const es = {
   tool_pedigree_error_id_required: 'Por favor ingresa un ID para esta persona.',
   tool_pedigree_error_duplicate_id: 'Este ID ya está en uso - elige uno único.',
   tool_pedigree_error_bad_generation: 'La generación debe ser un número de 1 o mayor.',
+
+  // qPCR Efficiency Calculator
+  tool_qpcr_reg_title: 'Calculadora de Eficiencia qPCR',
+  tool_qpcr_reg_desc: 'Calcula la eficiencia de amplificación de PCR en tiempo real a partir de una curva estándar de dilución seriada (Ct vs log de dilución).',
+  tool_qpcr_standard_curve_data: 'Datos de la Curva Estándar',
+  tool_qpcr_load_sample: 'Cargar Datos de Ejemplo',
+  tool_qpcr_dilution: 'Cantidad Relativa (mayor = más molde)',
+  tool_qpcr_ct: 'Valor de Ct',
+  tool_qpcr_add_row: 'Añadir Fila',
+  tool_qpcr_efficiency: 'Eficiencia de Amplificación',
+  tool_qpcr_slope: 'Pendiente',
+  tool_qpcr_intercept: 'Intersección',
+  tool_qpcr_verdict_ideal: 'Ideal (90-110%)',
+  tool_qpcr_verdict_acceptable: 'Aceptable',
+  tool_qpcr_verdict_poor: 'Deficiente',
+
+  // qPCR CSV upload
+  tool_qpcr_upload_csv: 'Subir CSV',
+  tool_qpcr_csv_parse_error: 'No se encontraron al menos 2 filas numéricas válidas en este archivo. Formato esperado: 1000,18.2',
 };
