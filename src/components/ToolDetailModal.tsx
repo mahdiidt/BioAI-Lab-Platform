@@ -16,6 +16,7 @@ import { PedigreeAnalysisTool } from './tools/PedigreeAnalysisTool';
 import { CodonOptimizationTool } from './tools/CodonOptimizationTool';
 import { CrisprGuideDesignerTool } from './tools/CrisprGuideDesignerTool';
 import { PrimerDesignerTool } from './tools/PrimerDesignerTool';
+import { QpcrEfficiencyTool } from './tools/QpcrEfficiencyTool';
 import { RestrictionDigestTool } from './tools/RestrictionDigestTool';
 import { AgaroseGelSimTool } from './tools/AgaroseGelSimTool';
 import { PlasmidMapTool } from './tools/PlasmidMapTool';
@@ -115,6 +116,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
         return <PrimerDesignerTool lang={lang} initialTab="tm" />;
       case 'pcr_reaction_setup':
         return <PrimerDesignerTool lang={lang} initialTab="setup" />;
+
+      case 'qpcr_efficiency':
+        return <QpcrEfficiencyTool lang={lang} />;
 
       case 'restriction_digest':
         return <RestrictionDigestTool lang={lang} />;
