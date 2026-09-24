@@ -197,6 +197,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     educationalLevel: 'intermediate',
     popular: true,
   },
+  {
+    id: 'qpcr_efficiency',
+    titleKey: 'tool_qpcr_reg_title',
+    descKey: 'tool_qpcr_reg_desc',
+    category: 'pcr_primers',
+    iconName: 'TrendingDown',
+    keywords: ['qpcr', 'real-time pcr', 'efficiency', 'standard curve', 'ct', 'slope'],
+    educationalLevel: 'advanced',
+    featured: true,
+  },
 
   // RESTRICTION & GEL SIMULATOR
   {
