@@ -809,4 +809,23 @@ export const en = {
   tool_pedigree_error_id_required: 'Please enter an ID for this individual.',
   tool_pedigree_error_duplicate_id: 'This ID is already used - choose a unique one.',
   tool_pedigree_error_bad_generation: 'Generation must be a number of 1 or higher.',
+
+  // qPCR Efficiency Calculator
+  tool_qpcr_reg_title: 'qPCR Efficiency Calculator',
+  tool_qpcr_reg_desc: 'Calculates real-time PCR amplification efficiency from a dilution-series standard curve (Ct vs log dilution).',
+  tool_qpcr_standard_curve_data: 'Standard Curve Data',
+  tool_qpcr_load_sample: 'Load Sample Data',
+  tool_qpcr_dilution: 'Relative Quantity (higher = more template)',
+  tool_qpcr_ct: 'Ct Value',
+  tool_qpcr_add_row: 'Add Row',
+  tool_qpcr_efficiency: 'Amplification Efficiency',
+  tool_qpcr_slope: 'Slope',
+  tool_qpcr_intercept: 'Intercept',
+  tool_qpcr_verdict_ideal: 'Ideal (90-110%)',
+  tool_qpcr_verdict_acceptable: 'Acceptable',
+  tool_qpcr_verdict_poor: 'Poor',
+
+  // qPCR CSV upload
+  tool_qpcr_upload_csv: 'Upload CSV',
+  tool_qpcr_csv_parse_error: 'Could not find at least 2 valid numeric rows in this file. Expected lines like: 1000,18.2',
 };
