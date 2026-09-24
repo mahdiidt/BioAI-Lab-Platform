@@ -808,4 +808,23 @@ export const fa = {
   tool_pedigree_error_id_required: 'لطفاً یه شناسه برای این فرد وارد کن.',
   tool_pedigree_error_duplicate_id: 'این شناسه قبلاً استفاده شده — یکی دیگه انتخاب کن.',
   tool_pedigree_error_bad_generation: 'نسل باید عددی ۱ یا بیشتر باشه.',
+
+  // qPCR Efficiency Calculator
+  tool_qpcr_reg_title: 'محاسبه‌گر کارایی qPCR',
+  tool_qpcr_reg_desc: 'محاسبه‌ی کارایی تکثیر PCR بلادرنگ از روی منحنی استاندارد رقت‌سازی (Ct در برابر لگاریتم رقت).',
+  tool_qpcr_standard_curve_data: 'داده‌های منحنی استاندارد',
+  tool_qpcr_load_sample: 'بارگذاری داده‌ی نمونه',
+  tool_qpcr_dilution: 'غلظت نسبی (بیشتر = الگوی بیشتر)',
+  tool_qpcr_ct: 'مقدار Ct',
+  tool_qpcr_add_row: 'افزودن ردیف',
+  tool_qpcr_efficiency: 'کارایی تکثیر',
+  tool_qpcr_slope: 'شیب',
+  tool_qpcr_intercept: 'عرض از مبدأ',
+  tool_qpcr_verdict_ideal: 'ایده‌آل (۹۰ تا ۱۱۰٪)',
+  tool_qpcr_verdict_acceptable: 'قابل‌قبول',
+  tool_qpcr_verdict_poor: 'ضعیف',
+
+  // qPCR CSV upload
+  tool_qpcr_upload_csv: 'آپلود CSV',
+  tool_qpcr_csv_parse_error: 'حداقل ۲ ردیف عددی معتبر توی این فایل پیدا نشد. خط‌ها باید این‌شکلی باشن: ۱۰۰۰،۱۸.۲',
 };
