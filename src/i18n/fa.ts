@@ -141,6 +141,27 @@ export const fa = {
   tool_mm_title: 'کینتیک آنزیمی میکائیلیس-منتن',
   tool_mm_desc: 'شبیه‌سازی سرعت واکنش (v)، Vmax، Km و منحنی‌های مهار رقابتی/غیررقابتی.',
 
+  // Henderson-Hasselbalch Buffer Calculator
+  tool_buffer_title: 'محاسبه‌گر بافر هندرسون-هاسلبالخ',
+  tool_buffer_desc: 'محاسبهٔ pH بافر از روی نسبت اسید/باز، یا محاسبهٔ حجم‌های فرم اسیدی و بازی لازم برای تهیهٔ بافر با pH هدف.',
+  tool_buffer_system: 'سامانهٔ بافر',
+  tool_buffer_mode_ph: 'محاسبهٔ pH',
+  tool_buffer_mode_mix: 'محاسبهٔ حجم‌های ترکیب',
+  tool_buffer_pka: 'pKa',
+  tool_buffer_conc_base: 'غلظت فرم بازی [A⁻] (مولار)',
+  tool_buffer_conc_acid: 'غلظت فرم اسیدی [HA] (مولار)',
+  tool_buffer_calculated_ph: 'pH محاسبه‌شده',
+  tool_buffer_target_ph: 'pH هدف',
+  tool_buffer_total_conc: 'غلظت کل بافر (مولار)',
+  tool_buffer_total_vol: 'حجم کل (میلی‌لیتر)',
+  tool_buffer_acid_vol: 'حجم استوک فرم اسیدی',
+  tool_buffer_base_vol: 'حجم استوک فرم بازی',
+  tool_buffer_ratio: 'نسبت [A⁻]/[HA]',
+  tool_buffer_pct_ionized: 'درصد یونیزه‌شده',
+  tool_buffer_capacity_warning_title: 'ظرفیت بافری ضعیف',
+  tool_buffer_capacity_warning_body: 'pH هدف بیش از ۱ واحد با pKa فاصله دارد. بافرها در محدودهٔ pKa ± ۱ بهترین عملکرد را دارند — سامانهٔ بافر دیگری را در نظر بگیرید.',
+
+
   tool_growth_title: 'شبیه‌ساز منحنی رشد باکتری',
   tool_growth_desc: 'محاسبه زمان مضاعف شدن (doubling time)، تعداد نسل و ثابت نرخ رشد k.',
   tool_gram_title: 'راهنمای تعاملی رنگ‌آمیزی گرم',
@@ -756,6 +777,11 @@ export const fa = {
   tool_skipped_invalid_sequences: 'توالی‌های نامعتبر نادیده گرفته شدند',
   tool_some_pairs_not_computed: 'برخی جفت‌ها قابل محاسبه نبودن (یک توالی از محدودیت طول مجاز برای این مقایسه بیشتر بود) و به‌جای یک ۰٪ گمراه‌کننده، با «—» نشون داده شدن.',
   tool_distance_matrix_note: 'این ماتریس از N×(N-1)/2 هم‌ردیف‌سازی کامل سراسری (همون الگوریتم ابزار Global Alignment) ساخته شده — نه یک روش علمی جدید. خلاصه‌ای از میزان شباهت هر توالی به بقیه‌ی توالی‌ها می‌ده، که اولین قدم استاندارد قبل از ساخت دستی یک درخت فیلوژنتیک هست.',
+
+  // Multiple Sequence Alignment (MSA)
+  tool_msa_title: 'هم‌ردیف‌سازی چندگانه توالی (MSA)',
+  tool_msa_desc: 'هم‌ردیف‌سازی پیشرونده‌ی چندین توالی DNA، RNA یا پروتئین با استفاده از درخت راهنمای UPGMA، همراه با نمایش حفاظت‌شدگی و توالی اجماعی.',
+  tool_msa_input_label: 'توالی‌های ورودی (فرمت FASTA)',
 
   // Plasmid Map Maker
   tool_plasmid_map_reg_title: 'نقشه‌ساز پلاسمید',
