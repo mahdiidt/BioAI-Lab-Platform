@@ -141,6 +141,27 @@ export const en = {
   tool_mm_title: 'Michaelis-Menten Enzyme Kinetics',
   tool_mm_desc: 'Simulate reaction velocity (v), Vmax, Km, and competitive/noncompetitive inhibition curves.',
 
+  // Henderson-Hasselbalch Buffer Calculator
+  tool_buffer_title: 'Henderson-Hasselbalch Buffer Calculator',
+  tool_buffer_desc: 'Calculate buffer pH from acid/base ratio, or the acid-form and base-form volumes needed to prepare a target pH buffer.',
+  tool_buffer_system: 'Buffer System',
+  tool_buffer_mode_ph: 'Calculate pH',
+  tool_buffer_mode_mix: 'Calculate Mixing Volumes',
+  tool_buffer_pka: 'pKa',
+  tool_buffer_conc_base: 'Base Form Concentration [A⁻] (M)',
+  tool_buffer_conc_acid: 'Acid Form Concentration [HA] (M)',
+  tool_buffer_calculated_ph: 'Calculated pH',
+  tool_buffer_target_ph: 'Target pH',
+  tool_buffer_total_conc: 'Total Buffer Concentration (M)',
+  tool_buffer_total_vol: 'Total Volume (mL)',
+  tool_buffer_acid_vol: 'Acid-Form Stock Volume',
+  tool_buffer_base_vol: 'Base-Form Stock Volume',
+  tool_buffer_ratio: '[A⁻]/[HA] Ratio',
+  tool_buffer_pct_ionized: '% Ionized',
+  tool_buffer_capacity_warning_title: 'Weak Buffering Capacity',
+  tool_buffer_capacity_warning_body: 'The target pH is more than 1 unit from the pKa. Buffers work best within pKa ± 1 — consider a different buffer system.',
+
+
   tool_growth_title: 'Bacterial Growth Curve Simulator',
   tool_growth_desc: 'Calculate doubling time, generation number, and growth rate constant k.',
   tool_gram_title: 'Gram Stain Interactive Reference',
@@ -757,6 +778,11 @@ export const en = {
   tool_skipped_invalid_sequences: 'Skipped invalid sequences',
   tool_some_pairs_not_computed: 'Some pairs could not be computed (a sequence exceeded the length limit for this comparison) and are shown as "—" rather than a misleading 0%.',
   tool_distance_matrix_note: 'This matrix is built from N×(N-1)/2 full pairwise global alignments (the same algorithm as the Global Alignment tool) — not a new scientific method. It summarizes how similar every sequence is to every other one, which is the standard first step before building a phylogenetic tree by hand.',
+
+  // Multiple Sequence Alignment (MSA)
+  tool_msa_title: 'Multiple Sequence Alignment (MSA)',
+  tool_msa_desc: 'Progressive multiple sequence alignment of DNA, RNA, or protein sequences using an UPGMA guide tree, with conservation and consensus.',
+  tool_msa_input_label: 'Input Sequences (FASTA Format)',
 
   // Plasmid Map Maker
   tool_plasmid_map_reg_title: 'Plasmid Map Maker',
