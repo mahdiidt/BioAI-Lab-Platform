@@ -136,6 +136,27 @@ export const zh = {
   tool_mm_title: '米氏方程酶动力学模拟',
   tool_mm_desc: '模拟反应速度 (v)、Vmax、Km 与竞争/非竞争性抑制曲线。',
 
+  // Henderson-Hasselbalch Buffer Calculator
+  tool_buffer_title: '亨德森-哈塞尔巴赫缓冲液计算器',
+  tool_buffer_desc: '根据酸/碱比例计算缓冲液pH值，或计算配制目标pH缓冲液所需的酸式和碱式体积。',
+  tool_buffer_system: '缓冲体系',
+  tool_buffer_mode_ph: '计算pH',
+  tool_buffer_mode_mix: '计算混合体积',
+  tool_buffer_pka: 'pKa',
+  tool_buffer_conc_base: '碱式浓度 [A⁻] (M)',
+  tool_buffer_conc_acid: '酸式浓度 [HA] (M)',
+  tool_buffer_calculated_ph: '计算得出的pH值',
+  tool_buffer_target_ph: '目标pH值',
+  tool_buffer_total_conc: '缓冲液总浓度 (M)',
+  tool_buffer_total_vol: '总体积 (mL)',
+  tool_buffer_acid_vol: '酸式储备液体积',
+  tool_buffer_base_vol: '碱式储备液体积',
+  tool_buffer_ratio: '[A⁻]/[HA] 比值',
+  tool_buffer_pct_ionized: '电离百分比',
+  tool_buffer_capacity_warning_title: '缓冲能力较弱',
+  tool_buffer_capacity_warning_body: '目标pH值与pKa相差超过1个单位。缓冲液在pKa ± 1范围内效果最佳——请考虑更换缓冲体系。',
+
+
   tool_growth_title: '细菌生长曲线模拟器',
   tool_growth_desc: '计算代时、倍增时间、世代数及比生长速率 k。',
   tool_gram_title: '革兰氏染色互动参考指南',
@@ -749,6 +770,11 @@ export const zh = {
   tool_skipped_invalid_sequences: '已跳过的无效序列',
   tool_some_pairs_not_computed: '部分序列对无法计算（某条序列超出了本次比较的长度限制），显示为「—」而非可能误导的 0%。',
   tool_distance_matrix_note: '该矩阵由 N×(N-1)/2 次完整成对全局比对构建而成（与全局比对工具使用相同算法），而非新的科学方法。它总结了每条序列与其他序列的相似程度，是手动构建系统发育树之前的标准第一步。',
+
+  // Multiple Sequence Alignment (MSA)
+  tool_msa_title: '多序列比对 (MSA)',
+  tool_msa_desc: '基于 UPGMA 引导树对 DNA、RNA 或蛋白质序列进行渐进式多序列比对,并给出保守性与共有序列。',
+  tool_msa_input_label: '输入序列（FASTA 格式）',
 
   // Plasmid Map Maker
   tool_plasmid_map_reg_title: '质粒图谱制作器',
