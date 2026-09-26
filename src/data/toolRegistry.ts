@@ -318,6 +318,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     educationalLevel: 'advanced',
     featured: true,
   },
+  {
+    id: 'buffer_ph_calc',
+    titleKey: 'tool_buffer_title',
+    descKey: 'tool_buffer_desc',
+    category: 'biochemistry',
+    iconName: 'Droplet',
+    keywords: ['buffer', 'ph', 'henderson', 'hasselbalch', 'pka', 'buffer preparation', 'tris', 'phosphate', 'acetate'],
+    educationalLevel: 'intermediate',
+    featured: true,
+  },
 
   // MICROBIOLOGY
   {
@@ -359,6 +369,16 @@ export const TOOL_REGISTRY: ToolMeta[] = [
     category: 'bioinformatics',
     iconName: 'GitCompare',
     keywords: ['smith', 'waterman', 'alignment', 'local', 'domain', 'motif', 'subsequence'],
+    educationalLevel: 'advanced',
+    featured: true,
+  },
+  {
+    id: 'msa',
+    titleKey: 'tool_msa_title',
+    descKey: 'tool_msa_desc',
+    category: 'bioinformatics',
+    iconName: 'AlignLeft',
+    keywords: ['msa', 'multiple sequence alignment', 'upgma', 'guide tree', 'progressive alignment', 'conservation', 'consensus'],
     educationalLevel: 'advanced',
     featured: true,
   },
