@@ -136,6 +136,27 @@ export const es = {
   tool_mm_title: 'Cinética Enzimática de Michaelis-Menten',
   tool_mm_desc: 'Simule velocidad de reacción (v), Vmax, Km y curvas de inhibición.',
 
+  // Henderson-Hasselbalch Buffer Calculator
+  tool_buffer_title: 'Calculadora de Buffer de Henderson-Hasselbalch',
+  tool_buffer_desc: 'Calcule el pH del buffer a partir de la proporción ácido/base, o los volúmenes de forma ácida y básica necesarios para preparar un buffer con el pH deseado.',
+  tool_buffer_system: 'Sistema de Buffer',
+  tool_buffer_mode_ph: 'Calcular pH',
+  tool_buffer_mode_mix: 'Calcular Volúmenes de Mezcla',
+  tool_buffer_pka: 'pKa',
+  tool_buffer_conc_base: 'Concentración de la Forma Básica [A⁻] (M)',
+  tool_buffer_conc_acid: 'Concentración de la Forma Ácida [HA] (M)',
+  tool_buffer_calculated_ph: 'pH Calculado',
+  tool_buffer_target_ph: 'pH Objetivo',
+  tool_buffer_total_conc: 'Concentración Total del Buffer (M)',
+  tool_buffer_total_vol: 'Volumen Total (mL)',
+  tool_buffer_acid_vol: 'Volumen de Stock Ácido',
+  tool_buffer_base_vol: 'Volumen de Stock Básico',
+  tool_buffer_ratio: 'Proporción [A⁻]/[HA]',
+  tool_buffer_pct_ionized: '% Ionizado',
+  tool_buffer_capacity_warning_title: 'Capacidad Amortiguadora Débil',
+  tool_buffer_capacity_warning_body: 'El pH objetivo está a más de 1 unidad del pKa. Los buffers funcionan mejor dentro de pKa ± 1 — considere otro sistema de buffer.',
+
+
   tool_growth_title: 'Simulador de Curva de Crecimiento Bacteriano',
   tool_growth_desc: 'Calcule tiempo de duplicación, número de generaciones y tasa de crecimiento k.',
   tool_gram_title: 'Referencia Interactiva de Tincion de Gram',
@@ -749,6 +770,11 @@ export const es = {
   tool_skipped_invalid_sequences: 'Secuencias inválidas omitidas',
   tool_some_pairs_not_computed: 'Algunos pares no pudieron calcularse (una secuencia superó el límite de longitud para esta comparación) y se muestran como "—" en lugar de un 0% engañoso.',
   tool_distance_matrix_note: 'Esta matriz se construye a partir de N×(N-1)/2 alineamientos globales por pares completos (el mismo algoritmo que la herramienta Global Alignment), no un nuevo método científico. Resume qué tan similar es cada secuencia a las demás, el primer paso estándar antes de construir un árbol filogenético a mano.',
+
+  // Multiple Sequence Alignment (MSA)
+  tool_msa_title: 'Alineamiento Múltiple de Secuencias (MSA)',
+  tool_msa_desc: 'Alineamiento múltiple progresivo de secuencias de ADN, ARN o proteínas mediante un árbol guía UPGMA, con conservación y secuencia consenso.',
+  tool_msa_input_label: 'Secuencias de Entrada (Formato FASTA)',
 
   // Plasmid Map Maker
   tool_plasmid_map_reg_title: 'Creador de Mapas de Plásmidos',
