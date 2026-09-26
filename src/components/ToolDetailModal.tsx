@@ -24,8 +24,10 @@ import { ProteinAnalyzerTool } from './tools/ProteinAnalyzerTool';
 import { SecondaryStructureTool } from './tools/SecondaryStructureTool';
 import { MolarityCalcTool } from './tools/MolarityCalcTool';
 import { MichaelisMentenTool } from './tools/MichaelisMentenTool';
+import { BufferCalculatorTool } from './tools/BufferCalculatorTool';
 import { BacterialGrowthTool } from './tools/BacterialGrowthTool';
 import { GlobalAlignmentTool } from './tools/GlobalAlignmentTool';
+import { MsaTool } from './tools/MsaTool';
 import { LocalAlignmentTool } from './tools/LocalAlignmentTool';
 import { DistanceMatrixTool } from './tools/DistanceMatrixTool';
 import { RnaSecondaryStructureTool } from './tools/RnaSecondaryStructureTool';
@@ -145,6 +147,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
       case 'michaelis_menten':
         return <MichaelisMentenTool lang={lang} />;
 
+      case 'buffer_ph_calc':
+        return <BufferCalculatorTool lang={lang} />;
+
       case 'bacterial_growth':
         return <BacterialGrowthTool lang={lang} />;
 
@@ -153,6 +158,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'global_alignment':
         return <GlobalAlignmentTool lang={lang} />;
+
+      case 'msa':
+        return <MsaTool lang={lang} />;
 
       case 'local_alignment':
         return <LocalAlignmentTool lang={lang} />;
