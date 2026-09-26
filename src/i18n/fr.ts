@@ -136,6 +136,27 @@ export const fr = {
   tool_mm_title: 'Cinétique Enzymatique de Michaelis-Menten',
   tool_mm_desc: 'Simulez la vitesse de réaction (v), Vmax, Km et les courbes d\'inhibition.',
 
+  // Henderson-Hasselbalch Buffer Calculator
+  tool_buffer_title: 'Calculateur de Tampon de Henderson-Hasselbalch',
+  tool_buffer_desc: 'Calculez le pH du tampon à partir du rapport acide/base, ou les volumes des formes acide et basique nécessaires pour préparer un tampon au pH souhaité.',
+  tool_buffer_system: 'Système Tampon',
+  tool_buffer_mode_ph: 'Calculer le pH',
+  tool_buffer_mode_mix: 'Calculer les Volumes de Mélange',
+  tool_buffer_pka: 'pKa',
+  tool_buffer_conc_base: 'Concentration de la Forme Basique [A⁻] (M)',
+  tool_buffer_conc_acid: 'Concentration de la Forme Acide [HA] (M)',
+  tool_buffer_calculated_ph: 'pH Calculé',
+  tool_buffer_target_ph: 'pH Cible',
+  tool_buffer_total_conc: 'Concentration Totale du Tampon (M)',
+  tool_buffer_total_vol: 'Volume Total (mL)',
+  tool_buffer_acid_vol: 'Volume de Stock Acide',
+  tool_buffer_base_vol: 'Volume de Stock Basique',
+  tool_buffer_ratio: 'Rapport [A⁻]/[HA]',
+  tool_buffer_pct_ionized: '% Ionisé',
+  tool_buffer_capacity_warning_title: 'Capacité Tampon Faible',
+  tool_buffer_capacity_warning_body: 'Le pH cible est à plus de 1 unité du pKa. Les tampons sont les plus efficaces dans la plage pKa ± 1 — envisagez un autre système tampon.',
+
+
   tool_growth_title: 'Simulateur de Courbe de Croissance Bactérienne',
   tool_growth_desc: 'Calculez le temps de doublement, le nombre de générations et le taux de croissance k.',
   tool_gram_title: 'Référence Interactive de Coloration de Gram',
@@ -749,6 +770,11 @@ export const fr = {
   tool_skipped_invalid_sequences: 'Séquences invalides ignorées',
   tool_some_pairs_not_computed: 'Certaines paires n\'ont pas pu être calculées (une séquence a dépassé la limite de longueur pour cette comparaison) et sont affichées comme « — » plutôt qu\'un 0 % trompeur.',
   tool_distance_matrix_note: 'Cette matrice est construite à partir de N×(N-1)/2 alignements globaux par paires complets (le même algorithme que l\'outil Global Alignment), et non une nouvelle méthode scientifique. Elle résume à quel point chaque séquence ressemble aux autres, la première étape standard avant de construire un arbre phylogénétique à la main.',
+
+  // Multiple Sequence Alignment (MSA)
+  tool_msa_title: 'Alignement Multiple de Séquences (MSA)',
+  tool_msa_desc: 'Alignement multiple progressif de séquences d\'ADN, d\'ARN ou de protéines à l\'aide d\'un arbre guide UPGMA, avec conservation et séquence consensus.',
+  tool_msa_input_label: 'Séquences en Entrée (Format FASTA)',
 
   // Plasmid Map Maker
   tool_plasmid_map_reg_title: 'Créateur de Carte Plasmidique',
