@@ -136,6 +136,27 @@ export const de = {
   tool_mm_title: 'Michaelis-Menten Enzymkinetik',
   tool_mm_desc: 'Simulieren Sie Reaktionsgeschwindigkeit (v), Vmax, Km und Hemmungskurven.',
 
+  // Henderson-Hasselbalch Buffer Calculator
+  tool_buffer_title: 'Henderson-Hasselbalch-Pufferrechner',
+  tool_buffer_desc: 'Berechnen Sie den Puffer-pH aus dem Säure/Base-Verhältnis oder die benötigten Volumina der Säure- und Basenform zur Herstellung eines Puffers mit Ziel-pH.',
+  tool_buffer_system: 'Puffersystem',
+  tool_buffer_mode_ph: 'pH berechnen',
+  tool_buffer_mode_mix: 'Mischvolumina berechnen',
+  tool_buffer_pka: 'pKa',
+  tool_buffer_conc_base: 'Konzentration der Basenform [A⁻] (M)',
+  tool_buffer_conc_acid: 'Konzentration der Säureform [HA] (M)',
+  tool_buffer_calculated_ph: 'Berechneter pH',
+  tool_buffer_target_ph: 'Ziel-pH',
+  tool_buffer_total_conc: 'Gesamtpufferkonzentration (M)',
+  tool_buffer_total_vol: 'Gesamtvolumen (mL)',
+  tool_buffer_acid_vol: 'Volumen der Säure-Stammlösung',
+  tool_buffer_base_vol: 'Volumen der Basen-Stammlösung',
+  tool_buffer_ratio: '[A⁻]/[HA]-Verhältnis',
+  tool_buffer_pct_ionized: '% Ionisiert',
+  tool_buffer_capacity_warning_title: 'Schwache Pufferkapazität',
+  tool_buffer_capacity_warning_body: 'Der Ziel-pH liegt mehr als 1 Einheit vom pKa entfernt. Puffer wirken am besten im Bereich pKa ± 1 — erwägen Sie ein anderes Puffersystem.',
+
+
   tool_growth_title: 'Bakterien-Wachstumskurven-Simulator',
   tool_growth_desc: 'Berechnen Sie Verdopplungszeit, Generationenzahl und Wachstumsrate k.',
   tool_gram_title: 'Interaktive Gram-Färbung Referenz',
@@ -749,6 +770,11 @@ export const de = {
   tool_skipped_invalid_sequences: 'Übersprungene ungültige Sequenzen',
   tool_some_pairs_not_computed: 'Einige Paare konnten nicht berechnet werden (eine Sequenz überschritt das Längenlimit für diesen Vergleich) und werden als „—" statt eines irreführenden 0 % angezeigt.',
   tool_distance_matrix_note: 'Diese Matrix wird aus N×(N-1)/2 vollständigen paarweisen globalen Alignments erstellt (derselbe Algorithmus wie das Global-Alignment-Werkzeug) — keine neue wissenschaftliche Methode. Sie fasst zusammen, wie ähnlich jede Sequenz allen anderen ist — der Standard-Erstschritt vor dem manuellen Erstellen eines phylogenetischen Baums.',
+
+  // Multiple Sequence Alignment (MSA)
+  tool_msa_title: 'Multiples Sequenzalignment (MSA)',
+  tool_msa_desc: 'Progressives multiples Sequenzalignment von DNA-, RNA- oder Proteinsequenzen mittels UPGMA-Führungsbaum, mit Konservierung und Konsensussequenz.',
+  tool_msa_input_label: 'Eingabesequenzen (FASTA-Format)',
 
   // Plasmid Map Maker
   tool_plasmid_map_reg_title: 'Plasmidkarten-Generator',
