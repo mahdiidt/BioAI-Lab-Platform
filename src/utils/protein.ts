@@ -29,6 +29,10 @@ export const PKA_VALUES = {
   R: 12.0, // Arginine
 };
 
+// Molecular mass of water used for peptide-bond condensation and terminal
+// groups. Keeping this as a named constant avoids repeating a rounded value.
+const WATER_MOLECULAR_WEIGHT = 18.01528;
+
 export function analyzeProtein(sequence: string) {
   const val = validateSequence(sequence, 'PROTEIN');
   const seq = val.cleanSequence.replace(/\*/g, '');
@@ -49,12 +53,12 @@ export function analyzeProtein(sequence: string) {
   for (const char of seq) {
     if (AMINO_ACID_MW[char]) {
       counts[char]++;
-      mw += AMINO_ACID_MW[char] - 18.015; // Subtract H2O per peptide bond
+      mw += AMINO_ACID_MW[char] - WATER_MOLECULAR_WEIGHT; // Subtract H2O per peptide bond
       gravySum += KYTE_DOOLITTLE[char] || 0;
     }
   }
 
-  mw += 18.015; // Add terminal H2O
+  mw += WATER_MOLECULAR_WEIGHT; // Add terminal H2O
 
   const gravyIndex = Number((gravySum / length).toFixed(3));
   const molecularWeightDa = Number(mw.toFixed(1));
