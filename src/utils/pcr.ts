@@ -1,7 +1,8 @@
 // PCR & Primer Thermodynamics Utilities
 
 export function calculatePrimerTm(
-  primerSeq: string
+  primerSeq: string,
+  sodiumM = 0.05
 ): {
   tm: number;
   gcContent: number;
@@ -18,6 +19,15 @@ export function calculatePrimerTm(
       gcContent: 0,
       length: 0,
       warnings: ['Sequence is empty.'],
+    };
+  }
+
+  if (!Number.isFinite(sodiumM) || sodiumM <= 0) {
+    return {
+      tm: 0,
+      gcContent: 0,
+      length,
+      warnings: ['Sodium concentration must be a positive number in mol/L.'],
     };
   }
 
@@ -62,9 +72,15 @@ export function calculatePrimerTm(
     // Tm = 2 × (A + T) + 4 × (G + C)
     tm = 2 * (aCount + tCount) + 4 * gcCount;
   } else {
-    // GC-based long-primer Tm estimate.
-    // This is NOT a nearest-neighbor thermodynamic calculation.
-    tm = 64.9 + (41 * (gcCount - 16.4)) / length;
+    // Salt-adjusted basic Tm estimate.
+    // This is still not a SantaLucia nearest-neighbor calculation, but it
+    // explicitly accounts for monovalent sodium concentration.
+    // Tm = 81.5 + 16.6 log10([Na+]) + 41(%GC as fraction) - 675/N
+    tm =
+      81.5 +
+      16.6 * Math.log10(sodiumM) +
+      41 * (gcCount / length) -
+      675 / length;
   }
 
   tm = Number(tm.toFixed(1));
