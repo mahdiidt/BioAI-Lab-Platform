@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { ExportButton } from '../common/ExportButton';
 import { ScientificExplanation } from '../common/ScientificExplanation';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
-import { AlignLeft, Play, AlertTriangle, Info } from 'lucide-react';
+import { AlignLeft, Play, AlertTriangle, Info, FileUp } from 'lucide-react';
 import {
   parseFasta,
   progressiveMSA,
@@ -89,6 +89,28 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
   const [gapPenalty, setGapPenalty] = useState(-2);
   const [result, setResult] = useState<MsaResult | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      const sizeMb = (file.size / 1024 / 1024).toFixed(1);
+      setFileError(getTranslation(lang, 'fileTooLargeError').replace('{size}', sizeMb));
+      e.target.value = '';
+      return;
+    }
+    setFileError(null);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) setInput(text);
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   const runAlignment = () => {
     const seqs = parseFasta(input);
@@ -103,12 +125,16 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
 
   const exportData = () => {
     if (!result || !result.isValid) return;
-    let text = `# Multiple Sequence Alignment Result\n`;
-    text += `# Sequences: ${result.stats.numSeqs} | Length: ${result.stats.alignLen} | Identity: ${result.stats.identPct}% | Gaps: ${result.stats.gapPct}%\n\n`;
+    // Strict FASTA only (no "#" comment lines - not universally recognized by
+    // FASTA parsers) so the file can be re-imported directly into other tools
+    // (Jalview, MEGA, ClustalX, BLAST, etc.) without manual cleanup. The
+    // alignment stats already shown above are omitted here since they'd
+    // otherwise appear as a stray non-sequence line.
+    let text = '';
     for (let i = 0; i < result.names.length; i++) {
       text += `>${result.names[i]}\n${result.aligned[i]}\n`;
     }
-    text += `\n>Consensus\n${result.consensus}\n`;
+    text += `>Consensus\n${result.consensus}\n`;
     return text;
   };
 
@@ -138,10 +164,33 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Input */}
       <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs">
-        <label className="text-xs font-bold text-[#12312B] flex items-center gap-2 mb-3">
-          <AlignLeft className="w-4 h-4 text-[#0F766E]" />
-          {getTranslation(lang, 'tool_msa_input_label') || 'Input Sequences (FASTA Format)'}
-        </label>
+        <div className="flex items-center justify-between mb-3">
+          <label className="text-xs font-bold text-[#12312B] flex items-center gap-2">
+            <AlignLeft className="w-4 h-4 text-[#0F766E]" />
+            {getTranslation(lang, 'tool_msa_input_label') || 'Input Sequences (FASTA Format)'}
+          </label>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            type="button"
+            className="inline-flex items-center gap-1 text-xs text-[#0F766E] hover:underline font-semibold cursor-pointer"
+          >
+            <FileUp className="w-3.5 h-3.5" />
+            {getTranslation(lang, 'tool_upload_fasta')}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".fasta,.fa,.txt,.seq"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </div>
+        {fileError && (
+          <div className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-xs text-[#EF4444]">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            {fileError}
+          </div>
+        )}
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -243,7 +292,7 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
             <ExportButton
               filename="msa_alignment.fasta"
               data={exportData() || ''}
-              format="txt"
+              format="fasta"
               lang={lang}
             />
           </div>
