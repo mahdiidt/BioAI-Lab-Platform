@@ -93,22 +93,43 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
     const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      const sizeMb = (file.size / 1024 / 1024).toFixed(1);
+    const oversized = files.find((f) => f.size > MAX_FILE_SIZE_BYTES);
+    if (oversized) {
+      const sizeMb = (oversized.size / 1024 / 1024).toFixed(1);
       setFileError(getTranslation(lang, 'fileTooLargeError').replace('{size}', sizeMb));
       e.target.value = '';
       return;
     }
     setFileError(null);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      if (text) setInput(text);
-    };
-    reader.readAsText(file);
+    // Read every selected file, then merge them together in one update so
+    // uploading several files at once (or one after another) combines their
+    // sequences into a single FASTA block instead of the last one replacing
+    // the rest.
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve((event.target?.result as string) || '');
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+          })
+      )
+    )
+      .then((contents) => {
+        const merged = contents.map((c) => c.trim()).filter(Boolean).join('\n');
+        if (!merged) return;
+        setInput((prev) => {
+          const prevTrimmed = prev.trim();
+          return prevTrimmed ? `${prevTrimmed}\n${merged}` : merged;
+        });
+      })
+      .catch(() => {
+        setFileError('One of the selected files could not be read.');
+      });
     e.target.value = '';
   };
 
@@ -181,6 +202,7 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
             ref={fileInputRef}
             type="file"
             accept=".fasta,.fa,.txt,.seq"
+            multiple
             onChange={handleFileUpload}
             className="hidden"
           />
