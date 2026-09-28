@@ -82,11 +82,11 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
   ];
 
   const textareaClass =
-    'w-full p-3 text-xs font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-[#12312B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 resize-y sequence-mono-ltr';
+    'w-full p-3 text-xs font-mono bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl text-[#12312B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 resize-y sequence-mono-ltr';
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 overflow-x-auto">
+      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] dark:border-slate-700 pb-3 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -97,7 +97,7 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-[#0F766E] text-white shadow-xs'
-                : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+                : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
             }`}
           >
             {tab.icon} {getTranslation(lang, tab.labelKey)}
@@ -108,8 +108,8 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
       {/* ONE-SAMPLE T-TEST */}
       {activeTab === 'one_sample' && (
         <div className="space-y-4">
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3">
-            <label className="text-xs font-bold text-[#12312B] block">{getTranslation(lang, 'tool_sample_data')}</label>
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-3">
+            <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 block">{getTranslation(lang, 'tool_sample_data')}</label>
             <textarea
               value={sample1Text}
               onChange={(e) => setSample1Text(e.target.value)}
@@ -118,18 +118,18 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
               className={textareaClass}
             />
             <div>
-              <label className="text-xs font-bold text-[#12312B] block mb-1">{getTranslation(lang, 'tool_population_mean_h0')}</label>
+              <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 block mb-1">{getTranslation(lang, 'tool_population_mean_h0')}</label>
               <input
                 type="number"
                 value={popMean}
                 onChange={(e) => setPopMean(parseFloat(e.target.value) || 0)}
-                className="w-40 p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E]"
+                className="w-40 p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl text-center text-[#0F766E] dark:text-teal-400"
               />
             </div>
           </div>
 
           {!oneSampleResult.isValid && (
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+            <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
               <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
               <span>{oneSampleResult.errorMessage}</span>
             </div>
@@ -158,12 +158,12 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
       {activeTab === 'two_sample' && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-2">
-              <label className="text-xs font-bold text-[#12312B] block">{getTranslation(lang, 'tool_group_a')}</label>
+            <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-2">
+              <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 block">{getTranslation(lang, 'tool_group_a')}</label>
               <textarea value={sampleAText} onChange={(e) => setSampleAText(e.target.value)} rows={3} className={textareaClass} />
             </div>
-            <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-2">
-              <label className="text-xs font-bold text-[#12312B] block">{getTranslation(lang, 'tool_group_b')}</label>
+            <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-2">
+              <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 block">{getTranslation(lang, 'tool_group_b')}</label>
               <textarea value={sampleBText} onChange={(e) => setSampleBText(e.target.value)} rows={3} className={textareaClass} />
             </div>
           </div>
@@ -192,7 +192,7 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
 
           {!twoSampleResult.isValid && (
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+            <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
               <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
               <span>{twoSampleResult.errorMessage}</span>
             </div>
@@ -220,18 +220,18 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
       {activeTab === 'chi_gof' && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-2">
-              <label className="text-xs font-bold text-[#12312B] block">{getTranslation(lang, 'tool_observed_counts')}</label>
+            <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-2">
+              <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 block">{getTranslation(lang, 'tool_observed_counts')}</label>
               <textarea value={observedText} onChange={(e) => setObservedText(e.target.value)} rows={2} className={textareaClass} />
             </div>
-            <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-2">
-              <label className="text-xs font-bold text-[#12312B] block">{getTranslation(lang, 'tool_expected_counts')}</label>
+            <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-2">
+              <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 block">{getTranslation(lang, 'tool_expected_counts')}</label>
               <textarea value={expectedText} onChange={(e) => setExpectedText(e.target.value)} rows={2} className={textareaClass} />
             </div>
           </div>
 
           {!gofResult.isValid && (
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+            <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
               <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
               <span>{gofResult.errorMessage}</span>
             </div>
@@ -256,8 +256,8 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
       {/* CHI-SQUARE INDEPENDENCE */}
       {activeTab === 'chi_indep' && (
         <div className="space-y-4">
-          <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-2">
-            <label className="text-xs font-bold text-[#12312B] block">{getTranslation(lang, 'tool_contingency_table')}</label>
+          <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-2">
+            <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 block">{getTranslation(lang, 'tool_contingency_table')}</label>
             <textarea
               value={tableText}
               onChange={(e) => setTableText(e.target.value)}
@@ -265,11 +265,11 @@ export const StatisticalTestTool: React.FC<ToolProps> = ({ lang }) => {
               placeholder={getTranslation(lang, 'tool_one_row_per_line')}
               className={textareaClass}
             />
-            <p className="text-[10px] text-[#64748B]">{getTranslation(lang, 'tool_one_row_per_line')}</p>
+            <p className="text-[10px] text-[#64748B] dark:text-slate-400">{getTranslation(lang, 'tool_one_row_per_line')}</p>
           </div>
 
           {!indepResult.isValid && (
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+            <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
               <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
               <span>{indepResult.errorMessage}</span>
             </div>
@@ -313,16 +313,16 @@ const ResultsPanel: React.FC<{
   const isSignificant = pValue < alpha;
 
   return (
-    <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-      <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-        <h4 className="font-bold text-sm text-[#12312B]">{getTranslation(lang, 'resultsHeader')}</h4>
+    <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+      <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+        <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'resultsHeader')}</h4>
         <ExportButton filename={exportFilename} data={exportData} format="json" lang={lang} />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {rows.map(([label, value]) => (
-          <div key={label} className="p-3 bg-slate-50 border border-[#DDEDE8] rounded-xl">
-            <span className="text-[10px] font-semibold text-[#64748B] block">{label}</span>
+          <div key={label} className="p-3 bg-slate-50 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{label}</span>
             <span className="text-sm font-bold text-[#12312B] font-mono">{value}</span>
           </div>
         ))}
@@ -334,7 +334,7 @@ const ResultsPanel: React.FC<{
         }`}
       >
         <div>
-          <span className="text-[11px] font-semibold text-[#64748B] block">p-value</span>
+          <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">p-value</span>
           <span className={`text-xl font-bold font-mono ${isSignificant ? 'text-emerald-700' : 'text-[#12312B]'}`}>
             {formatP(pValue)}
           </span>
