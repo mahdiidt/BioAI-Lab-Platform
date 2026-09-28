@@ -13,8 +13,8 @@ export const PhylogeneticTreeTool: React.FC<ToolProps> = ({ lang }) => {
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3">
-        <label className="text-xs font-semibold text-[#12312B] uppercase tracking-wider block">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-3">
+        <label className="text-xs font-semibold text-[#12312B] dark:text-slate-100 uppercase tracking-wider block">
           {getTranslation(lang, 'tool_newick_tree_format')}
         </label>
         <textarea
