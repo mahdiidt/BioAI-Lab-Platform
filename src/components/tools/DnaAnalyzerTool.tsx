@@ -78,7 +78,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Molecule Type Selector */}
       <div>
-        <span className="text-xs font-bold text-[#12312B] block mb-1.5">
+        <span className="text-xs font-bold text-[#12312B] dark:text-slate-100 block mb-1.5">
           {getTranslation(lang, 'tool_molecule_type')}
         </span>
         <div role="group" aria-label={getTranslation(lang, 'tool_molecule_type')} className="inline-flex items-center gap-2 p-1 bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl">
@@ -101,7 +101,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
       </div>
 
       {/* Sub-tab Navigation */}
-      <div role="tablist" aria-label={getTranslation(lang, 'tool_dna_analyzer_title')} className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 overflow-x-auto">
+      <div role="tablist" aria-label={getTranslation(lang, 'tool_dna_analyzer_title')} className="flex items-center gap-2 border-b border-[#DDEDE8] dark:border-slate-700 pb-3 overflow-x-auto">
         <button
           role="tab"
           aria-selected={activeTab === 'dna'}
@@ -109,7 +109,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
           className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'dna'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <Dna className="w-4 h-4" /> {getTranslation(lang, 'tool_dna_analyzer_title')}
@@ -121,7 +121,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
           className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'gc'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <PieChart className="w-4 h-4" /> {getTranslation(lang, 'tool_gc_content')}
@@ -133,7 +133,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
           className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'transcription'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <ArrowRightLeft className="w-4 h-4" /> {getTranslation(lang, 'tool_transcription_title')}
@@ -145,7 +145,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
           className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'translation'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <Binary className="w-4 h-4" /> {getTranslation(lang, 'tool_translation_title')}
@@ -157,7 +157,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
           className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'orf'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <Search className="w-4 h-4" /> {getTranslation(lang, 'tool_orf_title')}
@@ -174,7 +174,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
       />
 
       {!validation.isValid && validation.errorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-start gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600 mt-0.5" />
           <div className="space-y-0.5">
             <span>{validation.errorMessage}</span>
@@ -187,9 +187,9 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
 
       {/* Results Section */}
       {validation.isValid && composition && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
-          <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-            <h4 className="font-bold text-sm text-[#12312B]">
+        <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-5">
+          <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">
               {getTranslation(lang, 'resultsHeader')}
             </h4>
             <div className="flex items-center gap-2">
@@ -199,24 +199,24 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
 
           {/* QC Section */}
           <div className="space-y-2">
-            <span className="text-xs font-bold text-[#12312B] flex items-center gap-1.5">
-              <Info className="w-3.5 h-3.5 text-[#0F766E]" /> {getTranslation(lang, 'tool_qc_header')}
+            <span className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_qc_header')}
             </span>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_length')}</span>
+                <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_length')}</span>
                 <span className="text-sm font-bold text-[#12312B] font-mono">{stats.length.toLocaleString()}</span>
               </div>
               <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_qc_canonical_bases')}</span>
+                <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_qc_canonical_bases')}</span>
                 <span className="text-sm font-bold text-[#12312B] font-mono">{composition.canonicalTotal.toLocaleString()}</span>
               </div>
               <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_qc_ambiguous_bases')}</span>
+                <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_qc_ambiguous_bases')}</span>
                 <span className="text-sm font-bold text-[#12312B] font-mono">{composition.ambiguousTotal.toLocaleString()}</span>
               </div>
               <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_qc_n_count')}</span>
+                <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_qc_n_count')}</span>
                 <span className="text-sm font-bold text-[#12312B] font-mono">{(composition.ambiguous.N || 0).toLocaleString()}</span>
               </div>
             </div>
@@ -224,26 +224,26 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
 
           {/* Metrics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_length')}</span>
-              <span className="text-lg font-bold text-[#0F766E] font-mono">{stats.length.toLocaleString()} {molecule === 'DNA' ? 'bp' : 'nt'}</span>
+            <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_length')}</span>
+              <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{stats.length.toLocaleString()} {molecule === 'DNA' ? 'bp' : 'nt'}</span>
             </div>
-            <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_gc_content')}</span>
-              <span className="text-lg font-bold text-[#22C55E] font-mono">{stats.gcContent}%</span>
+            <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_gc_content')}</span>
+              <span className="text-lg font-bold text-[#22C55E] dark:text-green-400 font-mono">{stats.gcContent}%</span>
             </div>
-            <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_at_content')}</span>
-              <span className="text-lg font-bold text-[#0EA5E9] font-mono">{stats.atContent}%</span>
+            <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_at_content')}</span>
+              <span className="text-lg font-bold text-[#0EA5E9] dark:text-sky-400 font-mono">{stats.atContent}%</span>
             </div>
-            <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_mol_weight')}</span>
-              <span className="text-lg font-bold text-[#8B5CF6] font-mono">{stats.molecularWeightDa.toLocaleString()} Da</span>
+            <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_mol_weight')}</span>
+              <span className="text-lg font-bold text-[#8B5CF6] dark:text-violet-400 font-mono">{stats.molecularWeightDa.toLocaleString()} Da</span>
             </div>
           </div>
 
           {validation.hasAmbiguityChars && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-[11px] text-amber-800">
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-2 text-[11px] text-amber-800">
               <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
               <span>{getTranslation(lang, 'tool_gc_ambiguous_note')}</span>
             </div>
@@ -251,7 +251,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
 
           {/* Molecular Weight Model Selector */}
           <div className="flex items-center justify-between flex-wrap gap-2 p-3 bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl">
-            <span className="text-xs font-semibold text-[#12312B]">{getTranslation(lang, 'tool_mw_model')}</span>
+            <span className="text-xs font-semibold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_mw_model')}</span>
             <div className="flex items-center gap-1.5">
               {(molecule === 'DNA' ? (['ssDNA', 'dsDNA'] as MwModel[]) : (['RNA'] as MwModel[])).map((m) => (
                 <button
@@ -265,7 +265,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
                   } ${
                     mwModel === m
                       ? 'bg-[#0F766E] text-white'
-                      : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+                      : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
                   }`}
                 >
                   {getTranslation(lang, m === 'ssDNA' ? 'tool_mw_model_ssdna' : m === 'dsDNA' ? 'tool_mw_model_dsdna' : 'tool_mw_model_rna')}
@@ -277,7 +277,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
 
           {/* Nucleotide Breakdown Bar */}
           <div className="space-y-1.5">
-            <span className="text-xs font-semibold text-[#12312B]">{getTranslation(lang, 'tool_nucleotide_comp')}</span>
+            <span className="text-xs font-semibold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_nucleotide_comp')}</span>
             <div className="h-3 rounded-full bg-slate-100 flex overflow-hidden border border-[#DDEDE8]">
               <div style={{ width: `${(composition.canonical.A / (stats.length || 1)) * 100}%` }} className="bg-emerald-500" title="A" />
               {molecule === 'DNA' ? (
@@ -297,7 +297,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
 
             {composition.ambiguousTotal > 0 && (
               <div className="pt-2 space-y-1">
-                <span className="text-[11px] font-semibold text-[#64748B]">{getTranslation(lang, 'tool_ambiguous_bases_header')}</span>
+                <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400">{getTranslation(lang, 'tool_ambiguous_bases_header')}</span>
                 <div className="flex flex-wrap gap-1.5">
                   {Object.entries(composition.ambiguous).map(([sym, count]) => (
                     <span key={sym} className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-100 text-amber-800 border border-amber-200">
@@ -313,20 +313,20 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
           {activeTab === 'orf' ? (
             <div className="space-y-3 pt-2">
               {molecule === 'RNA' ? (
-                <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl flex items-start gap-2 text-xs text-sky-800">
+                <div className="p-3 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 rounded-xl flex items-start gap-2 text-xs text-sky-800">
                   <Info className="w-4 h-4 shrink-0 text-sky-600 mt-0.5" />
                   <span>{getTranslation(lang, 'tool_rna_orf_note')}</span>
                 </div>
               ) : (
                 <>
-                  <h5 className="text-xs font-bold text-[#12312B]">{getTranslation(lang, 'tool_orfs_found')} ({orfs.length})</h5>
+                  <h5 className="text-xs font-bold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_orfs_found')} ({orfs.length})</h5>
                   {orfs.length === 0 ? (
                     <p className="text-xs text-[#64748B] italic">{getTranslation(lang, 'tool_no_orfs_found')}</p>
                   ) : (
                     <div className="space-y-2 max-h-60 overflow-y-auto">
                       {orfs.map((orf, i) => (
                         <div key={i} className="p-3 bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl space-y-1">
-                          <div className="flex items-center justify-between text-xs font-bold text-[#0F766E]">
+                          <div className="flex items-center justify-between text-xs font-bold text-[#0F766E] dark:text-teal-400">
                             <span>{getTranslation(lang, 'tool_frame')} {orf.frame} (bp {orf.start}..{orf.end})</span>
                             <span className="font-mono">{orf.lengthAa} aa ({orf.lengthBp} bp)</span>
                           </div>
@@ -337,7 +337,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
                             </div>
                           )}
                           <div className="flex items-center justify-between gap-2">
-                            <div className="p-2 bg-white border border-[#DDEDE8] rounded-lg font-mono text-xs text-[#8B5CF6] break-all sequence-mono-ltr flex-1">
+                            <div className="p-2 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-lg font-mono text-xs text-[#8B5CF6] break-all sequence-mono-ltr flex-1">
                               {orf.proteinSequence}
                             </div>
                             <CopyButton textToCopy={orf.proteinSequence} lang={lang} />
@@ -352,14 +352,14 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
           ) : activeTab === 'transcription' ? (
             <div className="space-y-3 pt-2">
               {molecule === 'RNA' ? (
-                <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl flex items-start gap-2 text-xs text-sky-800">
+                <div className="p-3 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 rounded-xl flex items-start gap-2 text-xs text-sky-800">
                   <Info className="w-4 h-4 shrink-0 text-sky-600 mt-0.5" />
                   <span>{getTranslation(lang, 'tool_rna_transcription_note')}</span>
                 </div>
               ) : (
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold text-[#12312B]">{getTranslation(lang, 'tool_transcribed_mrna')}</span>
+                    <span className="text-xs font-semibold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_transcribed_mrna')}</span>
                     <CopyButton textToCopy={rna} lang={lang} />
                   </div>
                   <div className="p-2.5 bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg font-mono text-xs text-[#0F766E] break-all sequence-mono-ltr">
@@ -372,19 +372,19 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
             <div className="space-y-3 pt-2">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                  <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_reading_frame_used')}</span>
+                  <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_reading_frame_used')}</span>
                   <span className="text-sm font-bold text-[#12312B] font-mono">+1</span>
                 </div>
                 <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                  <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_start_position')}</span>
+                  <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_start_position')}</span>
                   <span className="text-sm font-bold text-[#12312B] font-mono">1</span>
                 </div>
                 <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                  <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_stop_codon_present')}</span>
+                  <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_stop_codon_present')}</span>
                   <span className="text-sm font-bold text-[#12312B] font-mono">{getTranslation(lang, proteinHasStop ? 'tool_yes' : 'tool_no')}</span>
                 </div>
                 <div className="p-2.5 bg-slate-50 border border-[#DDEDE8] rounded-lg">
-                  <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_aa_length')}</span>
+                  <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_aa_length')}</span>
                   <span className="text-sm font-bold text-[#12312B] font-mono">{proteinAaLength}</span>
                 </div>
               </div>
@@ -392,7 +392,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-semibold text-[#12312B]">{getTranslation(lang, 'tool_translated_protein')}</span>
+                  <span className="text-xs font-semibold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_translated_protein')}</span>
                   <CopyButton textToCopy={protein} lang={lang} />
                 </div>
                 <div className="p-2.5 bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg font-mono text-xs text-[#8B5CF6] break-all sequence-mono-ltr">
@@ -404,7 +404,7 @@ export const DnaAnalyzerTool: React.FC<ToolProps> = ({ lang, initialTab = 'dna' 
             <div className="space-y-3 pt-2">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-semibold text-[#12312B]">{getTranslation(lang, 'tool_reverse_complement_strand')}</span>
+                  <span className="text-xs font-semibold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_reverse_complement_strand')}</span>
                   <CopyButton textToCopy={revComp} lang={lang} />
                 </div>
                 <div className="p-2.5 bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg font-mono text-xs text-[#0EA5E9] break-all sequence-mono-ltr">
