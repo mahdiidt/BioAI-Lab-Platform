@@ -33,9 +33,9 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Mode Selector */}
-      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs flex items-center justify-between flex-wrap gap-2">
-        <span className="text-xs font-bold text-[#12312B] flex items-center gap-2">
-          <Repeat className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_select_molecule_mode')}
+      <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs flex items-center justify-between flex-wrap gap-2">
+        <span className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+          <Repeat className="w-4 h-4 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_select_molecule_mode')}
         </span>
         <div role="group" aria-label={getTranslation(lang, 'tool_select_molecule_mode')} className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8]">
           <button
@@ -72,7 +72,7 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Validation Error Notice */}
       {!validation.isValid && validation.errorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{validation.errorMessage}</span>
         </div>
@@ -80,10 +80,10 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Results Section */}
       {validation.isValid && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-            <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-              <Repeat className="w-4 h-4 text-[#0F766E]" />
+        <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+              <Repeat className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
               {getTranslation(lang, 'tool_complement_strands')} ({mode})
             </h4>
             <ExportButton
@@ -98,12 +98,12 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
             {/* Input Sequence */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-[#12312B] flex items-center gap-1">
+                <span className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-1">
                   {getTranslation(lang, 'tool_original_strand')}
                 </span>
                 <CopyButton textToCopy={validation.cleanSequence} lang={lang} />
               </div>
-              <div className="p-3 bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl font-mono text-xs text-[#0F766E] break-all sequence-mono-ltr">
+              <div className="p-3 bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl font-mono text-xs text-[#0F766E] break-all sequence-mono-ltr">
                 5'- {validation.cleanSequence} -3'
               </div>
             </div>
@@ -111,7 +111,7 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
             {/* Reverse Complement (5' -> 3') */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-[#12312B] flex items-center gap-1 text-[#0EA5E9]">
+                <span className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-1 text-[#0EA5E9]">
                   {getTranslation(lang, 'tool_reverse_complement_strand')} <span className="text-[10px] text-[#64748B] font-normal">{getTranslation(lang, 'tool_antiparallel_strand')}</span>
                 </span>
                 <CopyButton textToCopy={reverseComplement5to3} lang={lang} />
@@ -124,7 +124,7 @@ export const ReverseComplementTool: React.FC<ToolProps> = ({ lang }) => {
             {/* Direct Complement (3' -> 5') */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-bold text-[#12312B] flex items-center gap-1 text-[#8B5CF6]">
+                <span className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-1 text-[#8B5CF6]">
                   {getTranslation(lang, 'tool_direct_complement_strand')} <span className="text-[10px] text-[#64748B] font-normal">{getTranslation(lang, 'tool_aligned_antiparallel')}</span>
                 </span>
                 <CopyButton textToCopy={complement3to5} lang={lang} />
