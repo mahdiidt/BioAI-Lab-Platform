@@ -50,10 +50,10 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Input Area */}
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <label className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#0F766E]" />
+          <label className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_multi_fasta_input')}
           </label>
 
@@ -81,10 +81,10 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
           onChange={(e) => setFastaInput(e.target.value)}
           rows={6}
           placeholder=">header_id Description&#10;ATGC..."
-          className="w-full p-3 font-mono text-xs bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 text-[#12312B]"
+          className="w-full p-3 font-mono text-xs bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 text-[#12312B] dark:text-slate-100"
         />
 
-        <div className="flex items-center justify-between text-xs text-[#64748B]">
+        <div className="flex items-center justify-between text-xs text-[#64748B] dark:text-slate-400">
           <span>{getTranslation(lang, 'tool_parsed_records')}: <strong className="text-[#0F766E] font-bold">{parseResult.totalRecords}</strong></span>
           <div className="flex items-center gap-3">
             <button
@@ -120,7 +120,7 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Global Parse Error (e.g. sequence data found before the first '>' header) */}
       {parseResult.hasErrors && parseResult.globalErrorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <XCircle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{parseResult.globalErrorMessage}</span>
         </div>
@@ -130,7 +130,7 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
       {parseResult.records.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
               <Layers className="w-4 h-4 text-[#0EA5E9]" />
               {getTranslation(lang, 'tool_parsed_fasta_records')} ({parseResult.totalRecords})
             </h4>
@@ -156,9 +156,9 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
                   rec.validation.isValid ? 'border-[#DDEDE8]' : 'border-rose-300 bg-rose-50/20'
                 }`}
               >
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#DDEDE8] pb-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded-md bg-[#ECFDF5] border border-[#DDEDE8] text-[11px] font-mono font-bold text-[#0F766E]">
+                    <span className="px-2 py-0.5 rounded-md bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 text-[11px] font-mono font-bold text-[#0F766E] dark:text-teal-400">
                       &gt;{rec.id}
                     </span>
                     {rec.description && (
@@ -167,7 +167,7 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono font-semibold text-[#12312B]">
+                    <span className="text-xs font-mono font-semibold text-[#12312B] dark:text-slate-100">
                       {rec.length.toLocaleString()} {seqType === 'PROTEIN' ? 'aa' : 'bp'}
                     </span>
                     {rec.validation.isValid ? (
@@ -184,12 +184,12 @@ export const FastaParserTool: React.FC<ToolProps> = ({ lang }) => {
                 </div>
 
                 {!rec.validation.isValid && rec.validation.errorMessage && (
-                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700">
+                  <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-700">
                     {rec.validation.errorMessage}
                   </div>
                 )}
 
-                <div className="p-3 bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl font-mono text-xs text-[#0F766E] break-all max-h-28 overflow-y-auto sequence-mono-ltr">
+                <div className="p-3 bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl font-mono text-xs text-[#0F766E] break-all max-h-28 overflow-y-auto sequence-mono-ltr">
                   {rec.sequence}
                 </div>
               </div>
