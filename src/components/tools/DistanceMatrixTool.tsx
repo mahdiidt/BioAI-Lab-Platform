@@ -34,7 +34,7 @@ export const DistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
         <SequenceInput
           value={fastaInput}
           onChange={setFastaInput}
@@ -46,47 +46,47 @@ export const DistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
 
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="text-[11px] font-semibold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_match_score')}</label>
+            <label className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_match_score')}</label>
             <input
               type="number"
               value={matchScore}
               onChange={(e) => setMatchScore(parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E]"
+              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl text-center text-[#0F766E] dark:text-teal-400"
             />
           </div>
           <div>
-            <label className="text-[11px] font-semibold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_mismatch_penalty')}</label>
+            <label className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_mismatch_penalty')}</label>
             <input
               type="number"
               value={mismatchPenalty}
               onChange={(e) => setMismatchPenalty(parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E]"
+              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl text-center text-[#0F766E] dark:text-teal-400"
             />
           </div>
           <div>
-            <label className="text-[11px] font-semibold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_gap_penalty')}</label>
+            <label className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_gap_penalty')}</label>
             <input
               type="number"
               value={gapPenalty}
               onChange={(e) => setGapPenalty(parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E]"
+              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] dark:border-slate-700 rounded-xl text-center text-[#0F766E] dark:text-teal-400"
             />
           </div>
         </div>
       </div>
 
       {!result.isValid && result.errorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{result.errorMessage}</span>
         </div>
       )}
 
       {result.isValid && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
-          <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3 flex-wrap gap-2">
-            <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-              <Grid3x3 className="w-4 h-4 text-[#0F766E]" />
+        <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-5">
+          <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3 flex-wrap gap-2">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+              <Grid3x3 className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
               {getTranslation(lang, 'tool_distance_matrix_output')} ({result.labels.length}×{result.labels.length})
             </h4>
             <div className="flex items-center gap-2">
@@ -117,7 +117,7 @@ export const DistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
 
           {result.skippedRecords.length > 0 && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-[11px] text-amber-800">
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-2 text-[11px] text-amber-800">
               <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
               <span>
                 {getTranslation(lang, 'tool_skipped_invalid_sequences')}:{' '}
@@ -127,7 +127,7 @@ export const DistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
           )}
 
           {result.failedPairs.length > 0 && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-[11px] text-amber-800">
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-2 text-[11px] text-amber-800">
               <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
               <span>{getTranslation(lang, 'tool_some_pairs_not_computed')}</span>
             </div>
@@ -139,7 +139,7 @@ export const DistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
             higherIsBetter={mode === 'similarity'}
           />
 
-          <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl flex items-start gap-2 text-[11px] text-sky-800">
+          <div className="p-3 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 rounded-xl flex items-start gap-2 text-[11px] text-sky-800">
             <Info className="w-4 h-4 shrink-0 text-sky-600 mt-0.5" />
             <span>{getTranslation(lang, 'tool_distance_matrix_note')}</span>
           </div>
