@@ -28,6 +28,7 @@ import { BufferCalculatorTool } from './tools/BufferCalculatorTool';
 import { BacterialGrowthTool } from './tools/BacterialGrowthTool';
 import { GlobalAlignmentTool } from './tools/GlobalAlignmentTool';
 import { MsaTool } from './tools/MsaTool';
+import { MotifDiscoveryTool } from './tools/MotifDiscoveryTool';
 import { LocalAlignmentTool } from './tools/LocalAlignmentTool';
 import { DistanceMatrixTool } from './tools/DistanceMatrixTool';
 import { RnaSecondaryStructureTool } from './tools/RnaSecondaryStructureTool';
@@ -161,6 +162,9 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'msa':
         return <MsaTool lang={lang} />;
+
+      case 'motif_discovery':
+        return <MotifDiscoveryTool lang={lang} />;
 
       case 'local_alignment':
         return <LocalAlignmentTool lang={lang} />;
