@@ -33,7 +33,7 @@ export const SecondaryStructureTool: React.FC<ToolProps> = ({ lang }) => {
       />
 
       {!result.isValid ? (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{result.errorMessage}</span>
         </div>
@@ -44,7 +44,7 @@ export const SecondaryStructureTool: React.FC<ToolProps> = ({ lang }) => {
               <span className="block text-[10px] font-bold text-red-700 uppercase tracking-wide">{getTranslation(lang, 'tool_ss_helix')}</span>
               <span className="block text-xl font-extrabold text-red-700 font-mono">{result.helixPercent.toFixed(1)}%</span>
             </div>
-            <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-center">
+            <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl text-center">
               <span className="block text-[10px] font-bold text-amber-700 uppercase tracking-wide">{getTranslation(lang, 'tool_ss_sheet')}</span>
               <span className="block text-xl font-extrabold text-amber-700 font-mono">{result.sheetPercent.toFixed(1)}%</span>
             </div>
@@ -61,14 +61,14 @@ export const SecondaryStructureTool: React.FC<ToolProps> = ({ lang }) => {
             <div style={{ width: `${result.coilPercent}%`, backgroundColor: '#94A3B8' }} />
           </div>
 
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-              <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-                <Waves className="w-4 h-4 text-[#0F766E]" />
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+              <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+                <Waves className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
                 {getTranslation(lang, 'tool_ss_predicted_structure')}
               </h4>
               <div className="flex items-center gap-3">
-                <div className="hidden sm:flex items-center gap-3 text-[10px] font-semibold text-[#64748B]">
+                <div className="hidden sm:flex items-center gap-3 text-[10px] font-semibold text-[#64748B] dark:text-slate-400">
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 rounded-full bg-[#DC2626]" />{getTranslation(lang, 'tool_ss_helix')}</span>
                   <span className="flex items-center gap-1.5"><span className="w-3 h-2 bg-[#D97706]" style={{ clipPath: 'polygon(0 0, 70% 0, 100% 50%, 70% 100%, 0 100%)' }} />{getTranslation(lang, 'tool_ss_sheet')}</span>
                   <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-[#94A3B8]" />{getTranslation(lang, 'tool_ss_coil')}</span>
@@ -93,7 +93,7 @@ export const SecondaryStructureTool: React.FC<ToolProps> = ({ lang }) => {
             )}
           </div>
 
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs">
             <h4 className="font-bold text-sm text-[#12312B] mb-3">{getTranslation(lang, 'tool_ss_segments')}</h4>
             <div className="flex flex-wrap gap-1.5">
               {result.segments
