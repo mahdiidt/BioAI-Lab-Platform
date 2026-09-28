@@ -184,10 +184,10 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {/* Input */}
-      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs">
+      <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs">
         <div className="flex items-center justify-between mb-3">
-          <label className="text-xs font-bold text-[#12312B] flex items-center gap-2">
-            <AlignLeft className="w-4 h-4 text-[#0F766E]" />
+          <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <AlignLeft className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_msa_input_label') || 'Input Sequences (FASTA Format)'}
           </label>
           <button
@@ -208,7 +208,7 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
           />
         </div>
         {fileError && (
-          <div className="mb-3 p-2.5 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-xs text-[#EF4444]">
+          <div className="mb-3 p-2.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-2 text-xs text-[#EF4444] dark:text-red-300">
             <AlertTriangle className="w-4 h-4 shrink-0" />
             {fileError}
           </div>
@@ -222,18 +222,18 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {/* Controls */}
-      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs">
-        <label className="text-xs font-bold text-[#12312B] flex items-center gap-2 mb-3">
-          <Info className="w-4 h-4 text-[#0F766E]" />
+      <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs">
+        <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-2 mb-3">
+          <Info className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
           {getTranslation(lang, 'tool_alignment_params') || 'Alignment Parameters'}
         </label>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <div>
-            <label className="text-[11px] font-semibold text-[#64748B] block mb-1">Sequence Type</label>
+            <label className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block mb-1">Sequence Type</label>
             <select
               value={seqType}
               onChange={(e) => setSeqType(e.target.value as 'auto' | 'dna' | 'protein')}
-              className="w-full p-2 text-xs font-bold bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-[#0F766E]"
+              className="w-full p-2 text-xs font-bold bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-[#0F766E] dark:text-teal-400"
             >
               <option value="auto">Auto-detect</option>
               <option value="dna">DNA/RNA</option>
@@ -241,36 +241,36 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
             </select>
           </div>
           <div>
-            <label className="text-[11px] font-semibold text-[#64748B] block mb-1">
+            <label className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block mb-1">
               {getTranslation(lang, 'tool_match_score') || 'Match Score'}
             </label>
             <input
               type="number"
               value={matchScore}
               onChange={(e) => setMatchScore(parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E]"
+              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E] dark:text-teal-400"
             />
           </div>
           <div>
-            <label className="text-[11px] font-semibold text-[#64748B] block mb-1">
+            <label className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block mb-1">
               {getTranslation(lang, 'tool_mismatch_penalty') || 'Mismatch'}
             </label>
             <input
               type="number"
               value={mismatchScore}
               onChange={(e) => setMismatchScore(parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E]"
+              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E] dark:text-teal-400"
             />
           </div>
           <div>
-            <label className="text-[11px] font-semibold text-[#64748B] block mb-1">
+            <label className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block mb-1">
               {getTranslation(lang, 'tool_gap_penalty') || 'Gap Penalty'}
             </label>
             <input
               type="number"
               value={gapPenalty}
               onChange={(e) => setGapPenalty(parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E]"
+              className="w-full p-2 text-xs font-bold font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-center text-[#0F766E] dark:text-teal-400"
             />
           </div>
           <div className="flex items-end">
@@ -288,7 +288,7 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Loading */}
       {isRunning && (
-        <div className="p-8 bg-white border border-[#DDEDE8] rounded-2xl text-center">
+        <div className="p-8 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl text-center">
           <div className="w-7 h-7 border-3 border-[#DDEDE8] border-t-[#0F766E] rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-[#64748B] font-medium">Aligning sequences...</p>
         </div>
@@ -296,7 +296,7 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Error */}
       {result && !result.isValid && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{result.errorMessage}</span>
         </div>
@@ -304,11 +304,11 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Results */}
       {result && result.isValid && !isRunning && (
-        <div className="bg-white border border-[#DDEDE8] rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-[#DDEDE8]">
-            <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-              <AlignLeft className="w-4 h-4 text-[#0F766E]" />
+          <div className="flex items-center justify-between p-4 border-b border-[#DDEDE8] dark:border-slate-700">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+              <AlignLeft className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
               Alignment Result ({result.type === 'dna' ? 'Nucleotide' : 'Protein'})
             </h4>
             <ExportButton
@@ -320,26 +320,26 @@ export const MsaTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
 
           {/* Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 border-b border-[#DDEDE8]">
-            <div className="p-3 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">Sequences</span>
-              <span className="text-lg font-bold text-[#0F766E] font-mono">{result.stats.numSeqs}</span>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 border-b border-[#DDEDE8] dark:border-slate-700">
+            <div className="p-3 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">Sequences</span>
+              <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.stats.numSeqs}</span>
             </div>
-            <div className="p-3 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">Alignment Length</span>
-              <span className="text-lg font-bold text-[#0F766E] font-mono">{result.stats.alignLen}</span>
+            <div className="p-3 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">Alignment Length</span>
+              <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.stats.alignLen}</span>
             </div>
-            <div className="p-3 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">Identical Columns</span>
-              <span className="text-lg font-bold text-[#0F766E] font-mono">{result.stats.identCols}</span>
+            <div className="p-3 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">Identical Columns</span>
+              <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.stats.identCols}</span>
             </div>
-            <div className="p-3 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">Identity</span>
-              <span className="text-lg font-bold text-[#0F766E] font-mono">{result.stats.identPct}%</span>
+            <div className="p-3 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">Identity</span>
+              <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.stats.identPct}%</span>
             </div>
-            <div className="p-3 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">Gaps</span>
-              <span className="text-lg font-bold text-[#0F766E] font-mono">{result.stats.gapPct}%</span>
+            <div className="p-3 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">Gaps</span>
+              <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.stats.gapPct}%</span>
             </div>
           </div>
 
