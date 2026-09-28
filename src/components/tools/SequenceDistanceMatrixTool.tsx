@@ -62,10 +62,10 @@ export const SequenceDistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Input Area */}
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <label className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <Grid className="w-4 h-4 text-[#0F766E]" />
+          <label className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <Grid className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_multi_fasta_input')}
           </label>
         </div>
@@ -75,10 +75,10 @@ export const SequenceDistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
           onChange={(e) => setFastaInput(e.target.value)}
           rows={8}
           placeholder=">seq1&#10;ATGC...&#10;&#10;>seq2&#10;ATGC..."
-          className="w-full p-3 font-mono text-xs bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 text-[#12312B]"
+          className="w-full p-3 font-mono text-xs bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 text-[#12312B] dark:text-slate-100"
         />
 
-        <div className="flex items-center justify-between text-xs text-[#64748B]">
+        <div className="flex items-center justify-between text-xs text-[#64748B] dark:text-slate-400">
           <span>
             {getTranslation(lang, 'tool_parsed_records')}: <strong className="text-[#0F766E] font-bold">{parseResult.totalRecords}</strong>
           </span>
@@ -93,7 +93,7 @@ export const SequenceDistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Parse-level errors (leading sequence before header, etc.) */}
       {parseResult.hasErrors && parseResult.globalErrorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <XCircle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{parseResult.globalErrorMessage}</span>
         </div>
@@ -101,7 +101,7 @@ export const SequenceDistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Sequences excluded from the matrix (invalid chars, or over the 1000bp cap) */}
       {matrixResult.excluded.length > 0 && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl space-y-1 text-xs text-amber-800">
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl space-y-1 text-xs text-amber-800">
           <div className="flex items-center gap-2 font-bold">
             <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
             {getTranslation(lang, 'tool_distance_matrix_excluded')}
@@ -116,7 +116,7 @@ export const SequenceDistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Too-many-sequences warning */}
       {matrixResult.warning && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3 text-xs text-amber-800">
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl flex items-center gap-3 text-xs text-amber-800">
           <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600" />
           <span>{matrixResult.warning}</span>
         </div>
@@ -124,10 +124,10 @@ export const SequenceDistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Matrix + stats */}
       {ids.length >= 2 && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
-          <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-            <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-              <Grid className="w-4 h-4 text-[#0F766E]" />
+        <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-5">
+          <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+              <Grid className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
               {getTranslation(lang, 'tool_distance_matrix_output')}
             </h4>
             <ExportButton filename="sequence_distance_matrix.json" data={matrixResult} format="json" lang={lang} />
@@ -135,14 +135,14 @@ export const SequenceDistanceMatrixTool: React.FC<ToolProps> = ({ lang }) => {
 
           {bestWorst.best && bestWorst.worst && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-                <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_distance_matrix_most_similar')}</span>
-                <span className="text-sm font-bold text-[#0F766E] font-mono">
+              <div className="p-3 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+                <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_distance_matrix_most_similar')}</span>
+                <span className="text-sm font-bold text-[#0F766E] dark:text-teal-400 font-mono">
                   {ids[bestWorst.best.i]} ↔ {ids[bestWorst.best.j]} ({bestWorst.best.value}%)
                 </span>
               </div>
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl">
-                <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_distance_matrix_least_similar')}</span>
+              <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-xl">
+                <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_distance_matrix_least_similar')}</span>
                 <span className="text-sm font-bold text-rose-600 font-mono">
                   {ids[bestWorst.worst.i]} ↔ {ids[bestWorst.worst.j]} ({bestWorst.worst.value}%)
                 </span>
