@@ -3,7 +3,7 @@
 // Professional bioinformatics tool for discovering conserved
 // sequence motifs and generating publication-quality logos
 // ─────────────────────────────────────────────────────────────
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   analyzeAlignedMotif,
   discoverMotifs,
@@ -28,6 +28,8 @@ import {
   BarChart2,
   Copy,
   Hash,
+  FileUp,
+  AlertTriangle,
   Database,
 } from 'lucide-react';
 
@@ -65,6 +67,44 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
 
   const isRTL = lang === 'fa';
   const dir = isRTL ? 'rtl' : 'ltr';
+
+  // FASTA / text file upload. Several files can be picked at once (or uploaded
+  // one after another); their contents are appended to what is already in the
+  // box so separate per-sequence files combine into one input. 5 MB cap per
+  // file, same as the other tools.
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (!files.length) return;
+    const MAX_FILE_BYTES = 5 * 1024 * 1024;
+    const oversized = files.find((f) => f.size > MAX_FILE_BYTES);
+    if (oversized) {
+      setFileError(
+        getTranslation(lang, 'fileTooLargeError').replace('{size}', (oversized.size / 1024 / 1024).toFixed(1)),
+      );
+      return;
+    }
+    setFileError(null);
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => resolve((ev.target?.result as string) || '');
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+          }),
+      ),
+    )
+      .then((contents) => {
+        const merged = contents.map((c) => c.trim()).filter(Boolean).join('\n');
+        if (!merged) return;
+        setInputText((prev) => (prev.trim() ? `${prev.trim()}\n${merged}` : merged));
+      })
+      .catch(() => setFileError('One of the selected files could not be read.'));
+  };
 
   // Parse input
   const sequences = useMemo(() => {
@@ -107,8 +147,8 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
   return (
     <div className="space-y-6" dir={dir}>
       {/* Mode Selector */}
-      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs">
-        <div className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8] w-fit mx-auto">
+      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs dark:bg-slate-900 dark:border-slate-700">
+        <div className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8] w-fit mx-auto dark:bg-slate-800 dark:border-slate-700">
           <button
             type="button"
             aria-pressed={mode === 'aligned'}
@@ -136,7 +176,7 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
             {getTranslation(lang, 'tool_motif_mode_discover')}
           </button>
         </div>
-        <p className="text-center text-[10px] text-[#64748B] mt-2">
+        <p className="text-center text-[10px] text-[#64748B] mt-2 dark:text-slate-400">
           {mode === 'aligned'
             ? getTranslation(lang, 'tool_motif_mode_aligned_desc')
             : getTranslation(lang, 'tool_motif_mode_discover_desc')}
@@ -144,38 +184,62 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {/* Input */}
-      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3">
+      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3 dark:bg-slate-900 dark:border-slate-700">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5">
-            <FileText className="w-4 h-4 text-[#0F766E]" />
+          <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5 dark:text-slate-100">
+            <FileText className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_motif_input_label')}
           </label>
-          <span className="text-[10px] text-[#64748B]">
-            {sequences.length} {getTranslation(lang, 'tool_motif_sequences_found')}
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-1 text-xs text-[#0F766E] hover:underline font-semibold cursor-pointer dark:text-teal-400"
+            >
+              <FileUp className="w-3.5 h-3.5" />
+              {getTranslation(lang, 'tool_upload_fasta')}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".fasta,.fa,.txt,.seq"
+              multiple
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <span className="text-[10px] text-[#64748B] dark:text-slate-400">
+              {sequences.length} {getTranslation(lang, 'tool_motif_sequences_found')}
+            </span>
+          </div>
         </div>
+        {fileError && (
+          <div className="p-2.5 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-xs text-[#EF4444] dark:bg-red-950/40 dark:border-red-800 dark:text-red-300">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            {fileError}
+          </div>
+        )}
         <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           rows={8}
-          className="w-full p-3 text-xs font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-[#12312B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 resize-y"
+          className="w-full p-3 text-xs font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-[#12312B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 resize-y dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
           placeholder={getTranslation(lang, 'tool_motif_input_placeholder')}
           dir="ltr"
         />
-        <p className="text-[10px] text-[#94A3B8]">
+        <p className="text-[10px] text-[#94A3B8] dark:text-slate-500">
           {getTranslation(lang, 'tool_motif_input_hint')}
         </p>
       </div>
 
       {/* Controls */}
-      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs flex flex-wrap items-center gap-4">
+      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs flex flex-wrap items-center gap-4 dark:bg-slate-900 dark:border-slate-700">
         {/* Alphabet */}
         <div className="flex items-center gap-2">
-          <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5">
-            <Dna className="w-4 h-4 text-[#0F766E]" />
+          <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5 dark:text-slate-100">
+            <Dna className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_motif_alphabet')}
           </label>
-          <div className="flex gap-1 bg-[#F3FAF7] p-1 rounded-lg border border-[#DDEDE8]">
+          <div className="flex gap-1 bg-[#F3FAF7] p-1 rounded-lg border border-[#DDEDE8] dark:bg-slate-800 dark:border-slate-700">
             {(['DNA', 'RNA', 'PROTEIN'] as SeqAlphabet[]).map((a) => (
               <button
                 key={a}
@@ -197,8 +261,8 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
         {mode === 'discover' && (
           <>
             <div className="flex items-center gap-2">
-              <label className="text-[10px] font-bold text-[#12312B] flex items-center gap-1">
-                <Hash className="w-3.5 h-3.5 text-[#0F766E]" />
+              <label className="text-[10px] font-bold text-[#12312B] flex items-center gap-1 dark:text-slate-100">
+                <Hash className="w-3.5 h-3.5 text-[#0F766E] dark:text-teal-400" />
                 {getTranslation(lang, 'tool_motif_width')}
               </label>
               <input
@@ -207,11 +271,11 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
                 max={20}
                 value={motifWidth}
                 onChange={(e) => setMotifWidth(Math.max(4, Math.min(20, +e.target.value || 6)))}
-                className="w-16 p-1.5 text-[10px] font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-center text-[#0F766E] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20"
+                className="w-16 p-1.5 text-[10px] font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-center text-[#0F766E] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 dark:bg-slate-800 dark:border-slate-700 dark:text-teal-400"
               />
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-[10px] font-bold text-[#12312B]">
+              <label className="text-[10px] font-bold text-[#12312B] dark:text-slate-100">
                 {getTranslation(lang, 'tool_motif_mismatches')}
               </label>
               <input
@@ -220,7 +284,7 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
                 max={4}
                 value={maxMismatches}
                 onChange={(e) => setMaxMismatches(Math.max(0, Math.min(4, +e.target.value || 1)))}
-                className="w-16 p-1.5 text-[10px] font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-center text-[#0F766E] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20"
+                className="w-16 p-1.5 text-[10px] font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-center text-[#0F766E] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 dark:bg-slate-800 dark:border-slate-700 dark:text-teal-400"
               />
             </div>
           </>
@@ -230,16 +294,16 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
       {/* Error */}
       {((mode === 'aligned' && alignedResult && !alignedResult.isValid) ||
         (mode === 'discover' && discoveryResult && !discoveryResult.isValid)) && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300">
           {mode === 'aligned' ? alignedResult?.errorMessage : discoveryResult?.errorMessage}
         </div>
       )}
 
       {/* Discovery results: motif selector */}
       {mode === 'discover' && discoveryResult?.isValid && discoveryResult.motifs.length > 0 && (
-        <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3">
-          <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2">
-            <Zap className="w-4 h-4 text-[#0F766E]" />
+        <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3 dark:bg-slate-900 dark:border-slate-700">
+          <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2 dark:text-slate-100">
+            <Zap className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_motif_discovered')} ({discoveryResult.motifs.length})
           </h4>
           <div className="flex flex-wrap gap-2">
@@ -266,7 +330,7 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Sequence Logo */}
       {currentPWM.length > 0 && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
+        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5 dark:bg-slate-900 dark:border-slate-700">
           <SequenceLogoVisualizer
             pwm={currentPWM}
             alphabet={currentAlpha}
@@ -277,10 +341,10 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* PWM Table */}
       {currentPWM.length > 0 && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3">
+        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3 dark:bg-slate-900 dark:border-slate-700">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2">
-              <Database className="w-4 h-4 text-[#0F766E]" />
+            <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2 dark:text-slate-100">
+              <Database className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
               {getTranslation(lang, 'tool_motif_pwm_table')}
             </h4>
             <ExportButton
@@ -303,19 +367,19 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
           <div className="overflow-x-auto">
             <table className="w-full text-[10px] font-mono">
               <thead>
-                <tr className="border-b border-[#DDEDE8]">
-                  <th className="py-2 px-2 text-left text-[#64748B] font-bold">Pos</th>
+                <tr className="border-b border-[#DDEDE8] dark:border-slate-700">
+                  <th className="py-2 px-2 text-left text-[#64748B] font-bold dark:text-slate-400">Pos</th>
                   {Object.keys(currentPWM[0].frequency).map((c) => (
-                    <th key={c} className="py-2 px-2 text-center text-[#0F766E] font-bold">{c}</th>
+                    <th key={c} className="py-2 px-2 text-center text-[#0F766E] font-bold dark:text-teal-400">{c}</th>
                   ))}
-                  <th className="py-2 px-2 text-center text-[#64748B] font-bold">IC (bits)</th>
-                  <th className="py-2 px-2 text-center text-[#64748B] font-bold">Consensus</th>
+                  <th className="py-2 px-2 text-center text-[#64748B] font-bold dark:text-slate-400">IC (bits)</th>
+                  <th className="py-2 px-2 text-center text-[#64748B] font-bold dark:text-slate-400">Consensus</th>
                 </tr>
               </thead>
               <tbody>
                 {currentPWM.map((pos, i) => (
-                  <tr key={i} className="border-b border-[#F3FAF7] hover:bg-[#F3FAF7]/50">
-                    <td className="py-1.5 px-2 font-bold text-[#12312B]">{i + 1}</td>
+                  <tr key={i} className="border-b border-[#F3FAF7] hover:bg-[#F3FAF7]/50 dark:border-slate-800">
+                    <td className="py-1.5 px-2 font-bold text-[#12312B] dark:text-slate-100">{i + 1}</td>
                     {Object.entries(pos.frequency).map(([c, f]) => (
                       <td
                         key={c}
@@ -329,10 +393,10 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
                         {f.toFixed(3)}
                       </td>
                     ))}
-                    <td className="py-1.5 px-2 text-center font-bold text-[#0F766E]">
+                    <td className="py-1.5 px-2 text-center font-bold text-[#0F766E] dark:text-teal-400">
                       {pos.informationContent.toFixed(3)}
                     </td>
-                    <td className="py-1.5 px-2 text-center font-bold text-[#12312B] text-sm">
+                    <td className="py-1.5 px-2 text-center font-bold text-[#12312B] text-sm dark:text-slate-100">
                       {pos.maxChar}
                     </td>
                   </tr>
@@ -342,12 +406,12 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
 
           {/* Total IC */}
-          <div className="flex items-center gap-2 pt-2 border-t border-[#DDEDE8]">
-            <BarChart2 className="w-4 h-4 text-[#0F766E]" />
-            <span className="text-xs font-bold text-[#12312B]">
+          <div className="flex items-center gap-2 pt-2 border-t border-[#DDEDE8] dark:border-slate-700">
+            <BarChart2 className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
+            <span className="text-xs font-bold text-[#12312B] dark:text-slate-100">
               {getTranslation(lang, 'tool_motif_total_ic')}:
             </span>
-            <span className="text-xs font-mono font-bold text-[#0F766E]">
+            <span className="text-xs font-mono font-bold text-[#0F766E] dark:text-teal-400">
               {currentPWM.reduce((s, p) => s + p.informationContent, 0).toFixed(3)} bits
             </span>
           </div>
@@ -356,15 +420,15 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Consensus & Exports */}
       {mode === 'aligned' && alignedResult?.isValid && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
+        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4 dark:bg-slate-900 dark:border-slate-700">
           {/* Consensus */}
           <div>
-            <h4 className="text-xs font-bold text-[#12312B] mb-1 flex items-center gap-1.5">
-              <Layers className="w-4 h-4 text-[#0F766E]" />
+            <h4 className="text-xs font-bold text-[#12312B] mb-1 flex items-center gap-1.5 dark:text-slate-100">
+              <Layers className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
               {getTranslation(lang, 'tool_motif_consensus')}
             </h4>
             <div className="flex items-center gap-2">
-              <code className="text-sm font-mono font-bold text-[#0F766E] bg-[#F3FAF7] px-3 py-1.5 rounded-lg border border-[#DDEDE8] tracking-widest">
+              <code className="text-sm font-mono font-bold text-[#0F766E] bg-[#F3FAF7] px-3 py-1.5 rounded-lg border border-[#DDEDE8] tracking-widest dark:text-teal-400 dark:bg-slate-800 dark:border-slate-700">
                 {alignedResult.consensus}
               </code>
               <CopyButton textToCopy={alignedResult.consensus} lang={lang} />
@@ -373,8 +437,8 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
 
           {/* Export formats */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-[#12312B] flex items-center gap-1.5">
-              <FileText className="w-4 h-4 text-[#0F766E]" />
+            <h4 className="text-xs font-bold text-[#12312B] flex items-center gap-1.5 dark:text-slate-100">
+              <FileText className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
               {getTranslation(lang, 'tool_motif_export_formats')}
             </h4>
 
@@ -383,14 +447,14 @@ export const MotifDiscoveryTool: React.FC<ToolProps> = ({ lang }) => {
               { label: 'MEME', content: alignedResult.memeMotif },
               { label: 'TRANSFAC', content: alignedResult.transfacMatrix },
             ].map(({ label, content }) => (
-              <div key={label} className="bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl p-3">
+              <div key={label} className="bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl p-3 dark:bg-slate-800 dark:border-slate-700">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-bold text-[#0F766E] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#0F766E] uppercase tracking-wider dark:text-teal-400">
                     {label} Format
                   </span>
                   <CopyButton textToCopy={content} lang={lang} />
                 </div>
-                <pre className="text-[10px] font-mono text-[#334155] whitespace-pre overflow-x-auto" dir="ltr">
+                <pre className="text-[10px] font-mono text-[#334155] whitespace-pre overflow-x-auto dark:text-slate-300" dir="ltr">
                   {content}
                 </pre>
               </div>
