@@ -20,108 +20,108 @@ export const MichaelisMentenTool: React.FC<ToolProps> = ({ lang }) => {
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-        <h4 className="font-bold text-sm text-[#12312B] border-b border-[#DDEDE8] pb-2">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+        <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
           {getTranslation(lang, 'tool_enzyme_params')}
         </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_vmax_label')}</label>
+            <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_vmax_label')}</label>
             <input
               type="number"
               step="1"
               min="1"
               value={vmax}
               onChange={(e) => setVmax(parseFloat(e.target.value) || 1)}
-              className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+              className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_km_label')}</label>
+            <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_km_label')}</label>
             <input
               type="number"
               step="0.1"
               min="0.1"
               value={km}
               onChange={(e) => setKm(parseFloat(e.target.value) || 0.1)}
-              className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+              className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_substrate_conc')}</label>
+            <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_substrate_conc')}</label>
             <input
               type="number"
               step="0.5"
               min="0"
               value={substrate}
               onChange={(e) => setSubstrate(parseFloat(e.target.value) || 0)}
-              className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+              className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
             />
           </div>
         </div>
       </div>
 
       {hasInvalidInput && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{res.disclaimer || getTranslation(lang, 'tool_vmax_km_positive')}</span>
         </div>
       )}
 
       {/* Results */}
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
-        <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-          <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <Activity className="w-4 h-4 text-[#0F766E]" />
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+          <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <Activity className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_reaction_vel_output')}
           </h4>
           <div className="flex items-center gap-2">
             <ExportButton filename="michaelis_menten.json" data={res} format="json" lang={lang} />
-            <span className="text-xs font-mono font-bold text-[#0F766E] bg-[#ECFDF5] px-2.5 py-1 rounded-lg">
+            <span className="text-xs font-mono font-bold text-[#0F766E] dark:text-teal-400 bg-[#ECFDF5] dark:bg-teal-950/40 px-2.5 py-1 rounded-lg">
               V = {res.velocity} µmol/min
             </span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_substrate_s')}</span>
-            <span className="text-lg font-bold text-[#0F766E] font-mono">{substrate} mM</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_substrate_s')}</span>
+            <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{substrate} mM</span>
           </div>
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_init_velocity')}</span>
-            <span className="text-lg font-bold text-[#22C55E] font-mono">{res.velocity}</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_init_velocity')}</span>
+            <span className="text-lg font-bold text-[#22C55E] dark:text-green-400 font-mono">{res.velocity}</span>
           </div>
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_pct_vmax')}</span>
-            <span className="text-lg font-bold text-[#0EA5E9] font-mono">{res.percentVmax}%</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_pct_vmax')}</span>
+            <span className="text-lg font-bold text-[#0EA5E9] dark:text-sky-400 font-mono">{res.percentVmax}%</span>
           </div>
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_cat_efficiency')}</span>
-            <span className="text-lg font-bold text-[#8B5CF6] font-mono">{res.catalyticEfficiency}</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_cat_efficiency')}</span>
+            <span className="text-lg font-bold text-[#8B5CF6] dark:text-violet-400 font-mono">{res.catalyticEfficiency}</span>
           </div>
         </div>
 
         {/* Lineweaver-Burk Double Reciprocal Points & Warning */}
         <div className="p-4 bg-[#F3FAF7] border border-[#DDEDE8] rounded-2xl space-y-3">
-          <h5 className="font-bold text-xs text-[#12312B] flex items-center gap-2">
+          <h5 className="font-bold text-xs text-[#12312B] dark:text-slate-100 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-[#8B5CF6]" />
             {getTranslation(lang, 'tool_lineweaver_burk')}
           </h5>
 
-          <div className="grid grid-cols-2 gap-3 font-mono text-xs text-[#12312B]">
-            <div className="p-2.5 bg-white border border-[#DDEDE8] rounded-xl">
+          <div className="grid grid-cols-2 gap-3 font-mono text-xs text-[#12312B] dark:text-slate-100">
+            <div className="p-2.5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
               1/[S] = <strong>{res.lineweaverBurk.invSubstrate} mM⁻¹</strong>
             </div>
-            <div className="p-2.5 bg-white border border-[#DDEDE8] rounded-xl">
+            <div className="p-2.5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
               1/v = <strong>{res.lineweaverBurk.invVelocity} (µmol/min)⁻¹</strong>
             </div>
           </div>
 
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 text-xs text-amber-800">
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-2.5 text-xs text-amber-800">
             <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <div>
               <strong className="block font-bold">{getTranslation(lang, 'tool_transform_error_warn')}:</strong>
