@@ -118,10 +118,10 @@ export const QpcrEfficiencyTool: React.FC<ToolProps> = ({ lang }) => {
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <TrendingDown className="w-4 h-4 text-[#0F766E]" />
+          <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <TrendingDown className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_qpcr_standard_curve_data')}
           </h4>
           <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ export const QpcrEfficiencyTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {!result.isValid ? (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{result.errorMessage}</span>
         </div>
