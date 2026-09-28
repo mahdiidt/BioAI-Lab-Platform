@@ -1,4 +1,4 @@
-پimport React, { useState } from 'react';
+import React, { useState } from 'react';
 import { SequenceInput } from '../common/SequenceInput';
 import { smithWatermanAlignment } from '../../utils/localAlignment';
 import { CopyButton } from '../common/CopyButton';
