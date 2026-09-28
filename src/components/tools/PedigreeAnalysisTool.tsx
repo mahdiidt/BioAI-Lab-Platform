@@ -96,10 +96,10 @@ export const PedigreeAnalysisTool: React.FC<ToolProps> = ({ lang }) => {
 
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
         <div className="flex items-center justify-between">
-          <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <Plus className="w-4 h-4 text-[#0F766E]" />
+          <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <Plus className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_pedigree_add_person')}
           </h4>
           <button
@@ -195,14 +195,14 @@ export const PedigreeAnalysisTool: React.FC<ToolProps> = ({ lang }) => {
         )}
       </div>
 
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-          <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <Users className="w-4 h-4 text-[#0F766E]" />
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+          <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <Users className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_pedigree_chart_title')}
           </h4>
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-3 text-[10px] font-semibold text-[#64748B]">
+            <div className="hidden sm:flex items-center gap-3 text-[10px] font-semibold text-[#64748B] dark:text-slate-400">
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 border-2 border-[#12312B] bg-white inline-block" />{getTranslation(lang, 'tool_pedigree_male')}</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full border-2 border-[#12312B] bg-white inline-block" />{getTranslation(lang, 'tool_pedigree_female')}</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-[#0F766E] inline-block" />{getTranslation(lang, 'tool_pedigree_affected')}</span>
@@ -226,15 +226,15 @@ export const PedigreeAnalysisTool: React.FC<ToolProps> = ({ lang }) => {
         )}
       </div>
 
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-        <h4 className="font-bold text-sm text-[#12312B]">{getTranslation(lang, 'tool_pedigree_inference_title')}</h4>
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+        <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_pedigree_inference_title')}</h4>
 
         {inference.mostLikely.length > 0 && (
           <div className="space-y-1.5">
             <span className="text-[11px] font-bold text-[#64748B] uppercase tracking-wide">{getTranslation(lang, 'tool_pedigree_most_likely')}</span>
             <div className="flex flex-wrap gap-2">
               {inference.mostLikely.map((p) => (
-                <span key={p} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#ECFDF5] border border-[#0F766E] text-[#0F766E]">
+                <span key={p} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#ECFDF5] border border-[#0F766E] text-[#0F766E] dark:text-teal-400">
                   {getTranslation(lang, PATTERN_KEY[p])}
                 </span>
               ))}
@@ -259,7 +259,7 @@ export const PedigreeAnalysisTool: React.FC<ToolProps> = ({ lang }) => {
         )}
 
         {inference.notes && (
-          <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800">
+          <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl text-[11px] text-amber-800">
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{inference.notes}</span>
           </div>
