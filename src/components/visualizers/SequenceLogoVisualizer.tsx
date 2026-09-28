@@ -105,20 +105,20 @@ export const SequenceLogoVisualizer: React.FC<Props> = ({ pwm, alphabet, lang, t
     <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2">
-          <Maximize2 className="w-4 h-4 text-[#0F766E]" />
+        <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2 dark:text-slate-100">
+          <Maximize2 className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
           {title || getTranslation(lang, 'tool_motif_logo_title')}
         </h4>
         <div className="flex gap-2">
           <button
             onClick={handleExportSVG}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-[#0F766E] hover:bg-[#E6F5EF] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-[#0F766E] hover:bg-[#E6F5EF] transition-colors cursor-pointer dark:bg-slate-800 dark:border-slate-700 dark:text-teal-400"
           >
             <Download className="w-3 h-3" /> SVG
           </button>
           <button
             onClick={handleExportPNG}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-[#0F766E] hover:bg-[#E6F5EF] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-[#0F766E] hover:bg-[#E6F5EF] transition-colors cursor-pointer dark:bg-slate-800 dark:border-slate-700 dark:text-teal-400"
           >
             <Download className="w-3 h-3" /> PNG
           </button>
@@ -126,7 +126,7 @@ export const SequenceLogoVisualizer: React.FC<Props> = ({ pwm, alphabet, lang, t
       </div>
 
       {/* SVG Logo */}
-      <div className="overflow-x-auto p-4 bg-white border border-[#DDEDE8] rounded-2xl">
+      <div className="overflow-x-auto p-4 bg-white border border-[#DDEDE8] rounded-2xl dark:bg-slate-900 dark:border-slate-700">
         <svg
           ref={svgRef}
           viewBox={`0 0 ${width} ${height}`}
@@ -247,8 +247,8 @@ export const SequenceLogoVisualizer: React.FC<Props> = ({ pwm, alphabet, lang, t
       </div>
 
       {/* IC per position bar */}
-      <div className="p-4 bg-[#F3FAF7] border border-[#DDEDE8] rounded-2xl">
-        <h5 className="text-xs font-bold text-[#12312B] mb-2">
+      <div className="p-4 bg-[#F3FAF7] border border-[#DDEDE8] rounded-2xl dark:bg-slate-800 dark:border-slate-700">
+        <h5 className="text-xs font-bold text-[#12312B] mb-2 dark:text-slate-100">
           {getTranslation(lang, 'tool_motif_ic_per_pos')}
         </h5>
         <div className="flex gap-1 items-end" style={{ height: 60 }}>
@@ -264,7 +264,7 @@ export const SequenceLogoVisualizer: React.FC<Props> = ({ pwm, alphabet, lang, t
                     minHeight: 2,
                   }}
                 />
-                <span className="text-[8px] text-[#64748B] mt-0.5">{i + 1}</span>
+                <span className="text-[8px] text-[#64748B] mt-0.5 dark:text-slate-400">{i + 1}</span>
               </div>
             );
           })}
