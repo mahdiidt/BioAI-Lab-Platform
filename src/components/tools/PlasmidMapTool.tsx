@@ -126,11 +126,11 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
         lang={lang}
       />
 
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5">
-              <Tag className="w-3.5 h-3.5 text-[#0F766E]" /> {getTranslation(lang, 'tool_plasmid_name')}
+            <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-1.5">
+              <Tag className="w-3.5 h-3.5 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_plasmid_name')}
             </label>
             <input
               type="text"
@@ -140,7 +140,7 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-[#12312B]">{getTranslation(lang, 'tool_plasmid_min_orf_aa')}</label>
+            <label className="text-xs font-bold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_plasmid_min_orf_aa')}</label>
             <input
               type="number"
               min={5}
@@ -175,8 +175,8 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
         </div>
 
         <div className="border-t border-[#DDEDE8] pt-3.5 space-y-2">
-          <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5">
-            <Scissors className="w-3.5 h-3.5 text-[#0F766E]" /> {getTranslation(lang, 'tool_select_restriction_enzymes')}
+          <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-1.5">
+            <Scissors className="w-3.5 h-3.5 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_select_restriction_enzymes')}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
             {COMMON_ENZYMES.map((ez) => {
@@ -200,8 +200,8 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
         </div>
 
         <div className="border-t border-[#DDEDE8] pt-3.5 space-y-2.5">
-          <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5">
-            <Plus className="w-3.5 h-3.5 text-[#0F766E]" /> {getTranslation(lang, 'tool_plasmid_custom_features')}
+          <label className="text-xs font-bold text-[#12312B] dark:text-slate-100 flex items-center gap-1.5">
+            <Plus className="w-3.5 h-3.5 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_plasmid_custom_features')}
           </label>
           <div className="flex flex-wrap gap-2 items-end">
             <input
@@ -254,16 +254,16 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {!result.isValid ? (
-        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-medium flex items-center gap-2">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 rounded-2xl text-xs font-medium flex items-center gap-2">
           <Info className="w-4 h-4 shrink-0 text-rose-600" />
           <span>{result.errorMessage}</span>
         </div>
       ) : (
         <>
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-              <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-                <Orbit className="w-4 h-4 text-[#0F766E]" />
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+              <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+                <Orbit className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
                 {getTranslation(lang, 'tool_plasmid_map_title')}
               </h4>
               <div className="flex items-center gap-2">
@@ -293,27 +293,27 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
 
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="p-2.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-                    <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_total_seq_length')}</span>
-                    <span className="text-sm font-bold text-[#0F766E] font-mono">{result.length.toLocaleString()} bp</span>
+                  <div className="p-2.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+                    <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_total_seq_length')}</span>
+                    <span className="text-sm font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.length.toLocaleString()} bp</span>
                   </div>
-                  <div className="p-2.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-                    <span className="text-[10px] font-semibold text-[#64748B] block">GC</span>
-                    <span className="text-sm font-bold text-[#0F766E] font-mono">{result.gcContentOverall.toFixed(1)}%</span>
+                  <div className="p-2.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+                    <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">GC</span>
+                    <span className="text-sm font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.gcContentOverall.toFixed(1)}%</span>
                   </div>
-                  <div className="p-2.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-                    <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_plasmid_unique_cutters')}</span>
+                  <div className="p-2.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+                    <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_plasmid_unique_cutters')}</span>
                     <span className="text-sm font-bold text-[#DC2626] font-mono">{result.uniqueCutters.length}</span>
                   </div>
-                  <div className="p-2.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-                    <span className="text-[10px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_plasmid_orfs_found')}</span>
-                    <span className="text-sm font-bold text-[#8B5CF6] font-mono">{result.orfs.length}</span>
+                  <div className="p-2.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+                    <span className="text-[10px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_plasmid_orfs_found')}</span>
+                    <span className="text-sm font-bold text-[#8B5CF6] dark:text-violet-400 font-mono">{result.orfs.length}</span>
                   </div>
                 </div>
 
                 {selectedDetail && (
                   <div className="p-3 bg-[#F3FAF7] border border-[#0F766E] rounded-xl space-y-1">
-                    <span className="text-xs font-extrabold text-[#12312B] block">{selectedDetail.title}</span>
+                    <span className="text-xs font-extrabold text-[#12312B] dark:text-slate-100 block">{selectedDetail.title}</span>
                     {selectedDetail.lines.map((l, i) => (
                       <span key={i} className="text-[11px] text-[#334155] block font-mono break-all">
                         {l}
@@ -324,7 +324,7 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
 
                 {result.uniqueCutters.length > 0 && (
                   <div className="space-y-1.5">
-                    <span className="text-[11px] font-bold text-[#12312B]">{getTranslation(lang, 'tool_plasmid_unique_cutters')}</span>
+                    <span className="text-[11px] font-bold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_plasmid_unique_cutters')}</span>
                     <div className="flex flex-wrap gap-1.5">
                       {result.uniqueCutters.map((s) => (
                         <span
@@ -342,29 +342,29 @@ export const PlasmidMapTool: React.FC<ToolProps> = ({ lang }) => {
           </div>
 
           {result.orfs.length > 0 && (
-            <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3">
-              <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-                <DnaIcon className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_plasmid_orfs_found')}
+            <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-3">
+              <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+                <DnaIcon className="w-4 h-4 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_plasmid_orfs_found')}
               </h4>
-              <div className="border border-[#DDEDE8] rounded-xl overflow-hidden bg-[#F3FAF7]">
+              <div className="border border-[#DDEDE8] rounded-xl overflow-hidden bg-[#F3FAF7] dark:bg-slate-800">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-[#ECFDF5] text-[#12312B] border-b border-[#DDEDE8]">
+                  <thead className="bg-[#ECFDF5] text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700">
                     <tr>
                       <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_frame')}</th>
                       <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_cut_pos')}</th>
                       <th className="p-2.5 font-bold">aa</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#DDEDE8]">
+                  <tbody className="divide-y divide-[#DDEDE8] dark:divide-slate-700">
                     {result.orfs.slice(0, 15).map((orf, idx) => (
                       <tr
                         key={idx}
-                        className="hover:bg-white/60 transition-colors cursor-pointer"
+                        className="hover:bg-white/60 dark:hover:bg-slate-700/40 transition-colors cursor-pointer"
                         onClick={() => setSelected({ kind: 'orf', index: idx })}
                       >
                         <td className="p-2.5 font-mono font-bold text-[#8B5CF6]">{orf.frame}</td>
-                        <td className="p-2.5 font-mono text-[#0F766E]">{orf.start}–{orf.end}</td>
-                        <td className="p-2.5 font-mono text-[#64748B]">{orf.lengthAa}</td>
+                        <td className="p-2.5 font-mono text-[#0F766E] dark:text-teal-400">{orf.start}–{orf.end}</td>
+                        <td className="p-2.5 font-mono text-[#64748B] dark:text-slate-400">{orf.lengthAa}</td>
                       </tr>
                     ))}
                   </tbody>
