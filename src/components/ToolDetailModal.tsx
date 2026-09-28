@@ -29,6 +29,8 @@ import { BacterialGrowthTool } from './tools/BacterialGrowthTool';
 import { GlobalAlignmentTool } from './tools/GlobalAlignmentTool';
 import { MsaTool } from './tools/MsaTool';
 import { MotifDiscoveryTool } from './tools/MotifDiscoveryTool';
+import { DotPlotTool } from './tools/DotPlotTool';
+import { GcSkewTool } from './tools/GcSkewTool';
 import { LocalAlignmentTool } from './tools/LocalAlignmentTool';
 import { DistanceMatrixTool } from './tools/DistanceMatrixTool';
 import { RnaSecondaryStructureTool } from './tools/RnaSecondaryStructureTool';
@@ -165,6 +167,12 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'motif_discovery':
         return <MotifDiscoveryTool lang={lang} />;
+
+      case 'dot_plot':
+        return <DotPlotTool lang={lang} />;
+
+      case 'gc_skew':
+        return <GcSkewTool lang={lang} />;
 
       case 'local_alignment':
         return <LocalAlignmentTool lang={lang} />;
