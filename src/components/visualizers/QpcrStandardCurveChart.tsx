@@ -33,10 +33,10 @@ export const QpcrStandardCurveChart: React.FC<QpcrStandardCurveChartProps> = ({ 
   const lineY2 = intercept + slope * lineX2;
 
   return (
-    <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm">
-      <div className="flex items-center justify-between text-xs text-[#12312B] font-semibold border-b border-[#DDEDE8] pb-2 mb-2">
+    <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm">
+      <div className="flex items-center justify-between text-xs text-[#12312B] font-semibold border-b border-[#DDEDE8] dark:border-slate-700 pb-2 mb-2">
         <span>Ct vs log10(dilution)</span>
-        <span className="text-[#0F766E] font-mono">
+        <span className="text-[#0F766E] dark:text-teal-400 font-mono">
           slope: {slope.toFixed(3)}
         </span>
       </div>
