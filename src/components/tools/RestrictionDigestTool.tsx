@@ -39,10 +39,10 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
       />
 
       {/* Enzyme Selection & DNA Topology Controls */}
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#DDEDE8] pb-3">
-          <label className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <Scissors className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_select_restriction_enzymes')}
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+          <label className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <Scissors className="w-4 h-4 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_select_restriction_enzymes')}
           </label>
 
           <div role="group" aria-label={getTranslation(lang, 'tool_linear_dna') + ' / ' + getTranslation(lang, 'tool_circular_plasmid')} className="flex items-center gap-2 bg-[#F3FAF7] p-1 rounded-xl border border-[#DDEDE8]">
@@ -85,7 +85,7 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
                 }`}
               >
                 <span className="block text-xs font-mono">{ez.name}</span>
-                <span className="block text-[10px] text-[#64748B] font-mono">{ez.site}</span>
+                <span className="block text-[10px] text-[#64748B] dark:text-slate-400 font-mono">{ez.site}</span>
               </button>
             );
           })}
@@ -93,10 +93,10 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {/* Digestion Results */}
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
-        <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-          <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-            <Box className="w-4 h-4 text-[#0F766E]" />
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-5">
+        <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+          <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+            <Box className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
             {getTranslation(lang, 'tool_digest_fragment_analysis')} ({isCircular ? getTranslation(lang, 'tool_circular_plasmid') : getTranslation(lang, 'tool_linear_dna')})
           </h4>
           <ExportButton filename="restriction_digest.json" data={digestResult} format="json" lang={lang} />
@@ -104,20 +104,20 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
 
         {/* Summary metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_total_seq_length')}</span>
-            <span className="text-lg font-bold text-[#0F766E] font-mono">{digestResult.dnaLength} bp</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_total_seq_length')}</span>
+            <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{digestResult.dnaLength} bp</span>
           </div>
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_total_cut_sites')}</span>
-            <span className="text-lg font-bold text-[#22C55E] font-mono">{digestResult.numCuts}</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_total_cut_sites')}</span>
+            <span className="text-lg font-bold text-[#22C55E] dark:text-green-400 font-mono">{digestResult.numCuts}</span>
           </div>
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_fragments_generated')}</span>
-            <span className="text-lg font-bold text-[#0EA5E9] font-mono">{digestResult.fragmentSizes.length}</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_fragments_generated')}</span>
+            <span className="text-lg font-bold text-[#0EA5E9] dark:text-sky-400 font-mono">{digestResult.fragmentSizes.length}</span>
           </div>
-          <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-            <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_selected_enzymes')}</span>
+          <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_selected_enzymes')}</span>
             <span className="text-xs font-bold text-[#8B5CF6] truncate block">{selectedEnzymes.join(', ') || getTranslation(lang, 'tool_none')}</span>
           </div>
         </div>
@@ -125,21 +125,21 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
         {/* Ordered Cut Sites Table */}
         {digestResult.allCutSites.length > 0 && (
           <div className="space-y-2">
-            <span className="text-xs font-bold text-[#12312B]">{getTranslation(lang, 'tool_ordered_cut_positions')}</span>
-            <div className="border border-[#DDEDE8] rounded-xl overflow-hidden bg-[#F3FAF7]">
+            <span className="text-xs font-bold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_ordered_cut_positions')}</span>
+            <div className="border border-[#DDEDE8] rounded-xl overflow-hidden bg-[#F3FAF7] dark:bg-slate-800">
               <table className="w-full text-xs text-left">
-                <thead className="bg-[#ECFDF5] text-[#12312B] border-b border-[#DDEDE8]">
+                <thead className="bg-[#ECFDF5] text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700">
                   <tr>
                     <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_cut_num')}</th>
                     <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_cut_pos')}</th>
                     <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_cutting_enzyme')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#DDEDE8]">
+                <tbody className="divide-y divide-[#DDEDE8] dark:divide-slate-700">
                   {digestResult.allCutSites.map((site, idx) => (
-                    <tr key={idx} className="hover:bg-white/60 transition-colors">
-                      <td className="p-2.5 font-mono font-bold text-[#64748B]">{getTranslation(lang, 'tool_site')} {idx + 1}</td>
-                      <td className="p-2.5 font-mono font-bold text-[#0F766E]">{site.position} bp</td>
+                    <tr key={idx} className="hover:bg-white/60 dark:hover:bg-slate-700/40 transition-colors">
+                      <td className="p-2.5 font-mono font-bold text-[#64748B] dark:text-slate-400">{getTranslation(lang, 'tool_site')} {idx + 1}</td>
+                      <td className="p-2.5 font-mono font-bold text-[#0F766E] dark:text-teal-400">{site.position} bp</td>
                       <td className="p-2.5 font-mono text-[#8B5CF6]">{site.enzymeName}</td>
                     </tr>
                   ))}
@@ -151,12 +151,12 @@ export const RestrictionDigestTool: React.FC<ToolProps> = ({ lang }) => {
 
         {/* Combined Fragment Sizes List */}
         <div className="space-y-2">
-          <span className="text-xs font-bold text-[#12312B]">{getTranslation(lang, 'tool_combined_fragment_sizes')}</span>
+          <span className="text-xs font-bold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_combined_fragment_sizes')}</span>
           <div className="p-3 bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl flex flex-wrap gap-2">
             {digestResult.fragmentSizes.map((size, idx) => (
               <span
                 key={idx}
-                className="px-3 py-1 bg-white border border-[#DDEDE8] rounded-lg font-mono text-xs font-bold text-[#0F766E] shadow-2xs"
+                className="px-3 py-1 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-lg font-mono text-xs font-bold text-[#0F766E] shadow-2xs"
               >
                 {getTranslation(lang, 'tool_fragment')} {idx + 1}: {size} bp
               </span>
