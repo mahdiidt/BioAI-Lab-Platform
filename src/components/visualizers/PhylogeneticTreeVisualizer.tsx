@@ -14,7 +14,7 @@ export const PhylogeneticTreeVisualizer: React.FC<PhylogeneticTreeVisualizerProp
 
   if (!parsed.isValid || !parsed.root) {
     return (
-      <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs font-medium flex items-center gap-2">
+      <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 rounded-2xl text-xs font-medium flex items-center gap-2">
         <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
         <span>{parsed.errorMessage || getTranslation(lang, 'tool_phylo_invalid_format')}</span>
       </div>
@@ -119,18 +119,18 @@ export const PhylogeneticTreeVisualizer: React.FC<PhylogeneticTreeVisualizerProp
   };
 
   return (
-    <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3">
-      <div className="flex items-center justify-between text-xs font-bold text-[#12312B] border-b border-[#DDEDE8] pb-2">
+    <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-3">
+      <div className="flex items-center justify-between text-xs font-bold text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
         <span className="flex items-center gap-2">
-          <Network className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_phylo_cladogram_header')}
+          <Network className="w-4 h-4 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_phylo_cladogram_header')}
         </span>
-        <span className="text-[#0F766E] font-mono bg-[#ECFDF5] px-2.5 py-0.5 rounded-full border border-[#DDEDE8]">
+        <span className="text-[#0F766E] dark:text-teal-400 font-mono bg-[#ECFDF5] px-2.5 py-0.5 rounded-full border border-[#DDEDE8]">
           {leaves.length} {getTranslation(lang, 'tool_phylo_taxa_leaves')}
         </span>
       </div>
 
       {parsed.warning && (
-        <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold flex items-center gap-2">
+        <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 rounded-xl text-xs font-semibold flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
           <span>{parsed.warning}</span>
         </div>
