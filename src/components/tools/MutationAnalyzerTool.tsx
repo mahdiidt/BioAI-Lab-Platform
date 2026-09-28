@@ -40,15 +40,15 @@ export const MutationAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {/* Results */}
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-          <h4 className="font-bold text-sm text-[#12312B] flex items-center gap-2">
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+          <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
             <Zap className="w-4 h-4 text-[#F59E0B]" />
             {getTranslation(lang, 'tool_mutation_analysis')}
           </h4>
           <div className="flex items-center gap-2">
             <ExportButton filename="mutation_analysis.json" data={result} format="json" lang={lang} />
-            <span className="text-xs font-mono font-bold text-[#64748B]">
+            <span className="text-xs font-mono font-bold text-[#64748B] dark:text-slate-400">
               {origDna.length} bp vs {mutDna.length} bp
             </span>
           </div>
@@ -86,10 +86,10 @@ export const MutationAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
         {/* Changed Codons Table */}
         {result.changedCodons && result.changedCodons.length > 0 && (
           <div className="space-y-2 pt-2">
-            <span className="text-xs font-bold text-[#12312B]">{getTranslation(lang, 'tool_altered_codons')}</span>
-            <div className="border border-[#DDEDE8] rounded-xl overflow-hidden bg-[#F3FAF7]">
+            <span className="text-xs font-bold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_altered_codons')}</span>
+            <div className="border border-[#DDEDE8] dark:border-slate-700 rounded-xl overflow-hidden bg-[#F3FAF7] dark:bg-slate-800">
               <table className="w-full text-xs text-left">
-                <thead className="bg-[#ECFDF5] text-[#12312B] border-b border-[#DDEDE8]">
+                <thead className="bg-[#ECFDF5] text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700">
                   <tr>
                     <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_position')}</th>
                     <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_orig_codon_aa')}</th>
@@ -97,13 +97,13 @@ export const MutationAnalyzerTool: React.FC<ToolProps> = ({ lang }) => {
                     <th className="p-2.5 font-bold">{getTranslation(lang, 'tool_effect')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#DDEDE8]">
+                <tbody className="divide-y divide-[#DDEDE8] dark:divide-slate-700">
                   {result.changedCodons.map((item, idx) => {
                     const isDiffAa = item.origAa !== item.mutAa;
                     return (
-                      <tr key={idx} className="hover:bg-white/60 transition-colors">
-                        <td className="p-2.5 font-mono font-bold text-[#64748B]">nt {item.position}</td>
-                        <td className="p-2.5 font-mono text-[#0F766E]">
+                      <tr key={idx} className="hover:bg-white/60 dark:hover:bg-slate-700/40 transition-colors">
+                        <td className="p-2.5 font-mono font-bold text-[#64748B] dark:text-slate-400">nt {item.position}</td>
+                        <td className="p-2.5 font-mono text-[#0F766E] dark:text-teal-400">
                           {item.origCodon} ({item.origAa})
                         </td>
                         <td className="p-2.5 font-mono text-[#8B5CF6]">
