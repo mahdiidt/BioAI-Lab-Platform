@@ -1,342 +1,275 @@
-// ─────────────────────────────────────────────────────────────
-// GC Skew Multi-Track Chart (SVG-based)
-// Renders GC%, GC Skew, Cumulative GC Skew in stacked tracks
-// with landmark annotations and interactive tooltip.
-// ─────────────────────────────────────────────────────────────
-import React, { useState, useRef, useMemo } from 'react';
-import { GcSkewResult, SkewLandmark } from '../../utils/gcSkew';
+import React, { useState, useMemo, useRef } from 'react';
+import { analyzeGcSkew, parseFastaGC } from '../../utils/gcSkew';
 import { Language } from '../../types';
 import { getTranslation } from '../../i18n';
-import { Download, MapPin } from 'lucide-react';
+import { ExportButton } from '../common/ExportButton';
+import { ScientificExplanation } from '../common/ScientificExplanation';
+import { GcSkewChart } from '../visualizers/GcSkewChart';
+import {
+  Upload, FileText, Settings, BarChart2, MapPin, Dna,
+  Eye, EyeOff, Info, AlertTriangle, TrendingUp, Target,
+  Layers, Activity,
+} from 'lucide-react';
 
-interface Props {
-  result: GcSkewResult;
-  lang: Language;
-  showTracks: { gcContent: boolean; gcSkew: boolean; cumulative: boolean; atSkew: boolean };
-}
+interface ToolProps { lang: Language; }
 
-const COLORS = {
-  gcContent: '#0F766E',
-  gcSkewPos: '#3B82F6',
-  gcSkewNeg: '#EF4444',
-  cumulative: '#8B5CF6',
-  atSkew: '#F59E0B',
-  grid: '#E2E8F0',
-  landmark_ori: '#EF4444',
-  landmark_ter: '#3B82F6',
-  landmark_gc_island: '#10B981',
-  landmark_at_rich: '#F59E0B',
-};
+const SAMPLE = `>E_coli_K12_fragment_10kb
+ATGAAACGCATTAGCACCACCATTACCACCACCATCACCATTACCACAGGTAACGGTGCGGGCTGACGCGTACAGGAAACACAGAAAAAAGCCCGCACCTGAC
+AGTGCGGGCTTTTTTTTTCGACCAAAGGTAACGAGGTAACAACCATGCGAGTGTTGAAGTTCGGCGGTACATCAGTGGCAAATGCAGAACGTTTTCTGCGTG
+TTGCCGATATTCTGGAAAGCAATGCCAGGCAGGGGCAGGTGGCCACCGTCCTCTCTGCCCCCGCCAAAATCACCAACCACCTGGTGGCGATGATTGAAAAAAC
+CATTAGCGGCCAGGATGCTTTACCCAATATCAGCGATGCCGAACGTATTTTTGCCGAACTTTTGACGGGACTCGCCGCCGCCCAGCCGGGGTTCCCGCTGGCG
+CAATTGAAAACTTTCGTCGATCAGGAATTTGCCCAAATAAAACATGTCCTGCATGGCATTAGTTTGTTGGGGCAGTGCCCGGATAGCATCAACGCTGCGCTGA
+TTTGCCGTGGCGAGAAAATGTCGATCGCCATTATGGCCGGCGTATTAGAAGCGCGCGGTCACAACGTTACTGTTATCGATCCGGTCGAAAAACTGCTGGCAGT
+GGGGCATTACCTCGAATCTACCGTCGATATTGCTGAGTCCACCCGCCGTATTGCGGCAAGCCGCATTCCGGCTGATCACATGGTGCTGATGGCAGGTTTCACC
+GCCGGTAATGAAAAAGGCGAACTGGTGGTGCTTGGACGCAACGGTTCCGACTACTCTGCTGCGGTGCTGGCTGCCTGTTTACGCGCCGATTGTTGCGAGATTT
+GGACGGACGTTGACGGGGTCTATACCTGCGACCCGCGTCAGGTGCCCGATGCGAGGTTGTTGAAGTCGATGTCCTACCAGGAAGCGATGGAGCTTTCCTACTT
+CGGCGCTAAAGTTCTTCACCCCCGCACCATTACCCCCATCGCCCAGTTCCAGATCCCTTGCCTGATTAAAAATACCGGAAATCCTCAAGCACCAGGTACGCTCA`;
 
-const MARGIN = { top: 20, right: 30, bottom: 50, left: 60 };
-const TRACK_HEIGHT = 120;
-const TRACK_GAP = 15;
+export const GcSkewTool: React.FC<ToolProps> = ({ lang }) => {
+  const [inputText, setInputText] = useState(SAMPLE);
+  const [windowSize, setWindowSize] = useState(100);
+  const [stepSize, setStepSize] = useState(20);
+  const [showTracks, setShowTracks] = useState({
+    gcContent: true, gcSkew: true, cumulative: true, atSkew: false,
+  });
 
-export const GcSkewChart: React.FC<Props> = ({ result, lang, showTracks }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [tooltip, setTooltip] = useState<{ x: number; y: number; data: any } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isRTL = lang === 'fa';
 
-  const activeTracks = [
-    showTracks.gcContent && 'gcContent',
-    showTracks.gcSkew && 'gcSkew',
-    showTracks.cumulative && 'cumulative',
-    showTracks.atSkew && 'atSkew',
-  ].filter(Boolean) as string[];
+  const entries = useMemo(() => parseFastaGC(inputText), [inputText]);
+  const seq = entries[0]?.sequence || '';
+  const seqName = entries[0]?.name || 'Sequence';
 
-  const totalHeight = MARGIN.top + activeTracks.length * (TRACK_HEIGHT + TRACK_GAP) + MARGIN.bottom;
-  const chartWidth = 800;
-  const plotWidth = chartWidth - MARGIN.left - MARGIN.right;
+  const result = useMemo(() => {
+    if (seq.length < 50) return null;
+    return analyzeGcSkew(seq, seqName, windowSize, stepSize);
+  }, [seq, seqName, windowSize, stepSize]);
 
-  const points = result.dataPoints;
-  const n = points.length;
-
-  // Scales
-  const xScale = (pos: number) => MARGIN.left + (pos / result.stats.seqLength) * plotWidth;
-  const dataToX = (idx: number) => xScale(points[idx]?.position || 0);
-
-  // Build SVG path for a data series
-  function buildPath(accessor: (p: typeof points[0]) => number, yMin: number, yMax: number, baseY: number): string {
-    if (n === 0) return '';
-    const range = yMax - yMin || 1;
-    const parts: string[] = [];
-    for (let i = 0; i < n; i++) {
-      const x = dataToX(i);
-      const val = accessor(points[i]);
-      const y = baseY + TRACK_HEIGHT - ((val - yMin) / range) * TRACK_HEIGHT;
-      parts.push(i === 0 ? `M${x},${y}` : `L${x},${y}`);
+  const MAX_FILE_BYTES = 5 * 1024 * 1024;
+  const [fileError, setFileError] = useState<string | null>(null);
+  const readSequenceFile = (file: File) => {
+    if (file.size > MAX_FILE_BYTES) {
+      setFileError(getTranslation(lang, 'fileTooLargeError').replace('{size}', (file.size / 1024 / 1024).toFixed(1)));
+      return;
     }
-    return parts.join(' ');
-  }
-
-  // Build filled area path (for GC skew with positive/negative coloring)
-  function buildAreaPath(accessor: (p: typeof points[0]) => number, yMin: number, yMax: number, baseY: number, zeroLine: number): { above: string; below: string } {
-    if (n === 0) return { above: '', below: '' };
-    const range = yMax - yMin || 1;
-    const yOfVal = (val: number) => baseY + TRACK_HEIGHT - ((val - yMin) / range) * TRACK_HEIGHT;
-    const zeroY = yOfVal(zeroLine);
-
-    let above = `M${dataToX(0)},${zeroY}`;
-    let below = `M${dataToX(0)},${zeroY}`;
-
-    for (let i = 0; i < n; i++) {
-      const x = dataToX(i);
-      const val = accessor(points[i]);
-      const y = yOfVal(val);
-      above += ` L${x},${Math.min(y, zeroY)}`;
-      below += ` L${x},${Math.max(y, zeroY)}`;
-    }
-
-    above += ` L${dataToX(n - 1)},${zeroY} Z`;
-    below += ` L${dataToX(n - 1)},${zeroY} Z`;
-
-    return { above, below };
-  }
-
-  // Track renderers
-  const tracks = useMemo(() => {
-    const rendered: React.ReactNode[] = [];
-    let currentY = MARGIN.top;
-
-    if (showTracks.gcContent) {
-      const min = Math.min(...points.map(p => p.gcContent));
-      const max = Math.max(...points.map(p => p.gcContent));
-      const path = buildPath(p => p.gcContent, min - 0.02, max + 0.02, currentY);
-
-      rendered.push(
-        <g key="gcContent">
-          <rect x={MARGIN.left} y={currentY} width={plotWidth} height={TRACK_HEIGHT} fill="#F8FFFE" rx={4} />
-          <text x={MARGIN.left - 8} y={currentY + 12} textAnchor="end" fontSize={10} fontWeight="bold" fill="#0F766E">
-            GC%
-          </text>
-          {/* Mean line */}
-          <line
-            x1={MARGIN.left} x2={MARGIN.left + plotWidth}
-            y1={currentY + TRACK_HEIGHT - ((result.stats.overallGC - min + 0.02) / (max - min + 0.04)) * TRACK_HEIGHT}
-            y2={currentY + TRACK_HEIGHT - ((result.stats.overallGC - min + 0.02) / (max - min + 0.04)) * TRACK_HEIGHT}
-            stroke="#0F766E" strokeWidth={1} strokeDasharray="4,3" opacity={0.5}
-          />
-          <path d={path} fill="none" stroke={COLORS.gcContent} strokeWidth={1.5} />
-          {/* Y-axis ticks */}
-          <text x={MARGIN.left - 8} y={currentY + TRACK_HEIGHT} textAnchor="end" fontSize={8} fill="#94A3B8">
-            {(min * 100).toFixed(0)}%
-          </text>
-          <text x={MARGIN.left - 8} y={currentY + 10} textAnchor="end" fontSize={8} fill="#94A3B8">
-            {(max * 100).toFixed(0)}%
-          </text>
-        </g>
-      );
-      currentY += TRACK_HEIGHT + TRACK_GAP;
-    }
-
-    if (showTracks.gcSkew) {
-      const vals = points.map(p => p.gcSkew);
-      const absMax = Math.max(Math.abs(Math.min(...vals)), Math.abs(Math.max(...vals)), 0.01);
-      const { above, below } = buildAreaPath(p => p.gcSkew, -absMax, absMax, currentY, 0);
-      const linePath = buildPath(p => p.gcSkew, -absMax, absMax, currentY);
-
-      rendered.push(
-        <g key="gcSkew">
-          <rect x={MARGIN.left} y={currentY} width={plotWidth} height={TRACK_HEIGHT} fill="#FAFBFF" rx={4} />
-          <text x={MARGIN.left - 8} y={currentY + 12} textAnchor="end" fontSize={10} fontWeight="bold" fill="#3B82F6">
-            GC Skew
-          </text>
-          {/* Zero line */}
-          <line
-            x1={MARGIN.left} x2={MARGIN.left + plotWidth}
-            y1={currentY + TRACK_HEIGHT / 2} y2={currentY + TRACK_HEIGHT / 2}
-            stroke="#94A3B8" strokeWidth={0.5}
-          />
-          <path d={above} fill="rgba(59,130,246,0.15)" />
-          <path d={below} fill="rgba(239,68,68,0.15)" />
-          <path d={linePath} fill="none" stroke="#3B82F6" strokeWidth={1.2} />
-          <text x={MARGIN.left - 8} y={currentY + TRACK_HEIGHT} textAnchor="end" fontSize={8} fill="#94A3B8">
-            {(-absMax).toFixed(2)}
-          </text>
-          <text x={MARGIN.left - 8} y={currentY + 10} textAnchor="end" fontSize={8} fill="#94A3B8">
-            {absMax.toFixed(2)}
-          </text>
-        </g>
-      );
-      currentY += TRACK_HEIGHT + TRACK_GAP;
-    }
-
-    if (showTracks.cumulative) {
-      const vals = points.map(p => p.cumulativeGcSkew);
-      const min = Math.min(...vals);
-      const max = Math.max(...vals);
-      const path = buildPath(p => p.cumulativeGcSkew, min, max, currentY);
-
-      rendered.push(
-        <g key="cumulative">
-          <rect x={MARGIN.left} y={currentY} width={plotWidth} height={TRACK_HEIGHT} fill="#FDFAFF" rx={4} />
-          <text x={MARGIN.left - 8} y={currentY + 12} textAnchor="end" fontSize={10} fontWeight="bold" fill="#8B5CF6">
-            Cum.
-          </text>
-          <path d={path} fill="none" stroke={COLORS.cumulative} strokeWidth={1.8} />
-          {/* Landmark annotations on cumulative track */}
-          {result.landmarks.filter(l => l.type === 'ori' || l.type === 'ter').map((lm, i) => {
-            const x = xScale(lm.position);
-            return (
-              <g key={`lm-${i}`}>
-                <line
-                  x1={x} x2={x} y1={currentY} y2={currentY + TRACK_HEIGHT}
-                  stroke={lm.type === 'ori' ? COLORS.landmark_ori : COLORS.landmark_ter}
-                  strokeWidth={1.5} strokeDasharray="4,2"
-                />
-                <circle cx={x} cy={currentY + 8} r={5}
-                  fill={lm.type === 'ori' ? COLORS.landmark_ori : COLORS.landmark_ter} />
-                <text x={x} y={currentY + 11} textAnchor="middle" fontSize={7} fill="white" fontWeight="bold">
-                  {lm.type === 'ori' ? 'O' : 'T'}
-                </text>
-              </g>
-            );
-          })}
-        </g>
-      );
-      currentY += TRACK_HEIGHT + TRACK_GAP;
-    }
-
-    if (showTracks.atSkew) {
-      const vals = points.map(p => p.atSkew);
-      const absMax = Math.max(Math.abs(Math.min(...vals)), Math.abs(Math.max(...vals)), 0.01);
-      const linePath = buildPath(p => p.atSkew, -absMax, absMax, currentY);
-
-      rendered.push(
-        <g key="atSkew">
-          <rect x={MARGIN.left} y={currentY} width={plotWidth} height={TRACK_HEIGHT} fill="#FFFDF5" rx={4} />
-          <text x={MARGIN.left - 8} y={currentY + 12} textAnchor="end" fontSize={10} fontWeight="bold" fill="#F59E0B">
-            AT Skew
-          </text>
-          <line
-            x1={MARGIN.left} x2={MARGIN.left + plotWidth}
-            y1={currentY + TRACK_HEIGHT / 2} y2={currentY + TRACK_HEIGHT / 2}
-            stroke="#94A3B8" strokeWidth={0.5}
-          />
-          <path d={linePath} fill="none" stroke={COLORS.atSkew} strokeWidth={1.2} />
-        </g>
-      );
-    }
-
-    return rendered;
-  }, [points, showTracks, result]);
-
-  // X-axis ticks
-  const xTicks = useMemo(() => {
-    const ticks: React.ReactNode[] = [];
-    const step = Math.pow(10, Math.floor(Math.log10(result.stats.seqLength / 5)));
-    for (let pos = 0; pos <= result.stats.seqLength; pos += step) {
-      const x = xScale(pos);
-      ticks.push(
-        <g key={pos}>
-          <line x1={x} x2={x} y1={totalHeight - MARGIN.bottom} y2={totalHeight - MARGIN.bottom + 5} stroke="#94A3B8" />
-          <text x={x} y={totalHeight - MARGIN.bottom + 16} textAnchor="middle" fontSize={9} fill="#64748B">
-            {pos >= 1000000 ? `${(pos / 1000000).toFixed(1)}M` : pos >= 1000 ? `${(pos / 1000).toFixed(0)}k` : pos}
-          </text>
-        </g>
-      );
-    }
-    return ticks;
-  }, [result, totalHeight]);
-
-  // Mouse tracking
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const seqPos = ((mx - MARGIN.left) / plotWidth) * result.stats.seqLength;
-
-    // Find nearest data point
-    const idx = points.findIndex(p => p.position >= seqPos);
-    if (idx >= 0 && idx < points.length) {
-      setTooltip({
-        x: mx,
-        y: e.clientY - rect.top,
-        data: points[idx],
-      });
-    }
+    setFileError(null);
+    const reader = new FileReader();
+    reader.onload = (ev) => setInputText(ev.target?.result as string);
+    reader.readAsText(file);
   };
 
-  const handleExportSVG = () => {
-    if (!svgRef.current) return;
-    const data = new XMLSerializer().serializeToString(svgRef.current);
-    const blob = new Blob([data], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'gc_skew_plot.svg'; a.click();
-    URL.revokeObjectURL(url);
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    readSequenceFile(file);
+    e.target.value = '';
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    readSequenceFile(file);
+  };
+
+  const toggleTrack = (track: keyof typeof showTracks) => {
+    setShowTracks(prev => ({ ...prev, [track]: !prev[track] }));
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2 dark:text-slate-100">
-          <MapPin className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
-          {getTranslation(lang, 'tool_gcskew_chart_title')}
-        </h4>
-        <button
-          onClick={handleExportSVG}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg text-[#0F766E] hover:bg-[#E6F5EF] transition-colors cursor-pointer dark:bg-slate-800 dark:border-slate-700 dark:text-teal-400"
-        >
-          <Download className="w-3 h-3" /> SVG
-        </button>
-      </div>
-
-      <div className="relative overflow-x-auto bg-white border border-[#DDEDE8] rounded-2xl p-3 dark:bg-slate-900 dark:border-slate-700">
-        <svg
-          ref={svgRef}
-          viewBox={`0 0 ${chartWidth} ${totalHeight}`}
-          width={chartWidth}
-          height={totalHeight}
-          className="block mx-auto"
-          style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => setTooltip(null)}
-        >
-          <rect width={chartWidth} height={totalHeight} fill="white" />
-
-          {tracks}
-
-          {/* X-axis */}
-          <line
-            x1={MARGIN.left} x2={MARGIN.left + plotWidth}
-            y1={totalHeight - MARGIN.bottom} y2={totalHeight - MARGIN.bottom}
-            stroke="#94A3B8" strokeWidth={1}
-          />
-          {xTicks}
-          <text
-            x={chartWidth / 2} y={totalHeight - 5}
-            textAnchor="middle" fontSize={11} fontWeight="bold" fill="#334155"
-          >
-            {getTranslation(lang, 'tool_gcskew_position')} ({result.seqName})
-          </text>
-
-          {/* Tooltip crosshair */}
-          {tooltip && (
-            <g>
-              <line x1={tooltip.x} x2={tooltip.x} y1={MARGIN.top} y2={totalHeight - MARGIN.bottom}
-                stroke="#0F766E" strokeWidth={0.5} strokeDasharray="3,3" opacity={0.6} />
-            </g>
-          )}
-        </svg>
-
-        {/* Floating tooltip */}
-        {tooltip && tooltip.data && (
-          <div
-            className="absolute pointer-events-none bg-white/95 backdrop-blur-sm border border-[#DDEDE8] rounded-xl shadow-lg p-2.5 text-[10px] font-mono z-50 dark:border-slate-700"
-            style={{
-              left: Math.min(tooltip.x + 15, chartWidth - 180),
-              top: tooltip.y - 80,
-            }}
-          >
-            <div className="font-bold text-[#12312B] mb-1 dark:text-slate-100">{getTranslation(lang, 'tool_gcskew_tooltip_position')}: {tooltip.data.position.toLocaleString()}</div>
-            <div className="text-[#0F766E] dark:text-teal-400">GC: {(tooltip.data.gcContent * 100).toFixed(1)}%</div>
-            <div className="text-[#3B82F6]">GC Skew: {tooltip.data.gcSkew.toFixed(4)}</div>
-            <div className="text-[#8B5CF6]">{getTranslation(lang, 'tool_gcskew_cumulative')}: {tooltip.data.cumulativeGcSkew.toFixed(2)}</div>
-            <div className="text-[#F59E0B]">AT Skew: {tooltip.data.atSkew.toFixed(4)}</div>
+    <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Input */}
+      <div
+        className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3 dark:bg-slate-900 dark:border-slate-700"
+        onDrop={handleDrop}
+        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }}
+      >
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-bold text-[#12312B] flex items-center gap-1.5 dark:text-slate-100">
+            <Dna className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
+            {getTranslation(lang, 'tool_gcskew_input_label')}
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-[#64748B] font-mono dark:text-slate-400">{seq.length.toLocaleString()} bp</span>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold bg-[#0F766E] text-white rounded-lg hover:bg-[#0D6B64] transition-colors cursor-pointer shadow-xs"
+            >
+              <Upload className="w-3 h-3" />
+              {getTranslation(lang, 'tool_gcskew_upload_fasta')}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".fasta,.fa,.fna,.gbk,.txt"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
           </div>
-        )}
+        </div>
+        <textarea
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          rows={5}
+          className="w-full p-3 text-[11px] font-mono bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl text-[#12312B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 resize-y dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+          placeholder={getTranslation(lang, 'tool_gcskew_placeholder')}
+          dir="ltr"
+        />
+        <p className="text-[10px] text-[#94A3B8] flex items-center gap-1">
+          <Info className="w-3 h-3" />
+          {getTranslation(lang, 'tool_gcskew_drag_hint')}
+        </p>
       </div>
+
+      {/* Parameters */}
+      <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs dark:bg-slate-900 dark:border-slate-700">
+        <div className="flex items-center gap-2 mb-3">
+          <Settings className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
+          <span className="text-xs font-bold text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_gcskew_params')}</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-[10px] font-bold text-[#64748B] dark:text-slate-400">{getTranslation(lang, 'tool_gcskew_window')}</label>
+            <input type="range" min={20} max={2000} step={10} value={windowSize}
+              onChange={(e) => setWindowSize(+e.target.value)} className="w-24 accent-[#0F766E]" />
+            <span className="text-[10px] font-mono font-bold text-[#0F766E] bg-[#F3FAF7] px-2 py-0.5 rounded border border-[#DDEDE8] min-w-[3rem] text-center dark:text-teal-400 dark:bg-slate-800 dark:border-slate-700">{windowSize}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-[10px] font-bold text-[#64748B] dark:text-slate-400">{getTranslation(lang, 'tool_gcskew_step')}</label>
+            <input type="range" min={1} max={500} step={5} value={stepSize}
+              onChange={(e) => setStepSize(+e.target.value)} className="w-24 accent-[#0F766E]" />
+            <span className="text-[10px] font-mono font-bold text-[#0F766E] bg-[#F3FAF7] px-2 py-0.5 rounded border border-[#DDEDE8] min-w-[3rem] text-center dark:text-teal-400 dark:bg-slate-800 dark:border-slate-700">{stepSize}</span>
+          </div>
+        </div>
+
+        {/* Track toggles */}
+        <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[#DDEDE8] dark:border-slate-700">
+          {[
+            { key: 'gcContent' as const, label: 'GC%', color: '#0F766E', icon: BarChart2 },
+            { key: 'gcSkew' as const, label: 'GC Skew', color: '#3B82F6', icon: TrendingUp },
+            { key: 'cumulative' as const, label: getTranslation(lang, 'tool_gcskew_cumulative'), color: '#8B5CF6', icon: Layers },
+            { key: 'atSkew' as const, label: 'AT Skew', color: '#F59E0B', icon: Activity },
+          ].map(({ key, label, color, icon: Icon }) => (
+            <button key={key} type="button" onClick={() => toggleTrack(key)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer border ${
+                showTracks[key]
+                  ? `border-current text-white shadow-xs`
+                  : 'bg-[#F3FAF7] border-[#DDEDE8] text-[#64748B]'
+              }`}
+              style={showTracks[key] ? { backgroundColor: color, borderColor: color } : {}}
+            >
+              {showTracks[key] ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {seq.length > 50000 && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-700 font-medium flex items-center gap-2 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-300">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+          {getTranslation(lang, 'tool_gcskew_large_warning')}
+        </div>
+      )}
+
+      {fileError && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300">{fileError}</div>
+      )}
+
+      {result && !result.isValid && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-700 font-medium dark:bg-rose-950/40 dark:border-rose-800 dark:text-rose-300">{getTranslation(lang, 'tool_gcskew_error_too_short')}</div>
+      )}
+
+      {/* Chart */}
+      {result?.isValid && (
+        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm dark:bg-slate-900 dark:border-slate-700">
+          <GcSkewChart result={result} lang={lang} showTracks={showTracks} />
+        </div>
+      )}
+
+      {/* Stats */}
+      {result?.isValid && (
+        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3 dark:bg-slate-900 dark:border-slate-700">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-bold text-[#12312B] flex items-center gap-2 dark:text-slate-100">
+              <BarChart2 className="w-4 h-4 text-[#0F766E] dark:text-teal-400" />
+              {getTranslation(lang, 'tool_gcskew_statistics')}
+            </h4>
+            <ExportButton
+              data={result.dataPoints.map(p => ({
+                position: p.position,
+                gc_percent: (p.gcContent * 100).toFixed(2),
+                at_percent: (p.atContent * 100).toFixed(2),
+                gc_skew: p.gcSkew.toFixed(6),
+                at_skew: p.atSkew.toFixed(6),
+                cumulative_gc_skew: p.cumulativeGcSkew.toFixed(4),
+              }))}
+              filename="gc_skew_data"
+              format="json"
+              lang={lang}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: getTranslation(lang, 'tool_gcskew_seq_length'), value: result.stats.seqLength.toLocaleString() + ' bp', color: '#12312B' },
+              { label: getTranslation(lang, 'tool_gcskew_overall_gc'), value: (result.stats.overallGC * 100).toFixed(1) + '%', color: '#0F766E' },
+              { label: getTranslation(lang, 'tool_gcskew_mean_skew'), value: result.stats.meanGcSkew.toFixed(4), color: '#3B82F6' },
+              { label: getTranslation(lang, 'tool_gcskew_std_skew'), value: result.stats.stdGcSkew.toFixed(4), color: '#8B5CF6' },
+            ].map((s, i) => (
+              <div key={i} className="p-3 bg-[#F3FAF7] rounded-xl border border-[#DDEDE8] text-center dark:bg-slate-800 dark:border-slate-700">
+                <div className="text-[10px] font-bold text-[#64748B] mb-1 dark:text-slate-400">{s.label}</div>
+                <div className="text-lg font-bold font-mono" style={{ color: s.color }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Landmarks */}
+          {result.landmarks.length > 0 && (
+            <div className="space-y-2 pt-3 border-t border-[#DDEDE8] dark:border-slate-700">
+              <h5 className="text-xs font-bold text-[#12312B] flex items-center gap-1.5 dark:text-slate-100">
+                <Target className="w-3.5 h-3.5 text-[#EF4444]" />
+                {getTranslation(lang, 'tool_gcskew_landmarks')} ({result.landmarks.length})
+              </h5>
+              {result.landmarks.map((lm, i) => {
+                const label = lm.type === 'ori'
+                  ? getTranslation(lang, 'tool_gcskew_landmark_ori').replace('{pos}', lm.position.toLocaleString())
+                  : lm.type === 'ter'
+                  ? getTranslation(lang, 'tool_gcskew_landmark_ter').replace('{pos}', lm.position.toLocaleString())
+                  : lm.type === 'gc_island'
+                  ? getTranslation(lang, 'tool_gcskew_landmark_gc_island')
+                      .replace('{start}', String(lm.rangeStart ?? lm.position))
+                      .replace('{end}', String(lm.rangeEnd ?? lm.position))
+                      .replace('{pct}', (lm.value * 100).toFixed(1))
+                  : getTranslation(lang, 'tool_gcskew_landmark_at_rich')
+                      .replace('{start}', String(lm.rangeStart ?? lm.position))
+                      .replace('{end}', String(lm.rangeEnd ?? lm.position))
+                      .replace('{pct}', (lm.value * 100).toFixed(1));
+                return (
+                  <div key={i} className="flex items-center gap-3 p-2 bg-[#F3FAF7] rounded-lg border border-[#DDEDE8] text-[10px] dark:bg-slate-800 dark:border-slate-700">
+                    <span className={`px-2 py-0.5 rounded font-bold text-white shrink-0 ${
+                      lm.type === 'ori' ? 'bg-red-500' :
+                      lm.type === 'ter' ? 'bg-blue-500' :
+                      lm.type === 'gc_island' ? 'bg-emerald-500' : 'bg-amber-500'
+                    }`}>
+                      {lm.type === 'ori' ? 'ORI' : lm.type === 'ter' ? 'TER' : lm.type === 'gc_island' ? 'GC+' : 'AT+'}
+                    </span>
+                    <span className="text-[#334155] font-medium">{label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      <ScientificExplanation lang={lang}
+        formula={getTranslation(lang, 'tool_gcskew_formula')}
+        biologicalMeaning={getTranslation(lang, 'tool_gcskew_when')}
+        assumptions={getTranslation(lang, 'tool_gcskew_input_desc')}
+        limitations={getTranslation(lang, 'tool_gcskew_limitations')}
+      />
     </div>
   );
 };
