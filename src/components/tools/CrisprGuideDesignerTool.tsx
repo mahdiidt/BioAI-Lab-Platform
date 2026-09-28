@@ -39,9 +39,9 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
       />
 
       {/* PAM Selector */}
-      <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-3">
-        <label className="font-bold text-sm text-[#12312B] flex items-center gap-2">
-          <Crosshair className="w-4 h-4 text-[#0F766E]" /> {getTranslation(lang, 'tool_select_pam')}
+      <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-3">
+        <label className="font-bold text-sm text-[#12312B] dark:text-slate-100 flex items-center gap-2">
+          <Crosshair className="w-4 h-4 text-[#0F766E] dark:text-teal-400" /> {getTranslation(lang, 'tool_select_pam')}
         </label>
         <div role="group" aria-label={getTranslation(lang, 'tool_select_pam')} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {PAM_OPTIONS.map((opt) => {
@@ -61,7 +61,7 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
                 <span className={`block text-sm font-mono font-bold ${isSelected ? 'text-[#0F766E]' : 'text-[#12312B]'}`}>
                   {opt.label}
                 </span>
-                <span className="block text-[11px] text-[#64748B]">{opt.enzyme}</span>
+                <span className="block text-[11px] text-[#64748B] dark:text-slate-400">{opt.enzyme}</span>
               </button>
             );
           })}
@@ -69,14 +69,14 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
       </div>
 
       {!result.isValid && result.errorMessage && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{result.errorMessage}</span>
         </div>
       )}
 
       {result.warning === 'AMBIGUITY_BLOCKS_DESIGN' && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-xs text-rose-700 font-medium">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-center gap-3 text-xs text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{getTranslation(lang, 'tool_ambiguity_blocks_guide_design')}</span>
         </div>
@@ -84,26 +84,26 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
 
       {/* Results */}
       {result.isValid && !result.warning && (
-        <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
-          <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-3">
-            <h4 className="font-bold text-sm text-[#12312B]">
+        <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-5">
+          <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">
               {getTranslation(lang, 'tool_candidate_guides_found')} ({result.guides.length})
             </h4>
             <ExportButton filename="crispr_guides.json" data={result} format="json" lang={lang} />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_length')}</span>
-              <span className="text-lg font-bold text-[#0F766E] font-mono">{result.sequenceLength.toLocaleString()} bp</span>
+            <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_length')}</span>
+              <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{result.sequenceLength.toLocaleString()} bp</span>
             </div>
-            <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_pam_pattern')}</span>
-              <span className="text-lg font-bold text-[#8B5CF6] font-mono">{result.pamPattern}</span>
+            <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_pam_pattern')}</span>
+              <span className="text-lg font-bold text-[#8B5CF6] dark:text-violet-400 font-mono">{result.pamPattern}</span>
             </div>
-            <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-              <span className="text-[11px] font-semibold text-[#64748B] block">{getTranslation(lang, 'tool_guide_length')}</span>
-              <span className="text-lg font-bold text-[#0EA5E9] font-mono">{result.guideLength} nt</span>
+            <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+              <span className="text-[11px] font-semibold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_guide_length')}</span>
+              <span className="text-lg font-bold text-[#0EA5E9] dark:text-sky-400 font-mono">{result.guideLength} nt</span>
             </div>
           </div>
 
@@ -116,7 +116,7 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
                 return (
                   <div key={i} className="p-3.5 bg-[#F3FAF7] border border-[#DDEDE8] rounded-xl space-y-2">
                     <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#0F766E]">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#0F766E] dark:text-teal-400">
                         {g.strand === '+' ? (
                           <ArrowRight className="w-3.5 h-3.5" />
                         ) : (
@@ -132,7 +132,7 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <div className="p-2 bg-white border border-[#DDEDE8] rounded-lg font-mono text-xs text-[#12312B] break-all sequence-mono-ltr flex-1">
+                      <div className="p-2 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-lg font-mono text-xs text-[#12312B] break-all sequence-mono-ltr flex-1">
                         {g.guideSeq}
                         <span className="text-[#F59E0B] font-bold">{g.pamSeq}</span>
                       </div>
@@ -140,7 +140,7 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap text-[10px]">
-                      <span className="px-2 py-0.5 rounded-full bg-white border border-[#DDEDE8] font-mono font-bold text-[#64748B]">
+                      <span className="px-2 py-0.5 rounded-full bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 font-mono font-bold text-[#64748B] dark:text-slate-400">
                         {getTranslation(lang, 'tool_gc_content')}: {g.gcContent}%
                       </span>
                       {g.hasPolyT && (
@@ -165,7 +165,7 @@ export const CrisprGuideDesignerTool: React.FC<ToolProps> = ({ lang }) => {
             </div>
           )}
 
-          <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl flex items-start gap-2 text-[11px] text-sky-800">
+          <div className="p-3 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 rounded-xl flex items-start gap-2 text-[11px] text-sky-800">
             <Info className="w-4 h-4 shrink-0 text-sky-600 mt-0.5" />
             <span>{getTranslation(lang, 'tool_offtarget_scope_note')}</span>
           </div>
