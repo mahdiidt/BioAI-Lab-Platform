@@ -29,7 +29,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Tab bar */}
-      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 flex-wrap">
+      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] dark:border-slate-700 pb-3 flex-wrap">
         <button
           role="tab"
           aria-selected={activeTab === 'punnett'}
@@ -37,7 +37,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'punnett'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <Grid className="w-4 h-4" /> {getTranslation(lang, 'tool_punnett_tab')}
@@ -49,7 +49,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'hardy'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <Scale className="w-4 h-4" /> {getTranslation(lang, 'tool_hardy_tab')}
@@ -58,9 +58,9 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
 
       {activeTab === 'punnett' && (
         <div className="space-y-6">
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#DDEDE8] pb-3">
-              <h4 className="font-bold text-sm text-[#12312B]">{getTranslation(lang, 'tool_parental_cross')}</h4>
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#DDEDE8] dark:border-slate-700 pb-3">
+              <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_parental_cross')}</h4>
               <div className="flex items-center gap-2">
                 {punnettResult && <ExportButton filename="punnett_square.json" data={punnettResult} format="json" lang={lang} />}
                 <button
@@ -80,7 +80,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_parent1_genotype')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_parent1_genotype')}</label>
                 <input
                   type="text"
                   value={p1}
@@ -90,7 +90,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_parent2_genotype')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_parent2_genotype')}</label>
                 <input
                   type="text"
                   value={p2}
@@ -106,7 +106,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
             <div className="space-y-4">
               <PunnettSquareVisualizer result={punnettResult} lang={lang} />
 
-              <div className="p-4 bg-[#ECFDF5] border border-[#DDEDE8] rounded-2xl flex items-start gap-3 text-xs text-[#0F766E]">
+              <div className="p-4 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl flex items-start gap-3 text-xs text-[#0F766E] dark:text-teal-400">
                 <Info className="w-5 h-5 shrink-0 text-[#0F766E] mt-0.5" />
                 <div>
                   <strong className="block font-bold">{getTranslation(lang, 'tool_assumptions')}</strong>
@@ -115,7 +115,7 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
               </div>
             </div>
           ) : (
-            <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl text-xs font-semibold">
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 rounded-2xl text-xs font-semibold">
               {getTranslation(lang, 'tool_punnett_error')}
             </div>
           )}
@@ -132,14 +132,14 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
 
       {activeTab === 'hardy' && (
         <div className="space-y-6">
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-            <h4 className="font-bold text-sm text-[#12312B] border-b border-[#DDEDE8] pb-2">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
               {getTranslation(lang, 'tool_allele_freq_inputs')}
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_dominant_freq')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_dominant_freq')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -152,12 +152,12 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
                     setAlleleP(p);
                     setAlleleQ(Number((1 - p).toFixed(4)));
                   }}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7] focus:ring-2 focus:ring-[#0F766E]/20 outline-none"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 focus:ring-2 focus:ring-[#0F766E]/20 outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_recessive_freq')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_recessive_freq')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -177,36 +177,36 @@ export const PunnettSquareTool: React.FC<ToolProps> = ({ lang, initialTab = 'pun
           </div>
 
           {hwResult ? (
-            <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-2">
-                <h4 className="font-bold text-sm text-[#12312B]">
+            <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
+                <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">
                   {getTranslation(lang, 'tool_genotype_freq_pop')}
                 </h4>
                 <ExportButton filename="hardy_weinberg.json" data={hwResult} format="json" lang={lang} />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="p-3.5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-xl">
-                  <span className="text-[11px] font-bold text-[#64748B] block">{getTranslation(lang, 'tool_homo_dom')}</span>
-                  <span className="text-lg font-bold text-[#0F766E] font-mono">{(hwResult.p2 * 100).toFixed(1)}%</span>
-                  <span className="text-[10px] text-[#64748B] block mt-1">AA = {hwResult.p2}</span>
+                <div className="p-3.5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-xl">
+                  <span className="text-[11px] font-bold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_homo_dom')}</span>
+                  <span className="text-lg font-bold text-[#0F766E] dark:text-teal-400 font-mono">{(hwResult.p2 * 100).toFixed(1)}%</span>
+                  <span className="text-[10px] text-[#64748B] dark:text-slate-400 block mt-1">AA = {hwResult.p2}</span>
                 </div>
 
                 <div className="p-3.5 bg-[#F5F3FF] border border-[#DDD6FE] rounded-xl">
-                  <span className="text-[11px] font-bold text-[#64748B] block">{getTranslation(lang, 'tool_hetero')}</span>
-                  <span className="text-lg font-bold text-[#8B5CF6] font-mono">{(hwResult.twoPQ * 100).toFixed(1)}%</span>
-                  <span className="text-[10px] text-[#64748B] block mt-1">Aa = {hwResult.twoPQ}</span>
+                  <span className="text-[11px] font-bold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_hetero')}</span>
+                  <span className="text-lg font-bold text-[#8B5CF6] dark:text-violet-400 font-mono">{(hwResult.twoPQ * 100).toFixed(1)}%</span>
+                  <span className="text-[10px] text-[#64748B] dark:text-slate-400 block mt-1">Aa = {hwResult.twoPQ}</span>
                 </div>
 
                 <div className="p-3.5 bg-[#F0F9FF] border border-[#BAE6FD] rounded-xl">
-                  <span className="text-[11px] font-bold text-[#64748B] block">{getTranslation(lang, 'tool_homo_rec')}</span>
-                  <span className="text-lg font-bold text-[#0EA5E9] font-mono">{(hwResult.q2 * 100).toFixed(1)}%</span>
-                  <span className="text-[10px] text-[#64748B] block mt-1">aa = {hwResult.q2}</span>
+                  <span className="text-[11px] font-bold text-[#64748B] dark:text-slate-400 block">{getTranslation(lang, 'tool_homo_rec')}</span>
+                  <span className="text-lg font-bold text-[#0EA5E9] dark:text-sky-400 font-mono">{(hwResult.q2 * 100).toFixed(1)}%</span>
+                  <span className="text-[10px] text-[#64748B] dark:text-slate-400 block mt-1">aa = {hwResult.q2}</span>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl text-xs font-semibold">
+            <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 rounded-2xl text-xs font-semibold">
               {getTranslation(lang, 'tool_hw_error')}
             </div>
           )}
