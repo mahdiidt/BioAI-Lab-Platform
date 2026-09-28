@@ -37,7 +37,7 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
   return (
     <div className="space-y-6" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
       {/* Tabs */}
-      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] pb-3 overflow-x-auto">
+      <div role="tablist" className="flex items-center gap-2 border-b border-[#DDEDE8] dark:border-slate-700 pb-3 overflow-x-auto">
         <button
           role="tab"
           aria-selected={activeTab === 'molarity'}
@@ -45,7 +45,7 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'molarity'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <Calculator className="w-4 h-4" /> {getTranslation(lang, 'tool_molarity_calc')}
@@ -57,7 +57,7 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'c1v1'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <FlaskConical className="w-4 h-4" /> {getTranslation(lang, 'tool_solution_dilution')}
@@ -69,7 +69,7 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'od600'
               ? 'bg-[#0F766E] text-white shadow-xs'
-              : 'bg-white border border-[#DDEDE8] text-[#64748B] hover:text-[#12312B]'
+              : 'bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-[#64748B] hover:text-[#12312B]'
           }`}
         >
           <Droplet className="w-4 h-4" /> {getTranslation(lang, 'tool_od600_density')}
@@ -78,57 +78,57 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
 
       {activeTab === 'molarity' && (
         <div className="space-y-6">
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-            <h4 className="font-bold text-sm text-[#12312B] border-b border-[#DDEDE8] pb-2">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
               {getTranslation(lang, 'tool_sol_prep_params')}
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_target_conc')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_target_conc')}</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={targetConcM}
                   onChange={(e) => setTargetConcM(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_desired_vol')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_desired_vol')}</label>
                 <input
                   type="number"
                   step="10"
                   min="0"
                   value={volMl}
                   onChange={(e) => setVolMl(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_solute_mw')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_solute_mw')}</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={mw}
                   onChange={(e) => setMw(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
                 />
               </div>
             </div>
           </div>
 
           {molarityRes && (
-            <div className="p-5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-2xl space-y-2">
+            <div className="p-5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">{getTranslation(lang, 'tool_req_solute_mass')}</span>
                 <ExportButton filename="molarity_calc.json" data={molarityRes} format="json" lang={lang} />
               </div>
-              <div className="text-3xl font-black text-[#0F766E] font-mono">
+              <div className="text-3xl font-black text-[#0F766E] dark:text-teal-400 font-mono">
                 {molarityRes.value} {molarityRes.unit}
               </div>
               <div className="text-xs text-[#0F766E] font-medium pt-1 space-y-1">
@@ -151,9 +151,9 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
 
       {activeTab === 'c1v1' && (
         <div className="space-y-6">
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-2">
-              <h4 className="font-bold text-sm text-[#12312B]">{getTranslation(lang, 'tool_dilution_calc')}</h4>
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
+              <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">{getTranslation(lang, 'tool_dilution_calc')}</h4>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#64748B] font-bold">{getTranslation(lang, 'tool_solve_for')}:</span>
                 <button
@@ -181,17 +181,17 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_stock_conc_c1')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_stock_conc_c1')}</label>
                 <input
                   type="number"
                   value={c1}
                   onChange={(e) => setC1(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">
                   {getTranslation(lang, 'tool_stock_vol_v1')} {targetToSolve === 'V1' && <span className="text-[#0F766E] font-bold">({getTranslation(lang, 'tool_target_label')})</span>}
                 </label>
                 <input
@@ -199,12 +199,12 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
                   disabled={targetToSolve === 'V1'}
                   value={targetToSolve === 'V1' ? c1v1Res?.value || '' : v1}
                   onChange={(e) => setV1(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7] disabled:opacity-80"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 disabled:opacity-80"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">
                   {getTranslation(lang, 'tool_final_conc_c2')} {targetToSolve === 'C2' && <span className="text-[#0F766E] font-bold">({getTranslation(lang, 'tool_target_label')})</span>}
                 </label>
                 <input
@@ -212,31 +212,31 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
                   disabled={targetToSolve === 'C2'}
                   value={targetToSolve === 'C2' ? c1v1Res?.value || '' : c2}
                   onChange={(e) => setC2(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7] disabled:opacity-80"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 disabled:opacity-80"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_final_vol_v2')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_final_vol_v2')}</label>
                 <input
                   type="number"
                   value={v2}
                   onChange={(e) => setV2(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
                 />
               </div>
             </div>
           </div>
 
           {c1v1Res && (
-            <div className="p-5 bg-[#ECFDF5] border border-[#DDEDE8] rounded-2xl space-y-2">
+            <div className="p-5 bg-[#ECFDF5] dark:bg-teal-950/40 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">
                   {getTranslation(lang, 'tool_calculated')} {c1v1Res.solvedVariable}
                 </span>
                 <ExportButton filename="c1v1_dilution.json" data={c1v1Res} format="json" lang={lang} />
               </div>
-              <div className="text-3xl font-black text-[#0F766E] font-mono">
+              <div className="text-3xl font-black text-[#0F766E] dark:text-teal-400 font-mono">
                 {c1v1Res.value} {c1v1Res.unit}
               </div>
               <p className="text-xs text-[#0F766E] font-medium pt-1">
@@ -257,30 +257,30 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
 
       {activeTab === 'od600' && (
         <div className="space-y-6">
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-xs space-y-4">
-            <h4 className="font-bold text-sm text-[#12312B] border-b border-[#DDEDE8] pb-2">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-xs space-y-4">
+            <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100 border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
               {getTranslation(lang, 'tool_od_spec')}
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_measured_od600')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_measured_od600')}</label>
                 <input
                   type="number"
                   step="0.05"
                   min="0"
                   value={od600}
                   onChange={(e) => setOd600(parseFloat(e.target.value) || 0)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#64748B] block mb-1">{getTranslation(lang, 'tool_microorganism_type')}</label>
+                <label className="text-xs font-bold text-[#64748B] dark:text-slate-400 block mb-1">{getTranslation(lang, 'tool_microorganism_type')}</label>
                 <select
                   value={organism}
                   onChange={(e) => setOrganism(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] font-mono text-sm font-bold text-[#0F766E] bg-[#F3FAF7]"
+                  className="w-full p-2.5 rounded-xl border border-[#DDEDE8] dark:border-slate-600 font-mono text-sm font-bold text-[#0F766E] dark:text-teal-400 bg-[#F3FAF7] dark:bg-slate-800 dark:bg-slate-800"
                 >
                   <option value="E. coli">E. coli (~8×10⁸ cells/mL per OD600)</option>
                   <option value="Yeast">S. cerevisiae Yeast (~3×10⁷ cells/mL per OD600)</option>
@@ -289,16 +289,16 @@ export const MolarityCalcTool: React.FC<ToolProps> = ({ lang, initialTab = 'mola
             </div>
           </div>
 
-          <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3">
+          <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider block">{getTranslation(lang, 'tool_est_cell_density')}</span>
               <ExportButton filename="od600_cell_density.json" data={odRes} format="json" lang={lang} />
             </div>
-            <div className="text-2xl font-black text-[#0F766E] font-mono">
+            <div className="text-2xl font-black text-[#0F766E] dark:text-teal-400 font-mono">
               {odRes.formattedCells} cells/mL
             </div>
 
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 text-xs text-amber-800">
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-start gap-2.5 text-xs text-amber-800">
               <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
                 <strong className="block font-bold">{getTranslation(lang, 'tool_calib_disc_title')}:</strong>
