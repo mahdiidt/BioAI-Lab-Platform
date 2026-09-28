@@ -33,10 +33,10 @@ export const EnzymeKineticsChart: React.FC<EnzymeKineticsChartProps> = ({
     .join(' ');
 
   return (
-    <div className="p-4 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-3">
-      <div className="flex items-center justify-between text-xs text-[#12312B] font-semibold border-b border-[#DDEDE8] pb-2">
+    <div className="p-4 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-3">
+      <div className="flex items-center justify-between text-xs text-[#12312B] font-semibold border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
         <span>Michaelis-Menten Curve ($v$ vs $[S]$)</span>
-        <span className="text-[#0F766E] font-mono">
+        <span className="text-[#0F766E] dark:text-teal-400 font-mono">
           Vmax: {vmax} | Km: {km}
         </span>
       </div>
