@@ -29,7 +29,7 @@ export const RnaStructureVisualizer: React.FC<RnaStructureVisualizerProps> = ({ 
 
   return (
     <div className="space-y-2">
-      <div className="p-3 bg-white border border-[#DDEDE8] rounded-xl overflow-x-auto">
+      <div className="p-3 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-xl overflow-x-auto">
         <svg width={width} height={baselineY + 30} viewBox={`0 0 ${width} ${baselineY + 30}`} className="block">
           {/* Baseline */}
           <line x1={marginX} y1={baselineY} x2={width - marginX} y2={baselineY} stroke="#DDEDE8" strokeWidth={1} />
@@ -72,7 +72,7 @@ export const RnaStructureVisualizer: React.FC<RnaStructureVisualizerProps> = ({ 
           ))}
         </svg>
       </div>
-      <div className="flex items-center gap-4 text-[10px] text-[#64748B]">
+      <div className="flex items-center gap-4 text-[10px] text-[#64748B] dark:text-slate-400">
         <span className="flex items-center gap-1">
           <span className="w-3 h-0.5 bg-[#0F766E] inline-block rounded-full" /> {getTranslation(currentLang, 'tool_wc_pair')}
         </span>
