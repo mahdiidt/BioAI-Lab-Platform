@@ -20,12 +20,12 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
   const totalCells = type === 'monohybrid' ? 4 : 16;
 
   return (
-    <div className="p-5 bg-white border border-[#DDEDE8] rounded-2xl shadow-sm space-y-5">
-      <div className="flex items-center justify-between border-b border-[#DDEDE8] pb-2">
-        <h4 className="font-bold text-sm text-[#12312B]">
+    <div className="p-5 bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 rounded-2xl shadow-sm space-y-5">
+      <div className="flex items-center justify-between border-b border-[#DDEDE8] dark:border-slate-700 pb-2">
+        <h4 className="font-bold text-sm text-[#12312B] dark:text-slate-100">
           {getTranslation(lang, 'tool_punnett_interactive_header')} ({getTranslation(lang, type === 'monohybrid' ? 'tool_punnett_monohybrid' : 'tool_punnett_dihybrid')} {getTranslation(lang, 'tool_punnett_cross')})
         </h4>
-        <span className="text-xs font-semibold text-[#0F766E] bg-[#ECFDF5] px-2.5 py-0.5 rounded-full border border-[#DDEDE8]">
+        <span className="text-xs font-semibold text-[#0F766E] dark:text-teal-400 bg-[#ECFDF5] dark:bg-teal-950/40 px-2.5 py-0.5 rounded-full border border-[#DDEDE8]">
           {result.p1} × {result.p2}
         </span>
       </div>
@@ -36,7 +36,7 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
           <table className="border-collapse mx-auto">
             <thead>
               <tr>
-                <th className="p-2 text-xs font-mono text-[#64748B]">{getTranslation(lang, 'tool_punnett_parent_axis')}</th>
+                <th className="p-2 text-xs font-mono text-[#64748B] dark:text-slate-400">{getTranslation(lang, 'tool_punnett_parent_axis')}</th>
                 {p2Gametes.map((a, i) => (
                   <th key={i} className="p-2.5 font-mono font-bold text-sm text-[#0F766E] bg-white rounded border border-[#DDEDE8] min-w-[50px] text-center">
                     {a}
@@ -53,7 +53,7 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
                   {row.map((genotype, cIdx) => (
                     <td
                       key={cIdx}
-                      className="p-3 font-mono font-bold text-sm text-[#12312B] bg-white border border-[#DDEDE8] text-center rounded-lg shadow-2xs hover:bg-[#14B8A6]/10 transition-colors"
+                      className="p-3 font-mono font-bold text-sm text-[#12312B] bg-white dark:bg-slate-900 border border-[#DDEDE8] dark:border-slate-700 text-center rounded-lg shadow-2xs hover:bg-[#14B8A6]/10 transition-colors"
                     >
                       {genotype}
                     </td>
@@ -76,8 +76,8 @@ export const PunnettSquareVisualizer: React.FC<PunnettSquareVisualizerProps> = (
                 const item = info as RatioItem;
                 return (
                   <div key={gt} className="p-2 bg-[#F3FAF7] border border-[#DDEDE8] rounded-lg flex items-center justify-between text-xs">
-                    <span className="font-mono font-bold text-[#12312B]">{gt}</span>
-                    <span className="font-semibold text-[#0F766E]">
+                    <span className="font-mono font-bold text-[#12312B] dark:text-slate-100">{gt}</span>
+                    <span className="font-semibold text-[#0F766E] dark:text-teal-400">
                       {item.percent}% ({item.count}/{totalCells})
                     </span>
                   </div>
