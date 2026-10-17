@@ -37,6 +37,8 @@ import { RnaSecondaryStructureTool } from './tools/RnaSecondaryStructureTool';
 import { StatisticalTestTool } from './tools/StatisticalTestTool';
 import { PhylogeneticTreeTool } from './tools/PhylogeneticTreeTool';
 import { GramStainTool } from './tools/GramStainTool';
+import { CancerMlStudioTool } from './tools/CancerMlStudioTool';
+import { VariantAnalyzerTool } from './tools/VariantAnalyzerTool';
 
 interface ToolDetailModalProps {
   toolId: string;
@@ -105,6 +107,12 @@ export const ToolDetailModal: React.FC<ToolDetailModalProps> = ({
 
       case 'mutation_analyzer':
         return <MutationAnalyzerTool lang={lang} />;
+
+      case 'variant_analyzer':
+        return <VariantAnalyzerTool lang={lang} />;
+
+      case 'cancer_ml_studio':
+        return <CancerMlStudioTool lang={lang} />;
 
       case 'pedigree_analysis':
         return <PedigreeAnalysisTool lang={lang} />;
