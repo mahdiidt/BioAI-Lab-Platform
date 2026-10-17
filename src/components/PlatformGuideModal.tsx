@@ -54,6 +54,8 @@ import {
   Users,
   Droplet,
   Fingerprint,
+  BrainCircuit,
+  ScanSearch,
 } from 'lucide-react';
 
 interface PlatformGuideModalProps {
@@ -68,6 +70,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Repeat, ArrowRightLeft, Binary, PieChart, Search, FileText, BarChart2, Grid, Scale, Zap,
   Sliders, Crosshair, Thermometer, TestTube, Box, FlaskRound, TrendingDown, Eye, TrendingUp,
   LineChart, Shield, AlignLeft, GitMerge, Target, GitCompare, Waves, Sigma, Grid3x3, Orbit, Users, Droplet, Fingerprint,
+  BrainCircuit, ScanSearch,
 };
 const LEVEL_COLORS: Record<string, string> = {
   basic: 'text-[#0F766E] dark:text-teal-400 bg-[#ECFDF5] dark:bg-slate-800 border-[#DDEDE8] dark:border-slate-700',
