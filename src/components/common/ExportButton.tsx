@@ -6,7 +6,7 @@ import { Language } from '../../types';
 interface ExportButtonProps {
   filename: string;
   data: string | object;
-  format?: 'txt' | 'json' | 'fasta';
+  format?: 'txt' | 'json' | 'fasta' | 'csv' | 'vcf';
   lang?: Language;
   className?: string;
 }
@@ -31,6 +31,9 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
       const raw = typeof data === 'string' ? data.trim() : String(data);
       content = raw.startsWith('>') ? raw : `>sequence\n${raw}`;
       mimeType = 'text/plain';
+    } else if (format === 'csv') {
+      content = typeof data === 'string' ? data : String(data);
+      mimeType = 'text/csv';
     } else {
       content = typeof data === 'string' ? data : String(data);
     }
